@@ -220,6 +220,8 @@ $progresso_percentual = round($progresso * 100, 2);
             justify-content: center;
             gap: 10px;
             margin-top: 20px;
+            flex-direction: column;
+            align-items: center;
         }
 
         .coin-font {
@@ -274,6 +276,12 @@ $progresso_percentual = round($progresso * 100, 2);
             100% {
                 background-position: 50000px 50000px, 10000px 20000px, -10000px 15000px;
             }
+        }
+
+        .footer-full-btn {
+            width: 100%;
+            box-sizing: border-box;
+            text-align: center;
         }
     </style>
 </head>
@@ -338,10 +346,13 @@ $progresso_percentual = round($progresso * 100, 2);
         </div>
 
         <!-- Rodapé -->
-        <div class="footer">
-            <a href="missoes.php?id=<?= $aluno['id']; ?>" class="gradient-button"><span>Missões</span></a>
-            <a href="ranking.php?id=<?= $aluno['id']; ?>" class="gradient-button"><span>Ranking</span></a>
-            <a href="personalizar.php?id=<?= $aluno['id']; ?>" class="gradient-button"><span>Personalizar</span></a>
+        <div class="footer" style="flex-direction: column; align-items: center;">
+            <div style="display: flex; gap: 10px;">
+                <a href="missoes.php?id=<?= $aluno['id']; ?>" class="gradient-button"><span>Missões</span></a>
+                <a href="ranking.php?id=<?= $aluno['id']; ?>" class="gradient-button"><span>Ranking</span></a>
+                <a href="personalizar.php?id=<?= $aluno['id']; ?>" class="gradient-button"><span>Personalizar</span></a>
+            </div>
+            <a href="regras.php?id=<?= $aluno['id']; ?>" class="gradient-button footer-full-btn" style="margin-top: 10px;"><span>Regras</span></a>
         </div>
     </div>
     </div>
