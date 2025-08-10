@@ -1,0 +1,17 @@
+{
+    "name": "avito/game",
+    "autoload": {
+        "psr-4": {
+            "Avito\\Game\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Akio",
+            "email": "avitorakio@outlook.com"
+        }
+    ],
+    "require": {
+        "chillerlan/php-qrcode": "^5.0"
+    }
+}
