@@ -274,7 +274,11 @@
                 </div>
             </div>
         </div>
-        <a href="aluno.php" class="gradient-button back-btn">Voltar</a>
+    <?php
+    // Tenta obter o id do aluno via GET ou SESSION
+    $id_aluno = isset($_GET['id']) ? $_GET['id'] : (isset($_SESSION['id']) ? $_SESSION['id'] : '');
+    ?>
+    <a href="aluno.php<?php echo $id_aluno ? '?id=' . urlencode($id_aluno) : ''; ?>" class="gradient-button back-btn">Voltar</a>
     </div>
     <script>
         // Interatividade do acordeão
