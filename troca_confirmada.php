@@ -1,14 +1,14 @@
 <?php
-require 'db.php'; // Inclui a conexão com o banco de dados
+require 'db.php';
 session_start();
 
-if (!isset($_GET['troca_id'])) {
-    die("Erro: ID da solicitação de troca não foi fornecido.");
+if (!isset($_GET['troca_id'], $_GET['produto_id'], $_GET['aluno_id'])) {
+	die("Erro: Dados insuficientes para processar a troca.");
 }
-
 
 $produtoId = (int)$_GET['produto_id'];
 $alunoId = (int)$_GET['aluno_id'];
+$trocaId = (int)$_GET['troca_id'];
 
 // Recuperar informações do produto e do aluno
 $stmtProduto = $pdo->prepare("SELECT * FROM produtos WHERE id = :produto_id");
@@ -20,18 +20,24 @@ $stmtAluno->execute([':aluno_id' => $alunoId]);
 $aluno = $stmtAluno->fetch(PDO::FETCH_ASSOC);
 
 if (!$produto || !$aluno) {
-    die("Produto ou aluno não encontrado.");
+	die("Produto ou aluno não encontrado.");
 }
 
-$trocaId = (int)$_GET['troca_id'];
+// Verificar saldo e processar troca
+$moedas_necessarias = (int)$produto['moeda'];
+$moedas_aluno = (int)$aluno['moedas'];
+$erro = false;
+$mensagem = '';
 
-// Verificar se a troca existe no banco de dados
-$stmt = $pdo->prepare("SELECT * FROM trocas WHERE id = :id");
-$stmt->execute([':id' => $trocaId]);
-$troca = $stmt->fetch(PDO::FETCH_ASSOC);
-
-if (!$troca) {
-    die("Erro: Solicitação de troca não encontrada.");
+if ($moedas_aluno >= $moedas_necessarias) {
+	// Subtrai moedas do aluno
+	$novo_saldo = $moedas_aluno - $moedas_necessarias;
+	$stmtUpdate = $pdo->prepare("UPDATE alunos SET moedas = :novo_saldo WHERE id = :aluno_id");
+	$stmtUpdate->execute([':novo_saldo' => $novo_saldo, ':aluno_id' => $alunoId]);
+	$mensagem = "Parabéns! Você acabou de ganhar um <strong>" . htmlspecialchars($produto['nome']) . "</strong>. Vá até a secretaria para retirar seu prêmio! 🤑";
+} else {
+	$erro = true;
+	$mensagem = "<span style='color: #ff4d4d;'>Saldo insuficiente! Você precisa de <strong>" . $moedas_necessarias . " moedas</strong>, mas só tem <strong>" . $moedas_aluno . " moedas</strong>.";
 }
 ?>
 
@@ -59,49 +65,90 @@ if (!$troca) {
     </script>
 </head>
 <body>
-<body>
-<div id="wrapper">
-		<!-- Cabeçalho -->
-		<header>
-			<div class="container-fluid">
-				<div class="row">
-				<a href="aluno.php?id=<?= $aluno['id']; ?>" class="btn" style="color: #ffffff;">
-    			<i class="fas fa-chevron-left"></i>
-				</a>
-
-					<div class="col-4-sm center">
-						<h1 class="page-title">Confirmação de troca</h1> <!-- Título  -->
-					</div>
-
-
-				</div>
+	<div class="checkout-wrapper">
+		<div class="checkout-card">
+			<div class="checkout-success">
+				<img src="asset/img/coin.gif" alt="Sucesso" class="center-img-success">
 			</div>
-		</header>
-
-		<section>
-			<div class="container-fluid">
-				<!-- Cartão principal -->
-				<div class="row">
-					<div class="col-12">
-						<div class="hero-card1">
-
-							<div class="card-content">
-								<h3 class="branco">Parabéns! Você acabou de ganhar um <strong><?= htmlspecialchars($produto['nome']); ?></strong>.</h3> 
-								<p class="branco">Vá até a secretaria para retirar seu prêmio! 🤑</p> <!-- Descrição  -->
-                                <div>
-                                <br>
-
-                                <div class="content-image1">
-								<img src="<?= $produto['imagem'] ?>" alt="Imagem do produto">
-							</div>
-                                    
-									
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-
-
+			<h2>Resultado da Troca</h2>
+			<div class="checkout-product">
+				<img src="<?= htmlspecialchars($produto['imagem']); ?>" alt="Imagem do produto" class="center-img-produto">
+				<h3><?= htmlspecialchars($produto['nome']); ?></h3>
+				<p><?= htmlspecialchars($produto['descricao']); ?></p>
+			</div>
+			<div class="checkout-info">
+				<p><strong>Valor:</strong> <span style="color:gold; font-size:1.2em;"><?= htmlspecialchars($produto['moeda']); ?> moedas</span></p>
+				<p><strong>Seu saldo:</strong> <span style="color:gold; font-size:1.2em;"><?= $erro ? $moedas_aluno : $novo_saldo; ?> moedas</span></p>
+			</div>
+			<div style="margin-top:18px;">
+				<p class="branco" style="font-size:1.1em;"><?= $mensagem; ?></p>
+			</div>
+			<div style="display:flex; gap:10px; margin-top:18px;">
+				<a href="loja.php?id=<?= $alunoId; ?>" class="gradient-button" style="flex:1; text-align:center;">Voltar para Loja</a>
+				<a href="missoes.php?id=<?= $alunoId; ?>" class="gradient-button" style="flex:1; text-align:center;">Ver Missões</a>
+			</div>
+		</div>
+	</div>
+	<style>
+		.checkout-wrapper {
+			min-height: 100vh;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			background: #17171f;
+		}
+		.checkout-card {
+			background: #23233a;
+			border-radius: 18px;
+			box-shadow: 0 4px 24px #0008;
+			padding: 32px 24px;
+			text-align: center;
+			color: #fff;
+			font-family: 'Orbitron', Arial, sans-serif;
+			max-width: 350px;
+			width: 100%;
+		}
+		.checkout-success img {
+			animation: bounce 1s infinite alternate;
+			display: block;
+			margin-left: auto;
+			margin-right: auto;
+			width: 60px;
+			margin-bottom: 12px;
+		}
+		@keyframes bounce {
+			0% { transform: translateY(0); }
+			100% { transform: translateY(-10px); }
+		}
+		.gradient-button {
+			background: linear-gradient(90deg, #f3e600 0%, #ffd700 100%);
+			color: #23233a;
+			border: none;
+			border-radius: 8px;
+			padding: 12px 0;
+			font-weight: bold;
+			font-size: 1em;
+			cursor: pointer;
+			box-shadow: 0 2px 8px #0002;
+			transition: background 0.2s;
+			text-decoration: none;
+			display: block;
+		}
+		.gradient-button:hover {
+			background: linear-gradient(90deg, #ffd700 0%, #f3e600 100%);
+		}
+		.center-img-produto {
+			display: block;
+			margin-left: auto;
+			margin-right: auto;
+			width: 120px;
+			border-radius: 12px;
+			margin-bottom: 10px;
+			box-shadow: 0 2px 8px #0004;
+		}
+		.checkout-info {
+			margin: 18px 0 0 0;
+		}
+	</style>
 </body>
 </html>

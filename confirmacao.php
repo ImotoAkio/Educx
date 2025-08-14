@@ -80,54 +80,96 @@ if (!$produto || !$aluno) {
 </head>
 
 <body>
-	<div id="wrapper">
-		<!-- Cabeçalho -->
-		<header>
-			<div class="container-fluid">
-				<div class="row">
-					<a href="aluno.php?id=<?= $aluno['id']; ?>" class="btn" style="color: #ffffff;">
-						<i class="fas fa-chevron-left"></i>
-					</a>
-
-					<div class="col-4-sm center">
-						<h1 class="page-title">Confirmação de troca</h1> <!-- Título  -->
-					</div>
-
-
-				</div>
+	<div class="checkout-wrapper">
+		<div class="checkout-card">
+			<div class="checkout-success">
+				<img src="asset/img/coin.gif" alt="Sucesso" class="center-img-success">
 			</div>
-		</header>
-
-		<section>
-			<div class="container-fluid">
-				<!-- Cartão principal -->
-				<div class="row">
-					<div class="col-12">
-						<div class="hero-card1">
-
-							<div class="card-content">
-								<h3 class="branco">Você está prestes a trocar <strong><?= htmlspecialchars($produto['moeda']); ?> moedas</strong> pelo produto <strong><?= htmlspecialchars($produto['nome']); ?></strong>.</h3>
-								<p class="branco">Confirma?</p> <!-- Descrição  -->
-								<div>
-									<br>
-									<form action="processar_solicitacao.php" method="POST">
-										<input type="hidden" name="produto_id" value="<?= $produtoId; ?>">
-										<input type="hidden" name="aluno_id" value="<?= $alunoId; ?>">
-										<button type="submit">Confirmar Troca</button>
-									</form>
-									<div class="content-image">
-										<img src="<?= $produto['imagem'] ?>" alt="Imagem do produto">
-									</div>
-
-
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-
-
-
+			<h2>Confirmação de Compra</h2>
+			<div class="checkout-product">
+				<img src="<?= htmlspecialchars($produto['imagem']); ?>" alt="Imagem do produto" class="center-img-produto">
+				<h3><?= htmlspecialchars($produto['nome']); ?></h3>
+				<p><?= htmlspecialchars($produto['descricao']); ?></p>
+			</div>
+			<div class="checkout-info">
+				<p><strong>Valor:</strong> <span style="color:gold; font-size:1.2em;"><?= htmlspecialchars($produto['moeda']); ?> moedas</span></p>
+				<p><strong>Seu saldo:</strong> <span style="color:gold; font-size:1.2em;"><?= htmlspecialchars($aluno['moedas']); ?> moedas</span></p>
+			</div>
+			<form action="processar_solicitacao.php" method="POST" style="margin-top:18px;">
+				<input type="hidden" name="produto_id" value="<?= $produtoId; ?>">
+				<input type="hidden" name="aluno_id" value="<?= $alunoId; ?>">
+				<button type="submit" class="gradient-button" style="width:100%;">Confirmar Compra</button>
+			</form>
+			<div style="display:flex; gap:10px; margin-top:18px;">
+				<a href="loja.php?id=<?= $alunoId; ?>" class="gradient-button" style="flex:1; text-align:center;">Voltar para Loja</a>
+				<a href="missoes.php?id=<?= $alunoId; ?>" class="gradient-button" style="flex:1; text-align:center;">Ver Missões</a>
+			</div>
+		</div>
+	</div>
+	<style>
+		.center-img-success {
+			display: block;
+			margin-left: auto;
+			margin-right: auto;
+			width: 60px;
+			margin-bottom: 12px;
+		}
+		.center-img-produto {
+			display: block;
+			margin-left: auto;
+			margin-right: auto;
+			width: 120px;
+			border-radius: 12px;
+			margin-bottom: 10px;
+		}
+		.checkout-wrapper {
+			min-height: 100vh;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			background: #17171f;
+		}
+		.checkout-card {
+			background: #23233a;
+			border-radius: 18px;
+			box-shadow: 0 4px 24px #0008;
+			padding: 32px 24px;
+			text-align: center;
+			color: #fff;
+			font-family: 'Orbitron', Arial, sans-serif;
+			max-width: 350px;
+			width: 100%;
+		}
+		.checkout-success img {
+			animation: bounce 1s infinite alternate;
+		}
+		@keyframes bounce {
+			0% { transform: translateY(0); }
+			100% { transform: translateY(-10px); }
+		}
+		.gradient-button {
+			background: linear-gradient(90deg, #f3e600 0%, #ffd700 100%);
+			color: #23233a;
+			border: none;
+			border-radius: 8px;
+			padding: 12px 0;
+			font-weight: bold;
+			font-size: 1em;
+			cursor: pointer;
+			box-shadow: 0 2px 8px #0002;
+			transition: background 0.2s;
+			text-decoration: none;
+			display: block;
+		}
+		.gradient-button:hover {
+			background: linear-gradient(90deg, #ffd700 0%, #f3e600 100%);
+		}
+		.checkout-product img {
+			box-shadow: 0 2px 8px #0004;
+		}
+		.checkout-info {
+			margin: 18px 0 0 0;
+		}
+	</style>
 </body>
-
 </html>

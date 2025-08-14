@@ -55,8 +55,44 @@ if (!$aluno) {
     die("Aluno não encontrado.");
 }
 
+// --- Lógica de nível e progresso igual ao aluno.php ---
+function calcularNivelEProgresso($xp_total)
+{
+    $nivel = 1;
+    $xp_para_proximo_nivel = 499; // XP inicial necessário para o nível 1
+    $titulo_nivel = "Iniciante"; // Título padrão
 
+    // Determina o título do nível com base no XP total
+    if ($xp_total >= 2000) {
+        $titulo_nivel = "Líder";
+        $xp_para_proximo_nivel = 0; // Sem próximo nível definido
+    } elseif ($xp_total >= 1000) {
+        $titulo_nivel = "Guardião";
+        $xp_para_proximo_nivel = 1999;
+    } elseif ($xp_total >= 500) {
+        $titulo_nivel = "Explorador";
+        $xp_para_proximo_nivel = 999;
+    }
 
+    // Calcula o progresso dentro do nível atual
+    $xp_atual_no_nivel = $xp_para_proximo_nivel > 0 ? $xp_total % ($xp_para_proximo_nivel + 1) : $xp_total;
+
+    return [
+        'nivel' => $nivel,
+        'titulo_nivel' => $titulo_nivel,
+        'xp_atual_no_nivel' => $xp_atual_no_nivel,
+        'xp_para_proximo_nivel' => $xp_para_proximo_nivel
+    ];
+}
+
+$xp_total = (int) $aluno['xp_total'];
+$dados = calcularNivelEProgresso($xp_total);
+$nivel_atual = $dados['nivel'];
+$titulo_nivel = $dados['titulo_nivel'];
+$xp_atual_no_nivel = $dados['xp_atual_no_nivel'];
+$xp_para_proximo_nivel = $dados['xp_para_proximo_nivel'];
+$progresso = ($xp_para_proximo_nivel > 0) ? ($xp_atual_no_nivel / $xp_para_proximo_nivel) : 1;
+$progresso_percentual = round($progresso * 100, 2);
 ?>
 <!DOCTYPE html>
 <html lang="pt-br">
