@@ -55,11 +55,17 @@ if (isset($_POST['edit'])) {
 
 // Função para remover um professor
 if (isset($_GET['delete'])) {
-    $id = $_GET['delete'];
+  $id = $_GET['delete'];
 
-    $sql = "DELETE FROM professores WHERE id = :id";
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute(['id' => $id]);
+  // Remove vínculos do professor em turmas_professores
+  $sql = "DELETE FROM turmas_professores WHERE professor_id = :id";
+  $stmt = $pdo->prepare($sql);
+  $stmt->execute(['id' => $id]);
+
+  // Agora remove o professor
+  $sql = "DELETE FROM professores WHERE id = :id";
+  $stmt = $pdo->prepare($sql);
+  $stmt->execute(['id' => $id]);
 }
 
 // Consulta todos os professores

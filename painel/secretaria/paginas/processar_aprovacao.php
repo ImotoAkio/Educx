@@ -3,79 +3,57 @@ require '../../../db.php';
 session_start();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $solicitacao_id = isset($_POST['solicitacao_id']) ? (int)$_POST['solicitacao_id'] : null;
+    $troca_id = isset($_POST['troca_id']) ? (int)$_POST['troca_id'] : null;
     $acao = isset($_POST['acao']) ? $_POST['acao'] : null;
 
     // Verifica se os dados necessários foram enviados
-    if (!$solicitacao_id || !in_array($acao, ['aprovar', 'rejeitar'])) {
-        header('Location: painel_secretaria.php?erro=dados_invalidos');
+    if (!$troca_id || !in_array($acao, ['aprovar', 'rejeitar'])) {
+        header('Location: tables.php?erro=dados_invalidos');
         exit;
     }
 
     if ($acao === 'aprovar') {
         try {
-            // Inicia uma transação para garantir integridade
-            $pdo->beginTransaction();
+            // Atualiza o status da troca para 'aprovado'
+            $stmt = $pdo->prepare("UPDATE trocas SET status = 'aprovado' WHERE id = :id");
+            $stmt->execute([':id' => $troca_id]);
 
-            // Busca os detalhes da solicitação
-            $stmt = $pdo->prepare("
-                SELECT s.aluno_id, s.missao_id, m.xp, m.moedas 
-                FROM solicitacoes_missoes s
-                JOIN missoes m ON s.missao_id = m.id
-                WHERE s.id = :id
-            ");
-            $stmt->execute([':id' => $solicitacao_id]);
-            $solicitacao = $stmt->fetch(PDO::FETCH_ASSOC);
-
-            if ($solicitacao) {
-                // Atualiza o XP total e as moedas do aluno
-                $stmt = $pdo->prepare("
-                    UPDATE alunos 
-                    SET 
-                        xp_total = xp_total + :xp, 
-                        moedas = moedas + :moedas 
-                    WHERE id = :aluno_id
-                ");
-                $stmt->execute([
-                    ':xp' => $solicitacao['xp'],
-                    ':moedas' => $solicitacao['moedas'],
-                    ':aluno_id' => $solicitacao['aluno_id']
-                ]);
-
-                // Atualiza o status da solicitação para 'aprovado'
-                $stmt = $pdo->prepare("UPDATE solicitacoes_missoes SET status = 'aprovado' WHERE id = :id");
-                $stmt->execute([':id' => $solicitacao_id]);
-
-                // Confirma a transação
-                $pdo->commit();
-            } else {
-                // Caso a solicitação não seja encontrada, reverte a transação
-                $pdo->rollBack();
-                header('Location: painel_secretaria.php?erro=solicitacao_nao_encontrada');
-                exit;
-            }
+            header('Location: tables.php?status=aprovado');
+            exit;
         } catch (Exception $e) {
-            // Em caso de erro, reverte a transação
-            $pdo->rollBack();
-            header('Location: painel_secretaria.php?erro=erro_ao_aprovar');
+            header('Location: tables.php?erro=erro_ao_aprovar');
             exit;
         }
     } elseif ($acao === 'rejeitar') {
         try {
-            // Atualiza o status da solicitação para 'rejeitado'
-            $stmt = $pdo->prepare("UPDATE solicitacoes_missoes SET status = 'rejeitado' WHERE id = :id");
-            $stmt->execute([':id' => $solicitacao_id]);
+            // Busca os detalhes da troca para estornar moedas
+            $stmt = $pdo->prepare("
+                SELECT t.aluno_id, t.produto_id, p.moeda 
+                FROM trocas t
+                JOIN produtos p ON t.produto_id = p.id
+                WHERE t.id = :id
+            ");
+            $stmt->execute([':id' => $troca_id]);
+            $troca = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            // Redireciona de volta
-            header('Location: missoes.php?status=rejeitado');
+            if ($troca) {
+                // Estorna as moedas para o aluno
+                $stmt = $pdo->prepare("UPDATE alunos SET moedas = moedas + :moeda WHERE id = :aluno_id");
+                $stmt->execute([
+                    ':moeda' => $troca['moeda'],
+                    ':aluno_id' => $troca['aluno_id']
+                ]);
+            }
+
+            // Atualiza o status da troca para 'rejeitado'
+            $stmt = $pdo->prepare("UPDATE trocas SET status = 'rejeitado' WHERE id = :id");
+            $stmt->execute([':id' => $troca_id]);
+
+            header('Location: tables.php?status=rejeitado');
             exit;
         } catch (Exception $e) {
-            header('Location: painel_secretaria.php?erro=erro_ao_rejeitar');
+            header('Location: tables.php?erro=erro_ao_rejeitar');
             exit;
         }
     }
-
-    // Redireciona para a página anterior (painel da secretaria)
-    header('Location: missoes.php');
-    exit;
 }

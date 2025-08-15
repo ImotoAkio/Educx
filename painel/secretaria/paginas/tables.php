@@ -7,8 +7,8 @@ if (!isset($_SESSION['usuario_id']) || $_SESSION['tipo_usuario'] !== 'secretaria
     exit;
 }
 
-// Consulta as trocas pendentes
-$trocasStmt = $pdo->query("SELECT t.id, a.nome AS aluno_nome, p.nome AS produto_nome 
+// Consulta as trocas pendentes, incluindo data, status e valor das moedas
+$trocasStmt = $pdo->query("SELECT t.id, t.data_troca, t.status, a.nome AS aluno_nome, p.nome AS produto_nome, p.moeda AS produto_moeda 
                            FROM trocas t
                            JOIN alunos a ON t.aluno_id = a.id
                            JOIN produtos p ON t.produto_id = p.id
@@ -222,11 +222,36 @@ Coded by www.creative-tim.com
             <td><?= htmlspecialchars($troca['aluno_nome']); ?></td>
             <td><?= htmlspecialchars($troca['produto_nome']); ?></td>
             <td>
-                <form method="POST" action="../processar_aprovacao.php">
+                <form method="POST" action="processar_aprovacao.php" style="display:inline-block;">
                     <input type="hidden" name="troca_id" value="<?= $troca['id']; ?>">
                     <button class="btn btn-success" type="submit" name="acao" value="aprovar">Aprovar</button>
                     <button class="btn btn-danger" type="submit" name="acao" value="rejeitar">Rejeitar</button>
                 </form>
+                <button class="btn btn-info" type="button" data-toggle="modal" data-target="#modalTroca<?= $troca['id']; ?>">Ver detalhes</button>
+                <!-- Modal -->
+                <div class="modal fade" id="modalTroca<?= $troca['id']; ?>" tabindex="-1" role="dialog" aria-labelledby="modalLabel<?= $troca['id']; ?>" aria-hidden="true">
+                  <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="modalLabel<?= $troca['id']; ?>">Informações da Troca</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <div class="modal-body">
+                        <p><strong>Aluno:</strong> <?= htmlspecialchars($troca['aluno_nome']); ?></p>
+                        <p><strong>Produto:</strong> <?= htmlspecialchars($troca['produto_nome']); ?></p>
+                        <p><strong>Valor do item:</strong> <span style="color:gold; font-weight:bold;"><?= htmlspecialchars($troca['produto_moeda']); ?> moedas</span></p>
+                        <p><strong>Data da troca:</strong> <?= htmlspecialchars($troca['data_troca']); ?></p>
+                        <p><strong>Status:</strong> <?= htmlspecialchars($troca['status']); ?></p>
+                        <p><strong>ID da Troca:</strong> <?= $troca['id']; ?></p>
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
             </td>
         </tr>
         <?php endforeach; ?>

@@ -24,13 +24,18 @@ if (!$turma) {
 
 $turma_id = $turma['turma_id'];
 
-// Consulta as missões disponíveis para o aluno
+// Consulta apenas as missões que o aluno ainda não realizou
 $stmt = $pdo->prepare("
-    SELECT * 
-    FROM missoes 
-    WHERE status = 'ativa' AND (turma_id = :turma_id OR turma_id IS NULL)
+    SELECT m.*
+    FROM missoes m
+    WHERE m.status = 'ativa'
+      AND (m.turma_id = :turma_id OR m.turma_id IS NULL)
+      AND NOT EXISTS (
+          SELECT 1 FROM solicitacoes_missoes sm
+          WHERE sm.aluno_id = :aluno_id AND sm.missao_id = m.id
+      )
 ");
-$stmt->execute([':turma_id' => $turma_id]);
+$stmt->execute([':turma_id' => $turma_id, ':aluno_id' => $aluno_id]);
 $missoes = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Consulta os quizzes disponíveis para a turma do aluno

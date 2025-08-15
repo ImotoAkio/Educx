@@ -4,7 +4,7 @@ session_start();
 require '../../../db.php'; // Conexão com o banco
 
 // Variável para a URL base do QR Code
-$base_url = 'http:game.echotec.online/aluno.php?id=';
+  $base_url = 'http://educx.colegiorosadesharom.com.br/aluno.php?id=';
 
 // Verifica se o usuário está logado como secretaria
 if (!isset($_SESSION['usuario_id']) || $_SESSION['tipo_usuario'] !== 'secretaria') {
@@ -325,9 +325,7 @@ Coded by www.creative-tim.com
                             <!-- Botão para excluir aluno -->
                             <a href="?delete=<?= $aluno['id'] ?>" class="btn btn-danger" onclick="return confirm('Tem certeza que deseja excluir este aluno?');">Excluir</a>
 
-                            <!-- Botão para mostrar QR Code -->
-                            <a href="visualizar_qr.php?url=<?= urlencode($aluno['qr_code_link']); ?>&nome=<?= urlencode($aluno['nome']); ?>" 
-                                target="_blank" class="btn btn-primary">Ver QR Code</a>
+                            <!-- Botão de QR Code removido -->
 
 
                         </td>
