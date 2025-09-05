@@ -8,48 +8,13 @@ if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
 
 $aluno_id = (int) $_GET['id'];
 
-// Recupera a turma do aluno
-$stmt_turma = $pdo->prepare("
-    SELECT t.id AS turma_id
-    FROM alunos_turmas at
-    JOIN turmas t ON at.turma_id = t.id
-    WHERE at.aluno_id = :aluno_id
-");
-$stmt_turma->execute([':aluno_id' => $aluno_id]);
-$turma = $stmt_turma->fetch(PDO::FETCH_ASSOC);
-
-if (!$turma) {
-    die("O aluno não está associado a nenhuma turma.");
-}
-
-$turma_id = $turma['turma_id'];
-
-// Consulta apenas as missões que o aluno ainda não realizou
-$stmt = $pdo->prepare("
-    SELECT m.*
-    FROM missoes m
-    WHERE m.status = 'ativa'
-      AND (m.turma_id = :turma_id OR m.turma_id IS NULL)
-      AND NOT EXISTS (
-          SELECT 1 FROM solicitacoes_missoes sm
-          WHERE sm.aluno_id = :aluno_id AND sm.missao_id = m.id
-      )
-");
-$stmt->execute([':turma_id' => $turma_id, ':aluno_id' => $aluno_id]);
+// Consulta TODAS as missões sem restrições (para debug)
+$stmt = $pdo->query("SELECT * FROM missoes ORDER BY id DESC");
 $missoes = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Consulta os quizzes disponíveis para a turma do aluno (que ainda não foram realizados)
-$stmt_quizzes = $pdo->prepare("
-    SELECT q.* 
-    FROM quizzes q
-    WHERE q.turma_id = :turma_id
-      AND NOT EXISTS (
-          SELECT 1 FROM quizzes_finalizados qf
-          WHERE qf.aluno_id = :aluno_id AND qf.quiz_id = q.id
-      )
-");
-$stmt_quizzes->execute([':turma_id' => $turma_id, ':aluno_id' => $aluno_id]);
-$quizzes = $stmt_quizzes->fetchAll(PDO::FETCH_ASSOC);
+// Debug: mostrar informações
+echo "<!-- DEBUG: Total de missões encontradas: " . count($missoes) . " -->";
+echo "<!-- DEBUG: Aluno ID: " . $aluno_id . " -->";
 
 // Consulta os dados do aluno
 $stmt = $pdo->prepare("
@@ -110,7 +75,7 @@ $progresso_percentual = round($progresso * 100, 2);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="asset/louja.css">
     <link rel="stylesheet" href="asset/button.css">
-    <title>Missões</title>
+    <title>Missões - DEBUG</title>
     <style>
                 @import url('https://fonts.googleapis.com/css2?family=Orbitron&display=swap');
                 @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
@@ -231,113 +196,62 @@ $progresso_percentual = round($progresso * 100, 2);
     <br>
 </header>
 
+<!-- DEBUG INFO -->
+<div style="background: #f8f9fa; padding: 15px; margin: 10px; border-radius: 5px; border-left: 4px solid #007bff;">
+    <h4>🔍 DEBUG - Informações do Sistema</h4>
+    <p><strong>Total de missões no banco:</strong> <?= count($missoes); ?></p>
+    <p><strong>Aluno:</strong> <?= htmlspecialchars($aluno['nome']); ?> (ID: <?= $aluno['id']; ?>)</p>
+    <p><strong>Status:</strong> <?= count($missoes) > 0 ? '✅ Missões encontradas' : '❌ Nenhuma missão encontrada'; ?></p>
+</div>
+
 <section>
     <div class="container-fluid">
         <div class="row">
             <div class="col-12">
-                <h3 class="segment-title left">Quizzes disponíveis</h3>
+                <h3 class="segment-title left">TODAS as Missões (DEBUG)</h3>
                 <p style="color: #666; font-size: 0.9em; margin-bottom: 15px;">
-                    <i class="fa fa-info-circle"></i> Apenas quizzes que você ainda não realizou são exibidos aqui.
+                    <i class="fa fa-info-circle"></i> Esta é a versão de debug que mostra TODAS as missões sem restrições.
                 </p>
-                <?php if (!empty($quizzes)): ?>
-                    <?php foreach ($quizzes as $quiz): ?>
+                
+                <?php if (!empty($missoes)): ?>
+                    <?php foreach ($missoes as $missao): ?>
                         <article class="hero-card">
                             <div class="card-content">
-                                <h3><?= htmlspecialchars($quiz['nome']); ?></h3>
-                                <p><?= htmlspecialchars($quiz['descricao']); ?></p>
-                                <button class="gradient-button" onclick="window.location.href='quiz.php?aluno_id=<?= $aluno_id; ?>&quiz_id=<?= $quiz['id']; ?>';">
-                                    <span>Responder Quiz</span>
+                                <h3><?= htmlspecialchars($missao['nome']); ?></h3>
+                                <p><?= htmlspecialchars($missao['descricao']); ?></p>
+                                <div style="margin: 10px 0;">
+                                    <span style="background: #ffc107; padding: 5px 10px; border-radius: 15px; margin-right: 10px;">
+                                        <i class="fa fa-star"></i> <?= $missao['xp']; ?> XP
+                                    </span>
+                                    <span style="background: #28a745; padding: 5px 10px; border-radius: 15px; margin-right: 10px;">
+                                        <i class="fa fa-coins"></i> <?= $missao['moedas']; ?> moedas
+                                    </span>
+                                    <span style="background: #17a2b8; padding: 5px 10px; border-radius: 15px;">
+                                        <i class="fa fa-info"></i> Status: <?= $missao['status'] ? $missao['status'] : 'NULL'; ?>
+                                    </span>
+                                </div>
+                                <button class="gradient-button" onclick="window.location.href='realizar_missao.php?aluno_id=<?= $aluno_id; ?>&missao_id=<?= $missao['id']; ?>';">
+                                    <span>Realizar Missão</span>
                                 </button>
                             </div>
                         </article>
                     <?php endforeach; ?>
                 <?php else: ?>
-                    <p>Nenhum quiz disponível no momento.</p>
+                    <div style="background: #f8d7da; padding: 20px; border-radius: 5px; text-align: center;">
+                        <h4>❌ Nenhuma missão encontrada!</h4>
+                        <p>Verifique se:</p>
+                        <ul style="text-align: left; display: inline-block;">
+                            <li>A tabela 'missoes' existe</li>
+                            <li>Há dados na tabela 'missoes'</li>
+                            <li>A conexão com o banco está funcionando</li>
+                        </ul>
+                    </div>
                 <?php endif; ?>
             </div>
         </div>
     </div>
 </section>
 
-<!-- Seção de Quizzes Realizados -->
-<?php
-// Consulta os quizzes já realizados pelo aluno
-$stmt_quizzes_realizados = $pdo->prepare("
-    SELECT q.nome, q.descricao, qf.data_finalizacao
-    FROM quizzes_finalizados qf
-    JOIN quizzes q ON qf.quiz_id = q.id
-    WHERE qf.aluno_id = :aluno_id
-    ORDER BY qf.data_finalizacao DESC
-");
-$stmt_quizzes_realizados->execute([':aluno_id' => $aluno_id]);
-$quizzes_realizados = $stmt_quizzes_realizados->fetchAll(PDO::FETCH_ASSOC);
-?>
-
-<?php if (!empty($quizzes_realizados)): ?>
-<section>
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-12">
-                <h3 class="segment-title left">Quizzes Realizados</h3>
-                <p style="color: #666; font-size: 0.9em; margin-bottom: 15px;">
-                    <i class="fa fa-check-circle"></i> Histórico dos quizzes que você já completou.
-                </p>
-                <?php foreach ($quizzes_realizados as $quiz): ?>
-                    <article class="hero-card" style="opacity: 0.8; background: #f8f9fa;">
-                        <div class="card-content">
-                            <h3><?= htmlspecialchars($quiz['nome']); ?></h3>
-                            <p><?= htmlspecialchars($quiz['descricao']); ?></p>
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
-                                <span style="color: #28a745; font-weight: bold;">
-                                    <i class="fa fa-check-circle"></i> Concluído
-                                </span>
-                                <span style="color: #6c757d; font-size: 0.9em;">
-                                    <i class="fa fa-calendar"></i> <?= date('d/m/Y', strtotime($quiz['data_finalizacao'])); ?>
-                                </span>
-                            </div>
-                        </div>
-                    </article>
-                <?php endforeach; ?>
-            </div>
-        </div>
-    </div>
-</section>
-<?php endif; ?>
-        <section>
-            <div class="container-fluid">
-                <div class="row">
-                    <div class="col-12">
-                        <h3 class="segment-title left">Missões disponíveis</h3>
-                        <?php 
-                        // Correção: Usar count() em vez de !empty() para maior confiabilidade
-                        if (is_array($missoes) && count($missoes) > 0): 
-                        ?>
-                            <?php foreach ($missoes as $missao): ?>
-                                <article class="hero-card">
-                                    <div class="card-content">
-                                        <h3><?= htmlspecialchars($missao['nome']); ?></h3>
-                                        <p><?= htmlspecialchars($missao['descricao']); ?></p>
-                                        <div style="margin: 10px 0;">
-                                            <span style="background: #ffc107; padding: 5px 10px; border-radius: 15px; margin-right: 10px;">
-                                                <i class="fa fa-star"></i> <?= $missao['xp']; ?> XP
-                                            </span>
-                                            <span style="background: #28a745; padding: 5px 10px; border-radius: 15px;">
-                                                <i class="fa fa-coins"></i> <?= $missao['moedas']; ?> moedas
-                                            </span>
-                                        </div>
-                                        <button class="gradient-button" onclick="window.location.href='realizar_missao.php?aluno_id=<?= $aluno_id; ?>&missao_id=<?= $missao['id']; ?>';">
-                                            <span>Realizar Missão</span>
-                                        </button>
-                                    </div>
-                                </article>
-                            <?php endforeach; ?>
-                        <?php else: ?>
-                            <p>Nenhuma missão disponível no momento.</p>
-                        <?php endif; ?>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </div>
+</div>
 </body>
 </html>

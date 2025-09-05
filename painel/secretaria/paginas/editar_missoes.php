@@ -21,16 +21,20 @@ if (isset($_POST['add'])) {
     $xp = $_POST['xp'];
     $moedas = $_POST['moedas'];
     $link = $_POST['link'];
+    $status = $_POST['status'] ?? 'ativa';
+    $turma_id = $_POST['turma_id'] ?? null;
 
     try {
-        $sql = "INSERT INTO missoes (nome, descricao, xp, moedas, link) VALUES (:nome, :descricao, :xp, :moedas, :link)";
+        $sql = "INSERT INTO missoes (nome, descricao, xp, moedas, link, status, turma_id) VALUES (:nome, :descricao, :xp, :moedas, :link, :status, :turma_id)";
         $stmt = $pdo->prepare($sql);
         $stmt->execute([
             'nome' => $nome,
             'descricao' => $descricao,
             'xp' => $xp,
             'moedas' => $moedas,
-            'link' => $link
+            'link' => $link,
+            'status' => $status,
+            'turma_id' => $turma_id
         ]);
         
         redirecionarComMensagem('editar_missoes.php', 'success', "Missão '$nome' adicionada com sucesso!");
@@ -47,9 +51,11 @@ if (isset($_POST['edit'])) {
     $xp = $_POST['xp'];
     $moedas = $_POST['moedas'];
     $link = $_POST['link'];
+    $status = $_POST['status'] ?? 'ativa';
+    $turma_id = $_POST['turma_id'] ?? null;
 
     try {
-        $sql = "UPDATE missoes SET nome = :nome, descricao = :descricao, xp = :xp, moedas = :moedas, link = :link WHERE id = :id";
+        $sql = "UPDATE missoes SET nome = :nome, descricao = :descricao, xp = :xp, moedas = :moedas, link = :link, status = :status, turma_id = :turma_id WHERE id = :id";
         $stmt = $pdo->prepare($sql);
         $stmt->execute([
             'id' => $id,
@@ -57,7 +63,9 @@ if (isset($_POST['edit'])) {
             'descricao' => $descricao,
             'xp' => $xp,
             'moedas' => $moedas,
-            'link' => $link
+            'link' => $link,
+            'status' => $status,
+            'turma_id' => $turma_id
         ]);
         
         redirecionarComMensagem('editar_missoes.php', 'success', "Missão '$nome' atualizada com sucesso!");
@@ -91,9 +99,14 @@ if (isset($_GET['delete'])) {
 }
 
 // Recupera todas as missões
-$sql = "SELECT * FROM missoes";
+$sql = "SELECT * FROM missoes ORDER BY id DESC";
 $stmt = $pdo->query($sql);
 $missoes = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Recupera todas as turmas para o formulário
+$sql_turmas = "SELECT id, nome FROM turmas ORDER BY nome ASC";
+$stmt_turmas = $pdo->query($sql_turmas);
+$turmas = $stmt_turmas->fetchAll(PDO::FETCH_ASSOC);
 ?>
 <!--
 =========================================================
@@ -181,6 +194,12 @@ include 'include/navbar.php';
                           <i class="fa fa-coins"></i> Moedas <i class="fa fa-sort"></i>
                         </th>
                         <th>Link</th>
+                        <th style="cursor: pointer;" onclick="sortTable(6, 'tabelaMissoes')">
+                          <i class="fa fa-toggle-on"></i> Status <i class="fa fa-sort"></i>
+                        </th>
+                        <th style="cursor: pointer;" onclick="sortTable(7, 'tabelaMissoes')">
+                          <i class="fa fa-graduation-cap"></i> Turma <i class="fa fa-sort"></i>
+                        </th>
                         <th>
                           <i class="fa fa-cogs"></i> Ações
                         </th>
@@ -228,8 +247,22 @@ include 'include/navbar.php';
                             <?php endif; ?>
                           </td>
                           <td>
+                            <?php if ($missao['status'] === 'ativa'): ?>
+                              <span class="badge badge-success">Ativa</span>
+                            <?php else: ?>
+                              <span class="badge badge-secondary">Inativa</span>
+                            <?php endif; ?>
+                          </td>
+                          <td>
+                            <?php if (!empty($missao['turma_id'])): ?>
+                              <span class="badge badge-info">Turma <?= $missao['turma_id']; ?></span>
+                            <?php else: ?>
+                              <span class="badge badge-light">Todas</span>
+                            <?php endif; ?>
+                          </td>
+                          <td>
                             <div class="btn-group" role="group">
-                              <button class="btn btn-info btn-sm" onclick="editarMissao(<?= $missao['id']; ?>, '<?= htmlspecialchars($missao['nome']); ?>', '<?= htmlspecialchars($missao['descricao']); ?>', <?= $missao['xp']; ?>, <?= $missao['moedas']; ?>, '<?= htmlspecialchars($missao['link']); ?>')" 
+                              <button class="btn btn-info btn-sm" onclick="editarMissao(<?= $missao['id']; ?>, '<?= htmlspecialchars($missao['nome']); ?>', '<?= htmlspecialchars($missao['descricao']); ?>', <?= $missao['xp']; ?>, <?= $missao['moedas']; ?>, '<?= htmlspecialchars($missao['link']); ?>', '<?= $missao['status']; ?>', '<?= $missao['turma_id']; ?>')" 
                                       data-toggle="tooltip" title="Editar missão">
                                 <i class="fa fa-edit"></i>
                               </button>
@@ -291,6 +324,23 @@ include 'include/navbar.php';
                   <label for="link">Link (opcional)</label>
                   <input type="url" class="form-control" id="link" name="link" placeholder="https://...">
                 </div>
+                <div class="form-group">
+                  <label for="status">Status</label>
+                  <select class="form-control" id="status" name="status" required>
+                    <option value="ativa">Ativa</option>
+                    <option value="inativa">Inativa</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="turma_id">Turma (opcional)</label>
+                  <select class="form-control" id="turma_id" name="turma_id">
+                    <option value="">Todas as turmas</option>
+                    <?php foreach ($turmas as $turma): ?>
+                      <option value="<?= $turma['id']; ?>"><?= htmlspecialchars($turma['nome']); ?></option>
+                    <?php endforeach; ?>
+                  </select>
+                  <small class="form-text text-muted">Deixe em branco para que a missão apareça para todas as turmas</small>
+                </div>
               </div>
               <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
@@ -337,6 +387,23 @@ include 'include/navbar.php';
                 <div class="form-group">
                   <label for="edit_link">Link (opcional)</label>
                   <input type="url" class="form-control" id="edit_link" name="link" placeholder="https://...">
+                </div>
+                <div class="form-group">
+                  <label for="edit_status">Status</label>
+                  <select class="form-control" id="edit_status" name="status" required>
+                    <option value="ativa">Ativa</option>
+                    <option value="inativa">Inativa</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="edit_turma_id">Turma (opcional)</label>
+                  <select class="form-control" id="edit_turma_id" name="turma_id">
+                    <option value="">Todas as turmas</option>
+                    <?php foreach ($turmas as $turma): ?>
+                      <option value="<?= $turma['id']; ?>"><?= htmlspecialchars($turma['nome']); ?></option>
+                    <?php endforeach; ?>
+                  </select>
+                  <small class="form-text text-muted">Deixe em branco para que a missão apareça para todas as turmas</small>
                 </div>
               </div>
               <div class="modal-footer">
@@ -450,13 +517,15 @@ include 'include/navbar.php';
     }
     
     // Função para editar missão
-    function editarMissao(id, nome, descricao, xp, moedas, link) {
+    function editarMissao(id, nome, descricao, xp, moedas, link, status, turma_id) {
       $('#edit_id').val(id);
       $('#edit_nome').val(nome);
       $('#edit_descricao').val(descricao);
       $('#edit_xp').val(xp);
       $('#edit_moedas').val(moedas);
       $('#edit_link').val(link);
+      $('#edit_status').val(status || 'ativa');
+      $('#edit_turma_id').val(turma_id || '');
       $('#editMissaoModal').modal('show');
     }
     

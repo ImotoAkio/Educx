@@ -8,7 +8,12 @@ if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
 
 $aluno_id = (int) $_GET['id'];
 
-// Recupera a turma do aluno
+// Consulta TODAS as missões sem restrições
+$stmt = $pdo->query("SELECT * FROM missoes ORDER BY id DESC");
+$missoes = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Tentar recuperar a turma do aluno (opcional)
+$turma_id = null;
 $stmt_turma = $pdo->prepare("
     SELECT t.id AS turma_id
     FROM alunos_turmas at
@@ -18,38 +23,25 @@ $stmt_turma = $pdo->prepare("
 $stmt_turma->execute([':aluno_id' => $aluno_id]);
 $turma = $stmt_turma->fetch(PDO::FETCH_ASSOC);
 
-if (!$turma) {
-    die("O aluno não está associado a nenhuma turma.");
+if ($turma) {
+    $turma_id = $turma['turma_id'];
 }
 
-$turma_id = $turma['turma_id'];
-
-// Consulta apenas as missões que o aluno ainda não realizou
-$stmt = $pdo->prepare("
-    SELECT m.*
-    FROM missoes m
-    WHERE m.status = 'ativa'
-      AND (m.turma_id = :turma_id OR m.turma_id IS NULL)
-      AND NOT EXISTS (
-          SELECT 1 FROM solicitacoes_missoes sm
-          WHERE sm.aluno_id = :aluno_id AND sm.missao_id = m.id
-      )
-");
-$stmt->execute([':turma_id' => $turma_id, ':aluno_id' => $aluno_id]);
-$missoes = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-// Consulta os quizzes disponíveis para a turma do aluno (que ainda não foram realizados)
-$stmt_quizzes = $pdo->prepare("
-    SELECT q.* 
-    FROM quizzes q
-    WHERE q.turma_id = :turma_id
-      AND NOT EXISTS (
-          SELECT 1 FROM quizzes_finalizados qf
-          WHERE qf.aluno_id = :aluno_id AND qf.quiz_id = q.id
-      )
-");
-$stmt_quizzes->execute([':turma_id' => $turma_id, ':aluno_id' => $aluno_id]);
-$quizzes = $stmt_quizzes->fetchAll(PDO::FETCH_ASSOC);
+// Consulta os quizzes disponíveis (apenas se aluno estiver vinculado a turma)
+$quizzes = [];
+if ($turma_id) {
+    $stmt_quizzes = $pdo->prepare("
+        SELECT q.* 
+        FROM quizzes q
+        WHERE q.turma_id = :turma_id
+          AND NOT EXISTS (
+              SELECT 1 FROM quizzes_finalizados qf
+              WHERE qf.aluno_id = :aluno_id AND qf.quiz_id = q.id
+          )
+    ");
+    $stmt_quizzes->execute([':turma_id' => $turma_id, ':aluno_id' => $aluno_id]);
+    $quizzes = $stmt_quizzes->fetchAll(PDO::FETCH_ASSOC);
+}
 
 // Consulta os dados do aluno
 $stmt = $pdo->prepare("
@@ -112,8 +104,9 @@ $progresso_percentual = round($progresso * 100, 2);
     <link rel="stylesheet" href="asset/button.css">
     <title>Missões</title>
     <style>
-                @import url('https://fonts.googleapis.com/css2?family=Orbitron&display=swap');
-                @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+        
         .level {
             position: absolute;
             top: 10px;
@@ -151,54 +144,56 @@ $progresso_percentual = round($progresso * 100, 2);
             transform: skew(-30deg) translateY(-100%);
             line-height: 1.5;
         }
+        
         .voltar {
-	margin-bottom: 15px;
-  font: inherit;
-  background-color: #f0f0f0;
-  border: 0;
-  color: #242424;
-  border-radius: 0.5em;
-  font-size: 1.35rem;
-  padding: 0.375em 1em;
-  font-weight: 600;
-  text-shadow: 0 0.0625em 0 #fff;
-  box-shadow: inset 0 0.0625em 0 0 #f4f4f4, 0 0.0625em 0 0 #efefef,
-    0 0.125em 0 0 #ececec, 0 0.25em 0 0 #e0e0e0, 0 0.3125em 0 0 #dedede,
-    0 0.375em 0 0 #dcdcdc, 0 0.425em 0 0 #cacaca, 0 0.425em 0.5em 0 #cecece;
-  transition: 0.15s ease;
-  cursor: pointer;
-}
-.voltar:active {
-  translate: 0 0.225em;
-  box-shadow: inset 0 0.03em 0 0 #f4f4f4, 0 0.03em 0 0 #efefef,
-    0 0.0625em 0 0 #ececec, 0 0.125em 0 0 #e0e0e0, 0 0.125em 0 0 #dedede,
-    0 0.2em 0 0 #dcdcdc, 0 0.225em 0 0 #cacaca, 0 0.225em 0.375em 0 #cecece;
-}
-.coin-font {
-    font-family: "Press Start 2P", cursive; /* Altere a fonte aqui */
-    font-size: 1.2em; /* Ajuste o tamanho da fonte */
-    color: gold; /* Altere a cor, se necessário */
-}
-.xp-font {
-    font-family: "Press Start 2P", cursive; /* Altere a fonte aqui */
-    font-size: 1.2em; /* Ajuste o tamanho da fonte */
-    color: yellow; /* Altere a cor, se necessário */
-}
-.coins {
+            margin-bottom: 15px;
+            font: inherit;
+            background-color: #f0f0f0;
+            border: 0;
+            color: #242424;
+            border-radius: 0.5em;
+            font-size: 1.35rem;
+            padding: 0.375em 1em;
+            font-weight: 600;
+            text-shadow: 0 0.0625em 0 #fff;
+            box-shadow: inset 0 0.0625em 0 0 #f4f4f4, 0 0.0625em 0 0 #efefef,
+                0 0.125em 0 0 #ececec, 0 0.25em 0 0 #e0e0e0, 0 0.3125em 0 0 #dedede,
+                0 0.375em 0 0 #dcdcdc, 0 0.425em 0 0 #cacaca, 0 0.425em 0.5em 0 #cecece;
+            transition: 0.15s ease;
+            cursor: pointer;
+        }
+        
+        .voltar:active {
+            translate: 0 0.225em;
+            box-shadow: inset 0 0.03em 0 0 #f4f4f4, 0 0.03em 0 0 #efefef,
+                0 0.0625em 0 0 #ececec, 0 0.125em 0 0 #e0e0e0, 0 0.125em 0 0 #dedede,
+                0 0.2em 0 0 #dcdcdc, 0 0.225em 0 0 #cacaca, 0 0.225em 0.375em 0 #cecece;
+        }
+        
+        .coin-font {
+            font-family: "Press Start 2P", cursive;
+            font-size: 1.2em;
+            color: gold;
+        }
+        
+        .xp-font {
+            font-family: "Press Start 2P", cursive;
+            font-size: 1.2em;
+            color: yellow;
+        }
+        
+        .coins {
             align-items: center;
             font-size: 1.2em;
             padding-right: 20px;
         }
-.coins img {
+        
+        .coins img {
             width: 24px;
         }
-
     </style>
 </head>
 <body>
-<!-- Please ❤ this if you like it! -->
-<!-- Follow Me https://codepen.io/designfenix -->
-
 <div id="wrapper">
     
 <header>
@@ -263,7 +258,7 @@ $progresso_percentual = round($progresso * 100, 2);
 <?php
 // Consulta os quizzes já realizados pelo aluno
 $stmt_quizzes_realizados = $pdo->prepare("
-    SELECT q.nome, q.descricao, qf.data_finalizacao
+    SELECT q.nome, q.descricao, qf.data_finalizacao, qf.acertos, qf.total_perguntas, qf.pontuacao
     FROM quizzes_finalizados qf
     JOIN quizzes q ON qf.quiz_id = q.id
     WHERE qf.aluno_id = :aluno_id
@@ -289,7 +284,10 @@ $quizzes_realizados = $stmt_quizzes_realizados->fetchAll(PDO::FETCH_ASSOC);
                             <p><?= htmlspecialchars($quiz['descricao']); ?></p>
                             <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
                                 <span style="color: #28a745; font-weight: bold;">
-                                    <i class="fa fa-check-circle"></i> Concluído
+                                    <i class="fa fa-trophy"></i> <?= $quiz['acertos']; ?>/<?= $quiz['total_perguntas']; ?> acertos
+                                </span>
+                                <span style="color: #17a2b8; font-weight: bold;">
+                                    <i class="fa fa-star"></i> <?= $quiz['pontuacao']; ?> XP
                                 </span>
                                 <span style="color: #6c757d; font-size: 0.9em;">
                                     <i class="fa fa-calendar"></i> <?= date('d/m/Y', strtotime($quiz['data_finalizacao'])); ?>
@@ -303,41 +301,44 @@ $quizzes_realizados = $stmt_quizzes_realizados->fetchAll(PDO::FETCH_ASSOC);
     </div>
 </section>
 <?php endif; ?>
-        <section>
-            <div class="container-fluid">
-                <div class="row">
-                    <div class="col-12">
-                        <h3 class="segment-title left">Missões disponíveis</h3>
-                        <?php 
-                        // Correção: Usar count() em vez de !empty() para maior confiabilidade
-                        if (is_array($missoes) && count($missoes) > 0): 
-                        ?>
-                            <?php foreach ($missoes as $missao): ?>
-                                <article class="hero-card">
-                                    <div class="card-content">
-                                        <h3><?= htmlspecialchars($missao['nome']); ?></h3>
-                                        <p><?= htmlspecialchars($missao['descricao']); ?></p>
-                                        <div style="margin: 10px 0;">
-                                            <span style="background: #ffc107; padding: 5px 10px; border-radius: 15px; margin-right: 10px;">
-                                                <i class="fa fa-star"></i> <?= $missao['xp']; ?> XP
-                                            </span>
-                                            <span style="background: #28a745; padding: 5px 10px; border-radius: 15px;">
-                                                <i class="fa fa-coins"></i> <?= $missao['moedas']; ?> moedas
-                                            </span>
-                                        </div>
-                                        <button class="gradient-button" onclick="window.location.href='realizar_missao.php?aluno_id=<?= $aluno_id; ?>&missao_id=<?= $missao['id']; ?>';">
-                                            <span>Realizar Missão</span>
-                                        </button>
-                                    </div>
-                                </article>
-                            <?php endforeach; ?>
-                        <?php else: ?>
-                            <p>Nenhuma missão disponível no momento.</p>
-                        <?php endif; ?>
-                    </div>
-                </div>
+
+<section>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <h3 class="segment-title left">Missões disponíveis</h3>
+                <p style="color: #666; font-size: 0.9em; margin-bottom: 15px;">
+                    <i class="fa fa-info-circle"></i> Missões disponíveis para você realizar.
+                </p>
+                
+                <?php foreach ($missoes as $missao): ?>
+                    <article class="hero-card">
+                        <div class="card-content">
+                            <h3><?= htmlspecialchars($missao['nome']); ?></h3>
+                            <p><?= htmlspecialchars($missao['descricao']); ?></p>
+                            <div style="margin: 10px 0;">
+                                <span style="background: #ffc107; padding: 5px 10px; border-radius: 15px; margin-right: 10px;">
+                                    <i class="fa fa-star"></i> <?= $missao['xp']; ?> XP
+                                </span>
+                                <span style="background: #28a745; padding: 5px 10px; border-radius: 15px;">
+                                    <i class="fa fa-coins"></i> <?= $missao['moedas']; ?> moedas
+                                </span>
+                            </div>
+                            <button class="gradient-button" onclick="window.location.href='realizar_missao.php?aluno_id=<?= $aluno_id; ?>&missao_id=<?= $missao['id']; ?>';">
+                                <span>Realizar Missão</span>
+                            </button>
+                        </div>
+                    </article>
+                <?php endforeach; ?>
+                
+                <?php if (count($missoes) == 0): ?>
+                    <p>Nenhuma missão disponível no momento.</p>
+                <?php endif; ?>
             </div>
-        </section>
+        </div>
     </div>
+</section>
+
+</div>
 </body>
 </html>
