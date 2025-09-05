@@ -1,3 +1,7 @@
+<?php
+// Definir a página ativa - deve ser definida antes de incluir este arquivo
+$pagina_ativa = $pagina_ativa ?? 'dashboard';
+?>
 <body class="">
 <div class="wrapper">
     <div class="sidebar" data-color="white" data-active-color="danger">
@@ -13,27 +17,27 @@
       </div>
       <div class="sidebar-wrapper">
         <ul class="nav">
-          <li class="active">
+          <li class="<?= $pagina_ativa === 'dashboard' ? 'active' : '' ?>">
             <a href="./dashboard.php">
               <i class="nc-icon nc-bank"></i>
               <p>Dashboard</p>
             </a>
           </li>
-          <li>
+          <li class="<?= $pagina_ativa === 'missoes' ? 'active' : '' ?>">
             <a href="./missoes.php">
               <i class="nc-icon nc-user-run"></i>
               <p>Aprovar Missões</p>
             </a>
           </li>
-          <li>
+          <li class="<?= $pagina_ativa === 'editar_missoes' ? 'active' : '' ?>">
             <a href="./editar_missoes.php">
               <i class="nc-icon nc-controller-modern"></i>
               <p>Editar Missões</p>
             </a>
           </li>
-          <li>
+          <li class="<?= $pagina_ativa === 'criar_quiz' ? 'active' : '' ?>">
             <a href="./criar_quiz.php">
-              <i class="nc-icon nc-controller-modern"></i>
+              <i class="nc-icon nc-single-copy-04"></i>
               <p>Criar Quiz</p>
             </a>
           </li>
@@ -49,14 +53,17 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
           <ul class="navbar-nav ml-auto">
-            <li class="nav-item active">
+            <li class="nav-item <?= $pagina_ativa === 'dashboard' ? 'active' : '' ?>">
               <a class="nav-link" href="dashboard.php">Dashboard <span class="sr-only">(current)</span></a>
             </li>
-            <li class="nav-item">
+            <li class="nav-item <?= $pagina_ativa === 'missoes' ? 'active' : '' ?>">
               <a class="nav-link" href="./missoes.php">Aprovar Missões</a>
             </li>
-            <li class="nav-item">
+            <li class="nav-item <?= $pagina_ativa === 'editar_missoes' ? 'active' : '' ?>">
               <a class="nav-link" href="./editar_missoes.php">Editar Missões</a>
+            </li>
+            <li class="nav-item <?= $pagina_ativa === 'criar_quiz' ? 'active' : '' ?>">
+              <a class="nav-link" href="./criar_quiz.php">Criar Quiz</a>
             </li>
           </ul>
         </div>

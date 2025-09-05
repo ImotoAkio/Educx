@@ -3,10 +3,15 @@
 session_start();
 require '../../../db.php';
 
+// Incluir sistema de feedback
+require 'include/feedback.php';
+
+// Definir página ativa para a sidebar
+$pagina_ativa = 'editar_missoes';
+
 // Verifica se o usuário está logado como secretaria
 if (!isset($_SESSION['usuario_id']) || $_SESSION['tipo_usuario'] !== 'secretaria') {
-    header("Location: ../../../login.php");
-    exit;
+    redirecionarComMensagem('../../../login.php', 'error', 'Acesso negado. Faça login como secretaria.');
 }
 
 // Função para adicionar uma missão
@@ -17,15 +22,21 @@ if (isset($_POST['add'])) {
     $moedas = $_POST['moedas'];
     $link = $_POST['link'];
 
-    $sql = "INSERT INTO missoes (nome, descricao, xp, moedas, link) VALUES (:nome, :descricao, :xp, :moedas, :link)";
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute([
-        'nome' => $nome,
-        'descricao' => $descricao,
-        'xp' => $xp,
-        'moedas' => $moedas,
-        'link' => $link
-    ]);
+    try {
+        $sql = "INSERT INTO missoes (nome, descricao, xp, moedas, link) VALUES (:nome, :descricao, :xp, :moedas, :link)";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([
+            'nome' => $nome,
+            'descricao' => $descricao,
+            'xp' => $xp,
+            'moedas' => $moedas,
+            'link' => $link
+        ]);
+        
+        redirecionarComMensagem('editar_missoes.php', 'success', "Missão '$nome' adicionada com sucesso!");
+    } catch (Exception $e) {
+        redirecionarComMensagem('editar_missoes.php', 'error', 'Erro ao adicionar missão: ' . $e->getMessage());
+    }
 }
 
 // Função para editar uma missão
@@ -37,25 +48,46 @@ if (isset($_POST['edit'])) {
     $moedas = $_POST['moedas'];
     $link = $_POST['link'];
 
-    $sql = "UPDATE missoes SET nome = :nome, descricao = :descricao, xp = :xp, moedas = :moedas, link = :link WHERE id = :id";
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute([
-        'id' => $id,
-        'nome' => $nome,
-        'descricao' => $descricao,
-        'xp' => $xp,
-        'moedas' => $moedas,
-        'link' => $link
-    ]);
+    try {
+        $sql = "UPDATE missoes SET nome = :nome, descricao = :descricao, xp = :xp, moedas = :moedas, link = :link WHERE id = :id";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([
+            'id' => $id,
+            'nome' => $nome,
+            'descricao' => $descricao,
+            'xp' => $xp,
+            'moedas' => $moedas,
+            'link' => $link
+        ]);
+        
+        redirecionarComMensagem('editar_missoes.php', 'success', "Missão '$nome' atualizada com sucesso!");
+    } catch (Exception $e) {
+        redirecionarComMensagem('editar_missoes.php', 'error', 'Erro ao atualizar missão: ' . $e->getMessage());
+    }
 }
 
 // Função para excluir uma missão
 if (isset($_GET['delete'])) {
     $id = $_GET['delete'];
 
-    $sql = "DELETE FROM missoes WHERE id = :id";
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute(['id' => $id]);
+    try {
+        // Busca o nome da missão antes de deletar
+        $stmt = $pdo->prepare("SELECT nome FROM missoes WHERE id = :id");
+        $stmt->execute(['id' => $id]);
+        $missao = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if ($missao) {
+            $sql = "DELETE FROM missoes WHERE id = :id";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute(['id' => $id]);
+            
+            redirecionarComMensagem('editar_missoes.php', 'success', "Missão '{$missao['nome']}' removida com sucesso!");
+        } else {
+            redirecionarComMensagem('editar_missoes.php', 'error', 'Missão não encontrada.');
+        }
+    } catch (Exception $e) {
+        redirecionarComMensagem('editar_missoes.php', 'error', 'Erro ao remover missão: ' . $e->getMessage());
+    }
 }
 
 // Recupera todas as missões
@@ -85,9 +117,7 @@ Coded by www.creative-tim.com
   <link rel="apple-touch-icon" sizes="76x76" href="../assets/img/apple-icon.png">
   <link rel="icon" type="image/png" href="../assets/img/favicon.png">
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-  <title>
-    Painel Secretaria
-  </title>
+  <title>Painel da Secretaria</title>
   <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no' name='viewport' />
   <!--     Fonts and icons     -->
   <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700,200" rel="stylesheet" />
@@ -106,285 +136,385 @@ Coded by www.creative-tim.com
   .main-panel.d-md-none .navbar-nav .nav-link:hover {
     color: #007bff !important; /* Cor de hover azul */
   }
-  <style>
-    form .form-control {
-        width: 100% !important; /* Garante que os inputs ocupem toda a largura */
-    }
-</style>
-
   </style>
 
 </head>
 
 <body>
-  <div class="wrapper">
-    <div class="sidebar" data-color="white" data-active-color="danger">
-      <div class="logo">
-        <a href="dashboard.php" class="simple-text logo-mini">
-          <div class="logo-image-small">
-            <img src="../assets/img/logo-small.png" alt="Logo">
-          </div>
-        </a>
-        <a href="dashboard.php" class="simple-text logo-normal">
-          Painel
-        </a>
-      </div>
-      <div class="sidebar-wrapper">
-        <ul class="nav">
-          <li>
-            <a href="./dashboard.php">
-              <i class="nc-icon nc-bank"></i>
-              <p>Dashboard</p>
-            </a>
-          </li>
-          <li>
-            <a href="./editar_professor.php">
-              <i class="nc-icon nc-glasses-2"></i>
-              <p>Editar Professores</p>
-            </a>
-          </li>
-          <li>
-            <a href="./editar_loja.php">
-              <i class="nc-icon nc-basket"></i>
-              <p>Editar Loja</p>
-            </a>
-          </li>
-          <li>
-            <a href="./tables.php">
-              <i class="nc-icon nc-lock-circle-open"></i>
-              <p>Aprovar compra</p>
-            </a>
-          </li>
-          <li>
-            <a href="./editar_aluno.php">
-              <i class="nc-icon nc-single-02"></i>
-              <p>Editar Aluno</p>
-            </a>
-          </li>
-          <li>
-            <a href="./editar_secretaria.php">
-              <i class="nc-icon nc-badge"></i>
-              <p>Editar Secretários</p>
-            </a>
-          </li>
-          <li>
-            <a href="./missoes.php">
-              <i class="nc-icon nc-user-run"></i>
-              <p>Aprovar Missões</p>
-            </a>
-          </li>
-          <li class="active">
-            <a href="./editar_missoes.php">
-              <i class="nc-icon nc-controller-modern"></i>
-              <p>Editar Missões</p>
-            </a>
-          </li>
-          <li >
-            <a href="./turmas.php">
-              <i class="nc-icon nc-controller-modern"></i>
-              <p>Turmas</p>
-            </a>
-          </li>
-        </ul>
-      </div>
-    </div>
-
-    <!-- Painel principal para dispositivos móveis -->
-    <div class="main-panel d-md-none"> <!-- Visível apenas em dispositivos móveis -->
-      <!-- Aqui vai o conteúdo do painel principal -->
-      <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <button class="navbar-toggler-icon" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-          <ul class="navbar-nav ml-auto">
-            <li class="nav-item ">
-              <a class="nav-link" href="dashboard.php">Dashboard <span class="sr-only">(current)</span></a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="tables.php">Aprovar Compras</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="editar_professor.php">Editar Professores</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="editar_secretaria.php">Editar Secretários</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="editar_aluno.php">Editar Alunos</a>
-            </li>
-            <li class="nav-item active">
-              <a class="nav-link" href="editar_loja.php">Editar Loja</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="missoes.php">Aprovar Missões</a>
-            </li>
-          </ul>
-        </div>
-      </nav>
-    </div>
-
-    <!-- Painel principal para telas grandes -->
-    <div class="main-panel">
-      <!-- Navbar -->
-      <nav class="navbar navbar-expand-lg navbar-absolute fixed-top navbar-transparent">
-        <div class="container-fluid">
-          <div class="collapse navbar-collapse justify-content-end" id="navigation">
-            <ul class="navbar-nav">
-              <li class="nav-item btn-rotate dropdown">
-                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                  <i class="nc-icon nc-bell-55"></i>
-                  <p>
-                    <span class="d-lg-none d-md-block">Some Actions</span>
-                  </p>
-                </a>
-                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
-                  <a class="dropdown-item" href="#">Action</a>
-                  <a class="dropdown-item" href="#">Another action</a>
-                  <a class="dropdown-item" href="#">Something else here</a>
-                </div>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link btn-rotate" href="javascript:;" data-bs-toggle="modal" data-bs-target="#editAccountModal">
-                  <i class="nc-icon nc-settings-gear-65"></i>
-                  <p>
-                    <span class="d-lg-none d-md-block">Account</span>
-                  </p>
-                </a>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </nav>
+<?php
+include 'include/navbar.php';
+?>
       <div class="content">
+        <!-- Exibir mensagens de feedback -->
+        <?php exibirMensagemSessao(); ?>
+        
         <div class="row">
-          
-          </div>
- <!-- Adicionar Missão -->
- <div class="card mb-4">
-            <div class="card-header">Adicionar Nova Missão</div>
-            <div class="card-body">
-                <form method="POST">
-                    <div class="mb-3">
-                        <label for="nome" class="form-label">Nome</label>
-                        <input type="text" class="form-control" id="nome" name="nome" required>
+          <div class="col-md-12">
+            <div class="card">
+              <div class="card-header">
+                <h4 class="card-title">
+                  <i class="fa fa-tasks text-primary"></i> Gerenciar Missões
+                  <span class="badge badge-primary ml-2"><?= count($missoes); ?></span>
+                </h4>
+                <div class="card-tools">
+                  <button class="btn btn-success btn-sm" data-toggle="modal" data-target="#addMissaoModal">
+                    <i class="fa fa-plus"></i> Adicionar Missão
+                  </button>
+                </div>
+              </div>
+              <div class="card-body">
+                <div class="table-responsive">
+                  <table class="table table-striped table-hover" id="tabelaMissoes">
+                    <thead class="thead-dark">
+                      <tr>
+                        <th style="cursor: pointer;" onclick="sortTable(0, 'tabelaMissoes')">
+                          <i class="fa fa-hashtag"></i> ID <i class="fa fa-sort"></i>
+                        </th>
+                        <th style="cursor: pointer;" onclick="sortTable(1, 'tabelaMissoes')">
+                          <i class="fa fa-tasks"></i> Nome <i class="fa fa-sort"></i>
+                        </th>
+                        <th>Descrição</th>
+                        <th style="cursor: pointer;" onclick="sortTable(3, 'tabelaMissoes')">
+                          <i class="fa fa-star"></i> XP <i class="fa fa-sort"></i>
+                        </th>
+                        <th style="cursor: pointer;" onclick="sortTable(4, 'tabelaMissoes')">
+                          <i class="fa fa-coins"></i> Moedas <i class="fa fa-sort"></i>
+                        </th>
+                        <th>Link</th>
+                        <th>
+                          <i class="fa fa-cogs"></i> Ações
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <?php foreach ($missoes as $missao): ?>
+                        <tr class="missao-row" data-nome="<?= strtolower($missao['nome']); ?>">
+                          <td>
+                            <span class="badge badge-secondary"><?= $missao['id']; ?></span>
+                          </td>
+                          <td>
+                            <div class="d-flex align-items-center">
+                              <i class="fa fa-tasks text-primary mr-2"></i>
+                              <strong><?= htmlspecialchars($missao['nome']); ?></strong>
+                            </div>
+                          </td>
+                          <td>
+                            <div class="descricao-container">
+                              <span class="text-muted" data-toggle="tooltip" title="<?= htmlspecialchars($missao['descricao']); ?>">
+                                <?= strlen($missao['descricao']) > 80 ? substr($missao['descricao'], 0, 80) . '...' : $missao['descricao']; ?>
+                              </span>
+                              <button class="btn btn-link btn-sm p-0 ml-2" onclick="expandirDescricao(this)" data-descricao="<?= htmlspecialchars($missao['descricao']); ?>">
+                                <i class="fa fa-expand"></i>
+                              </button>
+                            </div>
+                          </td>
+                          <td>
+                            <span class="badge badge-warning">
+                              <i class="fa fa-star"></i> <?= $missao['xp']; ?> XP
+                            </span>
+                          </td>
+                          <td>
+                            <span class="badge badge-success">
+                              <i class="fa fa-coins"></i> <?= $missao['moedas']; ?> moedas
+                            </span>
+                          </td>
+                          <td>
+                            <?php if (!empty($missao['link'])): ?>
+                              <a href="<?= htmlspecialchars($missao['link']); ?>" target="_blank" class="btn btn-outline-primary btn-sm" data-toggle="tooltip" title="Abrir link">
+                                <i class="fa fa-external-link"></i> Link
+                              </a>
+                            <?php else: ?>
+                              <span class="text-muted">-</span>
+                            <?php endif; ?>
+                          </td>
+                          <td>
+                            <div class="btn-group" role="group">
+                              <button class="btn btn-info btn-sm" onclick="editarMissao(<?= $missao['id']; ?>, '<?= htmlspecialchars($missao['nome']); ?>', '<?= htmlspecialchars($missao['descricao']); ?>', <?= $missao['xp']; ?>, <?= $missao['moedas']; ?>, '<?= htmlspecialchars($missao['link']); ?>')" 
+                                      data-toggle="tooltip" title="Editar missão">
+                                <i class="fa fa-edit"></i>
+                              </button>
+                              <button class="btn btn-danger btn-sm" onclick="confirmarExclusao(<?= $missao['id']; ?>, '<?= htmlspecialchars($missao['nome']); ?>')" 
+                                      data-toggle="tooltip" title="Remover missão">
+                                <i class="fa fa-trash"></i>
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      <?php endforeach; ?>
+                    </tbody>
+                  </table>
+                  <?php if (empty($missoes)): ?>
+                    <div class="text-center py-5">
+                      <i class="fa fa-tasks fa-4x text-muted mb-4"></i>
+                      <h5 class="text-muted">Nenhuma missão cadastrada</h5>
+                      <p class="text-muted">Adicione a primeira missão usando o botão acima.</p>
                     </div>
-                    <div class="mb-3">
-                        <label for="descricao" class="form-label">Descrição</label>
-                        <textarea class="form-control" id="descricao" name="descricao" rows="3" required></textarea>
-                    </div>
-                    <div class="mb-3">
-                        <label for="xp" class="form-label">XP</label>
-                        <input type="number" class="form-control" id="xp" name="xp" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="moedas" class="form-label">Moedas</label>
-                        <input type="number" class="form-control" id="moedas" name="moedas" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="link" class="form-label">Link</label>
-                        <input type="url" class="form-control" id="link" name="link" required>
-                    </div>
-                    <button type="submit" name="add" class="btn btn-primary">Adicionar</button>
-                </form>
+                  <?php endif; ?>
+                </div>
+              </div>
             </div>
-        </div>
-
-
-    <!-- Listar Missões -->
-    <div class="card">
-        <div class="card-header">Missões Existentes</div>
-        <div class="card-body">
-            <table class="table table-bordered table-sm">
-                <thead>
-                    <tr>
-                        <th style="width: 5%;">ID</th>
-                        <th style="width: 15%;">Nome</th>
-                        <th style="width: 20%;">Descrição</th>
-                        <th style="width: 5%;">XP</th>
-                        <th style="width: 5%;">Moedas</th>
-                        <th style="width: 5%;">Link</th>
-                        <th style="width: 10%;">Ações</th>
-                    </tr>
-                </thead>
-                <tbody>
-    <?php foreach ($missoes as $missao): ?>
-        <tr>
-            <td><?= $missao['id']; ?></td>
-            <td>
-                <input type="text" name="nome" value="<?= htmlspecialchars($missao['nome']); ?>" class="form-control form-control-sm" style="width: 100%;" required>
-            </td>
-            <td>
-                <textarea name="descricao" class="form-control form-control-sm" style="width: 100%;" required><?= htmlspecialchars($missao['descricao']); ?></textarea>
-            </td>
-            <td>
-                <input type="number" name="xp" value="<?= $missao['xp']; ?>" class="form-control form-control-sm" style="width: 100%;" required>
-            </td>
-            <td>
-                <input type="number" name="moedas" value="<?= $missao['moedas']; ?>" class="form-control form-control-sm" style="width: 100%;" required>
-            </td>
-            <td>
-                <input type="url" name="link" value="<?= htmlspecialchars($missao['link']); ?>" class="form-control form-control-sm" style="width: 100%;" required>
-            </td>
-            <td>
-                <form method="POST" class="d-inline-block">
-                    <input type="hidden" name="id" value="<?= $missao['id']; ?>">
-                    <button type="submit" name="edit" class="btn btn-success btn-sm">Salvar</button>
-                </form>
-                <a href="?delete=<?= $missao['id']; ?>" class="btn btn-danger btn-sm" onclick="return confirm('Tem certeza que deseja excluir esta missão?');">Excluir</a>
-            </td>
-        </tr>
-    <?php endforeach; ?>
-</tbody>
-
-            </table>
-            <?php if (empty($missoes)): ?>
-                <p class="text-center">Nenhuma missão encontrada.</p>
-            <?php endif; ?>
-        </div>
-    </div>
-</div>
-
-
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+          </div>
         </div>
       </div>
-      <footer class="footer footer-black  footer-white ">
+
+      <!-- Modal Adicionar Missão -->
+      <div class="modal fade" id="addMissaoModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">
+                <i class="fa fa-plus text-success"></i> Adicionar Missão
+              </h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <form method="POST">
+              <div class="modal-body">
+                <div class="form-group">
+                  <label for="nome">Nome da Missão</label>
+                  <input type="text" class="form-control" id="nome" name="nome" required>
+                </div>
+                <div class="form-group">
+                  <label for="descricao">Descrição</label>
+                  <textarea class="form-control" id="descricao" name="descricao" rows="3" required></textarea>
+                </div>
+                <div class="form-group">
+                  <label for="xp">XP de Recompensa</label>
+                  <input type="number" class="form-control" id="xp" name="xp" min="1" required>
+                </div>
+                <div class="form-group">
+                  <label for="moedas">Moedas de Recompensa</label>
+                  <input type="number" class="form-control" id="moedas" name="moedas" min="0" required>
+                </div>
+                <div class="form-group">
+                  <label for="link">Link (opcional)</label>
+                  <input type="url" class="form-control" id="link" name="link" placeholder="https://...">
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                <button type="submit" name="add" class="btn btn-success">
+                  <i class="fa fa-plus"></i> Adicionar
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Editar Missão -->
+      <div class="modal fade" id="editMissaoModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">
+                <i class="fa fa-edit text-info"></i> Editar Missão
+              </h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <form method="POST">
+              <div class="modal-body">
+                <input type="hidden" id="edit_id" name="id">
+                <div class="form-group">
+                  <label for="edit_nome">Nome da Missão</label>
+                  <input type="text" class="form-control" id="edit_nome" name="nome" required>
+                </div>
+                <div class="form-group">
+                  <label for="edit_descricao">Descrição</label>
+                  <textarea class="form-control" id="edit_descricao" name="descricao" rows="3" required></textarea>
+                </div>
+                <div class="form-group">
+                  <label for="edit_xp">XP de Recompensa</label>
+                  <input type="number" class="form-control" id="edit_xp" name="xp" min="1" required>
+                </div>
+                <div class="form-group">
+                  <label for="edit_moedas">Moedas de Recompensa</label>
+                  <input type="number" class="form-control" id="edit_moedas" name="moedas" min="0" required>
+                </div>
+                <div class="form-group">
+                  <label for="edit_link">Link (opcional)</label>
+                  <input type="url" class="form-control" id="edit_link" name="link" placeholder="https://...">
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                <button type="submit" name="edit" class="btn btn-info">
+                  <i class="fa fa-save"></i> Salvar
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <footer class="footer">
         <div class="container-fluid">
           <div class="row">
             <nav class="footer-nav">
-              <ul>
-                <li><a href="https://www.creative-tim.com" target="_blank">Creative Tim</a></li>
-                <li><a href="https://www.creative-tim.com/blog" target="_blank">Blog</a></li>
-                <li><a href="https://www.creative-tim.com/license" target="_blank">Licenses</a></li>
-              </ul>
+              <div class="credits ml-auto">
+                <span class="copyright">
+                  © <script>document.write(new Date().getFullYear())</script>, feito com <i class="fa fa-heart heart"></i> pela Creative Tim
+                </span>
+              </div>
             </nav>
-            <div class="credits ml-auto">
-              <span class="copyright">
-                © <script>
-                  document.write(new Date().getFullYear())
-                </script>, made with <i class="fa fa-heart heart"></i> by Creative Tim
-              </span>
-            </div>
           </div>
         </div>
       </footer>
     </div>
   </div>
-  <!--   Core JS Files   -->
+
+  <!-- JS Files -->
   <script src="../assets/js/core/jquery.min.js"></script>
   <script src="../assets/js/core/popper.min.js"></script>
   <script src="../assets/js/core/bootstrap.min.js"></script>
   <script src="../assets/js/plugins/perfect-scrollbar.jquery.min.js"></script>
-  <!--  Google Maps Plugin    -->
-  <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_KEY_HERE"></script>
-  <!-- Chart JS -->
   <script src="../assets/js/plugins/chartjs.min.js"></script>
-  <!--  Notifications Plugin    -->
   <script src="../assets/js/plugins/bootstrap-notify.js"></script>
-  <!-- Control Center for Now Ui Dashboard: parallax effects, scripts for the example pages etc -->
-  <script src="../assets/js/paper-dashboard.min.js?v=2.0.1" type="text/javascript"></script><!-- Paper Dashboard DEMO methods, don't include it in your project! -->
+  <script src="../assets/js/paper-dashboard.min.js?v=2.0.1"></script>
   <script src="../assets/demo/demo.js"></script>
+  <script>
+    $(document).ready(function() {
+      $(".navbar-toggler").click(function() {
+        $(this).find(".navbar-toggler-bar").toggle();
+      });
+
+      demo.initChartsPages();
+      
+      // Initialize tooltips
+      $('[data-toggle="tooltip"]').tooltip();
+      
+      // Auto-hide alerts
+      setTimeout(function() {
+        $('.alert').fadeOut('slow');
+      }, 5000);
+    });
+    
+    // Função para ordenar tabelas
+    function sortTable(n, tableId) {
+      var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+      table = document.getElementById(tableId);
+      switching = true;
+      dir = "asc";
+      
+      while (switching) {
+        switching = false;
+        rows = table.rows;
+        
+        for (i = 1; i < (rows.length - 1); i++) {
+          shouldSwitch = false;
+          x = rows[i].getElementsByTagName("TD")[n];
+          y = rows[i + 1].getElementsByTagName("TD")[n];
+          
+          if (dir == "asc") {
+            if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+              shouldSwitch = true;
+              break;
+            }
+          } else if (dir == "desc") {
+            if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+              shouldSwitch = true;
+              break;
+            }
+          }
+        }
+        
+        if (shouldSwitch) {
+          rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+          switching = true;
+          switchcount++;
+        } else {
+          if (switchcount == 0 && dir == "asc") {
+            dir = "desc";
+            switching = true;
+          }
+        }
+      }
+    }
+    
+    // Função para expandir descrição
+    function expandirDescricao(button) {
+      var descricao = $(button).data('descricao');
+      var container = $(button).closest('.descricao-container');
+      var span = container.find('span');
+      
+      if (span.text().includes('...')) {
+        span.text(descricao);
+        $(button).find('i').removeClass('fa-expand').addClass('fa-compress');
+      } else {
+        span.text(descricao.length > 80 ? descricao.substring(0, 80) + '...' : descricao);
+        $(button).find('i').removeClass('fa-compress').addClass('fa-expand');
+      }
+    }
+    
+    // Função para editar missão
+    function editarMissao(id, nome, descricao, xp, moedas, link) {
+      $('#edit_id').val(id);
+      $('#edit_nome').val(nome);
+      $('#edit_descricao').val(descricao);
+      $('#edit_xp').val(xp);
+      $('#edit_moedas').val(moedas);
+      $('#edit_link').val(link);
+      $('#editMissaoModal').modal('show');
+    }
+    
+    // Função para confirmar exclusão
+    function confirmarExclusao(id, nome) {
+      if (confirm('Tem certeza que deseja remover a missão "' + nome + '"?\n\nEsta ação não pode ser desfeita.')) {
+        window.location.href = '?delete=' + id;
+      }
+    }
+    
+    // Função para mostrar toast notifications
+    function showToast(type, title, message) {
+      var icon = '';
+      var bgClass = '';
+      
+      switch(type) {
+        case 'success':
+          icon = 'fa-check-circle';
+          bgClass = 'bg-success';
+          break;
+        case 'error':
+          icon = 'fa-exclamation-circle';
+          bgClass = 'bg-danger';
+          break;
+        case 'warning':
+          icon = 'fa-exclamation-triangle';
+          bgClass = 'bg-warning';
+          break;
+        case 'info':
+          icon = 'fa-info-circle';
+          bgClass = 'bg-info';
+          break;
+      }
+      
+      var toast = `
+        <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1055;">
+          <div class="toast ${bgClass} text-white" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+              <i class="fa ${icon} me-2"></i>
+              <strong class="me-auto">${title}</strong>
+              <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+              ${message}
+            </div>
+          </div>
+        </div>
+      `;
+      
+      $('body').append(toast);
+      $('.toast').toast('show');
+      
+      // Remove toast after 3 seconds
+      setTimeout(function() {
+        $('.toast').remove();
+      }, 3000);
+    }
+  </script>
 </body>
 
 </html>

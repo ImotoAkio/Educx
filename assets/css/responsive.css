@@ -296,6 +296,85 @@
 	
 }
 
+/* Estilos específicos para o botão de conectar no menu mobile */
+@media all and (max-width: 991px) {
+    .sidebar-inner .btn-box {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+    
+    .sidebar-inner .btn-box .btn {
+        width: 100%;
+        max-width: 250px;
+        justify-content: center;
+    }
+    
+    .sidebar-inner .btn-box .btn span {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* Estilos para o botão de conectar na navbar mobile */
+    .nav-right-part-mobile {
+        display: flex !important;
+        align-items: center;
+        margin-left: auto;
+        margin-right: 15px;
+        position: relative;
+        z-index: 1000;
+    }
+    
+    .nav-right-part-mobile .btn {
+        font-size: 14px;
+        padding: 8px 16px;
+        white-space: nowrap;
+        min-width: auto;
+    }
+    
+    .nav-right-part-mobile .btn span {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+    
+    .nav-right-part-mobile .btn img {
+        width: 16px;
+        height: auto;
+    }
+
+    /* Ajuste para o layout da navbar mobile */
+    .navbar-area .nav-container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+    }
+
+    .responsive-mobile-menu {
+        order: 3;
+        margin-left: auto;
+    }
+
+    .logo {
+        order: 1;
+        flex: 0 0 auto;
+    }
+
+    .nav-right-part-mobile {
+        order: 2;
+        flex: 0 0 auto;
+        margin-right: 60px; /* Espaço para o botão do menu */
+    }
+
+    /* Garantir que o botão seja visível */
+    .nav-right-part-mobile .btn {
+        display: inline-flex !important;
+        align-items: center;
+        justify-content: center;
+    }
+}
+
 
 @media all and (min-width: 1300px) {
 	.custom-container {

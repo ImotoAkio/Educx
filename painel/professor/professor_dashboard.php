@@ -29,7 +29,7 @@ try {
 
 try {
     // Consulta para buscar todos os alunos ordenados por XP total
-    $query = "SELECT id, nome, xp_total, avatar, GREATEST(FLOOR(xp_total / 1000), 1) AS nivel FROM alunos ORDER BY xp_total DESC";
+    $query = "SELECT id, nome, xp_total, moedas, avatar, GREATEST(FLOOR(xp_total / 1000), 1) AS nivel FROM alunos ORDER BY xp_total DESC";
     $stmt = $pdo->query($query);
     $alunos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
@@ -39,6 +39,7 @@ try {
 // Inicializa variáveis
 $alunos = [];
 $erro = "";
+$sucesso = "";
 $professor_nome = htmlspecialchars($_SESSION['usuario_nome']);
 $current_avatar = $alunoEncontrado['avatar'] ?? 'asset/img/default.gif';
 
@@ -49,7 +50,7 @@ $current_avatar = $alunoEncontrado['avatar'] ?? 'asset/img/default.gif';
 // Processa a pesquisa do professor
 if (isset($_GET['pesquisa'])) {
     $pesquisa = $_GET['pesquisa'];
-    $stmt = $pdo->prepare("SELECT * FROM alunos WHERE nome LIKE :pesquisa");
+    $stmt = $pdo->prepare("SELECT id, nome, xp_total, moedas, avatar FROM alunos WHERE nome LIKE :pesquisa");
     $stmt->execute([':pesquisa' => "%$pesquisa%"]);
     $alunos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -62,25 +63,62 @@ if (isset($_GET['pesquisa'])) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['aluno_id']) && isset($_POST['valor'])) {
     $aluno_id = $_POST['aluno_id'];
     $valor = $_POST['valor'];  // Valor a ser adicionado ou removido
-    $descricao = $_POST['descricao'];
+    $descricao = $_POST['descricao'] ?? 'Ajuste manual de moedas';
 
-    // Verifica se estamos adicionando ou removendo moedas
-    if ($valor > 0) {
-        // Adiciona moedas
-        try {
-            $stmt = $pdo->prepare("UPDATE alunos SET moedas = moedas + :valor WHERE id = :aluno_id");
-            $stmt->execute([':valor' => $valor, ':aluno_id' => $aluno_id]);
-        } catch (Exception $e) {
-            $erro = "Erro ao adicionar moedas: " . $e->getMessage();
-        }
+    // Validação do valor
+    if (!is_numeric($valor) || $valor == 0) {
+        $erro = "Por favor, insira um valor válido diferente de zero.";
     } else {
-        // Remove moedas (se valor for negativo)
-        try {
-            $stmt = $pdo->prepare("UPDATE alunos SET moedas = GREATEST(moedas + :valor, 0) WHERE id = :aluno_id");
-            // Usando GREATEST para garantir que o valor não fique negativo
-            $stmt->execute([':valor' => $valor, ':aluno_id' => $aluno_id]);
-        } catch (Exception $e) {
-            $erro = "Erro ao remover moedas: " . $e->getMessage();
+        // Verifica se estamos adicionando ou removendo moedas
+        if ($valor > 0) {
+            // Adiciona moedas
+            try {
+                $stmt = $pdo->prepare("UPDATE alunos SET moedas = moedas + :valor WHERE id = :aluno_id");
+                $stmt->execute([':valor' => $valor, ':aluno_id' => $aluno_id]);
+                
+                // Registra a transação no histórico (se houver uma tabela de histórico)
+                try {
+                    $stmt = $pdo->prepare("INSERT INTO historico_moedas (aluno_id, professor_id, quantidade, tipo, descricao, data) VALUES (:aluno_id, :professor_id, :quantidade, 'adicao', :descricao, NOW())");
+                    $stmt->execute([
+                        ':aluno_id' => $aluno_id,
+                        ':professor_id' => $_SESSION['usuario_id'],
+                        ':quantidade' => $valor,
+                        ':descricao' => $descricao
+                    ]);
+                } catch (Exception $e) {
+                    // Se a tabela não existir, apenas ignora o erro
+                    // O importante é que as moedas foram atualizadas
+                }
+                
+                $sucesso = "Adicionadas " . $valor . " moedas com sucesso!";
+            } catch (Exception $e) {
+                $erro = "Erro ao adicionar moedas: " . $e->getMessage();
+            }
+        } else {
+            // Remove moedas (se valor for negativo)
+            try {
+                $stmt = $pdo->prepare("UPDATE alunos SET moedas = GREATEST(moedas + :valor, 0) WHERE id = :aluno_id");
+                // Usando GREATEST para garantir que o valor não fique negativo
+                $stmt->execute([':valor' => $valor, ':aluno_id' => $aluno_id]);
+                
+                // Registra a transação no histórico
+                try {
+                    $stmt = $pdo->prepare("INSERT INTO historico_moedas (aluno_id, professor_id, quantidade, tipo, descricao, data) VALUES (:aluno_id, :professor_id, :quantidade, 'remocao', :descricao, NOW())");
+                    $stmt->execute([
+                        ':aluno_id' => $aluno_id,
+                        ':professor_id' => $_SESSION['usuario_id'],
+                        ':quantidade' => abs($valor),
+                        ':descricao' => $descricao
+                    ]);
+                } catch (Exception $e) {
+                    // Se a tabela não existir, apenas ignora o erro
+                    // O importante é que as moedas foram atualizadas
+                }
+                
+                $sucesso = "Removidas " . abs($valor) . " moedas com sucesso!";
+            } catch (Exception $e) {
+                $erro = "Erro ao remover moedas: " . $e->getMessage();
+            }
         }
     }
 }
@@ -224,7 +262,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['aluno_id']) && isset(
                 <?php if (!empty($erro)): ?>
                     <div class="row">
                         <div class="col-12">
-                            <p class="erro"><?= htmlspecialchars($erro) ?></p>
+                            <p class="erro" style="color: red; background-color: #ffe6e6; padding: 10px; border-radius: 5px; border: 1px solid #ff9999;"><?= htmlspecialchars($erro) ?></p>
+                        </div>
+                    </div>
+                <?php endif; ?>
+
+                <?php if (!empty($sucesso)): ?>
+                    <div class="row">
+                        <div class="col-12">
+                            <p class="sucesso" style="color: green; background-color: #e6ffe6; padding: 10px; border-radius: 5px; border: 1px solid #99ff99;"><?= htmlspecialchars($sucesso) ?></p>
                         </div>
                     </div>
                 <?php endif; ?>
@@ -236,29 +282,47 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['aluno_id']) && isset(
 
     <img src="/game/<?= htmlspecialchars($aluno['avatar'] ?: 'asset/img/default.gif'); ?>" alt="Avatar do Aluno">
 
+        <!-- Controle de Moedas Simplificado -->
         <form method="POST" style="display:inline;">
             <input type="hidden" name="aluno_id" value="<?= $aluno['id'] ?>">
-            <input type="hidden" name="valor" value="5"> <!-- Valor de +5 moedas -->
-            <input type="hidden" name="descricao" value="Fez a atividade">
-            <button type="submit" class="botao-verde">+5</button>
-        </form>
+            <div class="moedas-control" style="margin: 15px 0; padding: 20px; background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); border-radius: 12px; border: 1px solid #dee2e6; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                <h5 style="margin: 0 0 15px 0; color: #495057; font-size: 16px; font-weight: 600; text-align: center;">💰 Controle de Moedas</h5>
+                
+                <!-- Transação Personalizada -->
+                <div style="margin-bottom: 20px;">
+                    <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap; justify-content: center;">
+                        <input type="number" name="valor" placeholder="Quantidade" min="1" max="1000" 
+                               style="width: 150px; padding: 10px; border: 2px solid #ced4da; border-radius: 6px; font-size: 14px; text-align: center;" required>
+                        <button type="submit" class="botao-verde" style="padding: 10px 20px; font-size: 14px; border-radius: 6px;">➕ Adicionar</button>
+                        <button type="submit" class="botao-vermelho" style="padding: 10px 20px; font-size: 14px; border-radius: 6px;" onclick="document.querySelector('input[name=valor]').value = '-' + Math.abs(document.querySelector('input[name=valor]').value); return true;">➖ Remover</button>
+                    </div>
+                </div>
 
-        <form method="POST" style="display:inline;">
-            <input type="hidden" name="aluno_id" value="<?= $aluno['id'] ?>">
-            <input type="hidden" name="valor" value="-5"> <!-- Valor de -5 moedas -->
-            <input type="hidden" name="descricao" value="Remoção de moedas">
-            <button type="submit" class="botao-vermelho"> -5</button>
+                <!-- Botões Rápidos -->
+                <div style="text-align: center;">
+                    <p style="margin: 0 0 10px 0; color: #6c757d; font-size: 12px; font-weight: 500;">Transações Rápidas:</p>
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap; justify-content: center;">
+                        <button type="button" class="botao-verde" style="padding: 8px 16px; font-size: 13px; border-radius: 5px;" onclick="adicionarMoedas(5)">+5</button>
+                        <button type="button" class="botao-verde" style="padding: 8px 16px; font-size: 13px; border-radius: 5px;" onclick="adicionarMoedas(10)">+10</button>
+                        <button type="button" class="botao-verde" style="padding: 8px 16px; font-size: 13px; border-radius: 5px;" onclick="adicionarMoedas(20)">+20</button>
+                        <button type="button" class="botao-verde" style="padding: 8px 16px; font-size: 13px; border-radius: 5px;" onclick="adicionarMoedas(50)">+50</button>
+                        <button type="button" class="botao-vermelho" style="padding: 8px 16px; font-size: 13px; border-radius: 5px;" onclick="removerMoedas(5)">-5</button>
+                        <button type="button" class="botao-vermelho" style="padding: 8px 16px; font-size: 13px; border-radius: 5px;" onclick="removerMoedas(10)">-10</button>
+                        <button type="button" class="botao-vermelho" style="padding: 8px 16px; font-size: 13px; border-radius: 5px;" onclick="removerMoedas(20)">-20</button>
+                        <button type="button" class="botao-vermelho" style="padding: 8px 16px; font-size: 13px; border-radius: 5px;" onclick="removerMoedas(50)">-50</button>
+                    </div>
+                </div>
+            </div>
         </form>
 
 
         
         <div class="detail">
             <h4 class="name"><?= htmlspecialchars($aluno['nome']) ?></h4>
-            <div class="detail-footer">
-                <div class="price left">ID: <?= $aluno['id'] ?></div>
-                <div class="review right">
-                    <img src="https://design-fenix.com.ar/codepen/ui-store/stars.png" alt="Estrelas de avaliação">
-                    <?= $aluno['moedas'] ?> moedas
+            <div class="detail-footer" style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
+                <div class="price left" style="font-size: 12px; color: #6c757d;">ID: <?= $aluno['id'] ?></div>
+                <div class="review right" style="display: flex; align-items: center; gap: 5px;">
+                    <span style="font-weight: 600; color: #28a745;">💰 <?= $aluno['moedas'] ?> moedas</span>
                 </div>
             </div>
         </div>
@@ -271,5 +335,53 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['aluno_id']) && isset(
         </section>
     </div>
 </body>
+
+<script>
+// Função para atualizar a página após uma transação bem-sucedida
+function atualizarPagina() {
+    // Remove as mensagens de sucesso após 3 segundos
+    setTimeout(function() {
+        const mensagens = document.querySelectorAll('.sucesso, .erro');
+        mensagens.forEach(function(mensagem) {
+            mensagem.style.display = 'none';
+        });
+    }, 3000);
+}
+
+// Funções para os botões rápidos
+function adicionarMoedas(quantidade) {
+    const form = event.target.closest('form');
+    const valorInput = form.querySelector('input[name="valor"]');
+    
+    valorInput.value = quantidade;
+    form.submit();
+}
+
+function removerMoedas(quantidade) {
+    const form = event.target.closest('form');
+    const valorInput = form.querySelector('input[name="valor"]');
+    
+    valorInput.value = -quantidade;
+    form.submit();
+}
+
+// Executa a função quando a página carrega
+document.addEventListener('DOMContentLoaded', function() {
+    atualizarPagina();
+    
+    // Adiciona validação nos campos de quantidade
+    const camposQuantidade = document.querySelectorAll('input[type="number"]');
+    camposQuantidade.forEach(function(campo) {
+        campo.addEventListener('input', function() {
+            const valor = parseInt(this.value);
+            if (valor < 1) {
+                this.value = 1;
+            } else if (valor > 1000) {
+                this.value = 1000;
+            }
+        });
+    });
+});
+</script>
 
 </html>

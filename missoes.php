@@ -38,13 +38,17 @@ $stmt = $pdo->prepare("
 $stmt->execute([':turma_id' => $turma_id, ':aluno_id' => $aluno_id]);
 $missoes = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Consulta os quizzes disponíveis para a turma do aluno
+// Consulta os quizzes disponíveis para a turma do aluno (que ainda não foram realizados)
 $stmt_quizzes = $pdo->prepare("
-    SELECT * 
-    FROM quizzes 
-    WHERE turma_id = :turma_id
+    SELECT q.* 
+    FROM quizzes q
+    WHERE q.turma_id = :turma_id
+      AND NOT EXISTS (
+          SELECT 1 FROM quizzes_finalizados qf
+          WHERE qf.aluno_id = :aluno_id AND qf.quiz_id = q.id
+      )
 ");
-$stmt_quizzes->execute([':turma_id' => $turma_id]);
+$stmt_quizzes->execute([':turma_id' => $turma_id, ':aluno_id' => $aluno_id]);
 $quizzes = $stmt_quizzes->fetchAll(PDO::FETCH_ASSOC);
 
 // Consulta os dados do aluno
@@ -233,6 +237,9 @@ $progresso_percentual = round($progresso * 100, 2);
         <div class="row">
             <div class="col-12">
                 <h3 class="segment-title left">Quizzes disponíveis</h3>
+                <p style="color: #666; font-size: 0.9em; margin-bottom: 15px;">
+                    <i class="fa fa-info-circle"></i> Apenas quizzes que você ainda não realizou são exibidos aqui.
+                </p>
                 <?php if (!empty($quizzes)): ?>
                     <?php foreach ($quizzes as $quiz): ?>
                         <article class="hero-card">
@@ -252,6 +259,54 @@ $progresso_percentual = round($progresso * 100, 2);
         </div>
     </div>
 </section>
+
+<!-- Seção de Quizzes Realizados -->
+<?php
+// Consulta os quizzes já realizados pelo aluno
+$stmt_quizzes_realizados = $pdo->prepare("
+    SELECT q.nome, q.descricao, qf.data_finalizacao, qf.acertos, qf.total_perguntas, qf.pontuacao
+    FROM quizzes_finalizados qf
+    JOIN quizzes q ON qf.quiz_id = q.id
+    WHERE qf.aluno_id = :aluno_id
+    ORDER BY qf.data_finalizacao DESC
+");
+$stmt_quizzes_realizados->execute([':aluno_id' => $aluno_id]);
+$quizzes_realizados = $stmt_quizzes_realizados->fetchAll(PDO::FETCH_ASSOC);
+?>
+
+<?php if (!empty($quizzes_realizados)): ?>
+<section>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <h3 class="segment-title left">Quizzes Realizados</h3>
+                <p style="color: #666; font-size: 0.9em; margin-bottom: 15px;">
+                    <i class="fa fa-check-circle"></i> Histórico dos quizzes que você já completou.
+                </p>
+                <?php foreach ($quizzes_realizados as $quiz): ?>
+                    <article class="hero-card" style="opacity: 0.8; background: #f8f9fa;">
+                        <div class="card-content">
+                            <h3><?= htmlspecialchars($quiz['nome']); ?></h3>
+                            <p><?= htmlspecialchars($quiz['descricao']); ?></p>
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
+                                <span style="color: #28a745; font-weight: bold;">
+                                    <i class="fa fa-trophy"></i> <?= $quiz['acertos']; ?>/<?= $quiz['total_perguntas']; ?> acertos
+                                </span>
+                                <span style="color: #17a2b8; font-weight: bold;">
+                                    <i class="fa fa-star"></i> <?= $quiz['pontuacao']; ?> XP
+                                </span>
+                                <span style="color: #6c757d; font-size: 0.9em;">
+                                    <i class="fa fa-calendar"></i> <?= date('d/m/Y', strtotime($quiz['data_finalizacao'])); ?>
+                                </span>
+                            </div>
+                        </div>
+                    </article>
+                <?php endforeach; ?>
+            </div>
+        </div>
+    </div>
+</section>
+<?php endif; ?>
         <section>
             <div class="container-fluid">
                 <div class="row">
