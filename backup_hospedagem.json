@@ -1,0 +1,1674 @@
+{
+    "alternativas": [
+        {
+            "id": 19,
+            "pergunta_id": 6,
+            "texto": "Ricardo",
+            "correta": 1
+        },
+        {
+            "id": 20,
+            "pergunta_id": 6,
+            "texto": "Ricardo",
+            "correta": 0
+        },
+        {
+            "id": 21,
+            "pergunta_id": 6,
+            "texto": "cesar",
+            "correta": 0
+        },
+        {
+            "id": 22,
+            "pergunta_id": 7,
+            "texto": "sim",
+            "correta": 1
+        },
+        {
+            "id": 23,
+            "pergunta_id": 7,
+            "texto": "nao",
+            "correta": 0
+        },
+        {
+            "id": 24,
+            "pergunta_id": 7,
+            "texto": "talvez",
+            "correta": 0
+        },
+        {
+            "id": 25,
+            "pergunta_id": 8,
+            "texto": "Ricardo",
+            "correta": 1
+        },
+        {
+            "id": 26,
+            "pergunta_id": 8,
+            "texto": "Cesar",
+            "correta": 0
+        },
+        {
+            "id": 27,
+            "pergunta_id": 8,
+            "texto": "Anderson",
+            "correta": 0
+        },
+        {
+            "id": 28,
+            "pergunta_id": 9,
+            "texto": "1",
+            "correta": 1
+        },
+        {
+            "id": 29,
+            "pergunta_id": 9,
+            "texto": "2",
+            "correta": 0
+        },
+        {
+            "id": 30,
+            "pergunta_id": 10,
+            "texto": "Errada",
+            "correta": 1
+        },
+        {
+            "id": 31,
+            "pergunta_id": 10,
+            "texto": "Correta",
+            "correta": 0
+        },
+        {
+            "id": 32,
+            "pergunta_id": 11,
+            "texto": "Certa",
+            "correta": 1
+        },
+        {
+            "id": 33,
+            "pergunta_id": 11,
+            "texto": "Errada",
+            "correta": 0
+        },
+        {
+            "id": 34,
+            "pergunta_id": 12,
+            "texto": "certa",
+            "correta": 1
+        },
+        {
+            "id": 35,
+            "pergunta_id": 12,
+            "texto": "errada",
+            "correta": 0
+        },
+        {
+            "id": 36,
+            "pergunta_id": 13,
+            "texto": "certa",
+            "correta": 1
+        },
+        {
+            "id": 37,
+            "pergunta_id": 13,
+            "texto": "errada",
+            "correta": 0
+        },
+        {
+            "id": 38,
+            "pergunta_id": 14,
+            "texto": "Errada",
+            "correta": 1
+        },
+        {
+            "id": 39,
+            "pergunta_id": 14,
+            "texto": "certa",
+            "correta": 0
+        }
+    ],
+    "alunos": [
+        {
+            "id": 86,
+            "nome": "Jos\u00e9 \u00cdcaro",
+            "moedas": 0,
+            "qr_code_link": "",
+            "xp_atual": 0,
+            "xp_total": 100,
+            "nivel": 1,
+            "avatar": "asset\/img\/avatar\/Robo Estudante.gif",
+            "fundo": "especial"
+        },
+        {
+            "id": 87,
+            "nome": "Amy Hadassa",
+            "moedas": 0,
+            "qr_code_link": "",
+            "xp_atual": 0,
+            "xp_total": 100,
+            "nivel": 1,
+            "avatar": "asset\/img\/avatar\/Robo Estudante.gif",
+            "fundo": "especial"
+        },
+        {
+            "id": 88,
+            "nome": "Jo\u00e3o Guilherme",
+            "moedas": 0,
+            "qr_code_link": "",
+            "xp_atual": 0,
+            "xp_total": 100,
+            "nivel": 1,
+            "avatar": "asset\/img\/avatar\/Robo Estudante.gif",
+            "fundo": "especial"
+        },
+        {
+            "id": 89,
+            "nome": "Ana Cecilia",
+            "moedas": 0,
+            "qr_code_link": "",
+            "xp_atual": 0,
+            "xp_total": 100,
+            "nivel": 1,
+            "avatar": "asset\/img\/avatar\/Robo Estudante.gif",
+            "fundo": "especial"
+        },
+        {
+            "id": 90,
+            "nome": "Miqueias",
+            "moedas": 0,
+            "qr_code_link": "",
+            "xp_atual": 0,
+            "xp_total": 100,
+            "nivel": 1,
+            "avatar": "asset\/img\/avatar\/Robo Estudante.gif",
+            "fundo": "especial"
+        },
+        {
+            "id": 91,
+            "nome": "Helena Mota",
+            "moedas": 0,
+            "qr_code_link": "",
+            "xp_atual": 0,
+            "xp_total": 100,
+            "nivel": 1,
+            "avatar": "asset\/img\/avatar\/Robo Estudante.gif",
+            "fundo": "especial"
+        },
+        {
+            "id": 92,
+            "nome": "Jo\u00e3o Gabriel",
+            "moedas": 0,
+            "qr_code_link": "",
+            "xp_atual": 0,
+            "xp_total": 100,
+            "nivel": 1,
+            "avatar": "asset\/img\/avatar\/Robo Estudante.gif",
+            "fundo": "especial"
+        },
+        {
+            "id": 93,
+            "nome": "Anne Isabel",
+            "moedas": 0,
+            "qr_code_link": "",
+            "xp_atual": 0,
+            "xp_total": 100,
+            "nivel": 1,
+            "avatar": "asset\/img\/avatar\/Robo Estudante.gif",
+            "fundo": "especial"
+        },
+        {
+            "id": 94,
+            "nome": "Kemily Ithiely",
+            "moedas": 0,
+            "qr_code_link": "",
+            "xp_atual": 0,
+            "xp_total": 100,
+            "nivel": 1,
+            "avatar": "asset\/img\/avatar\/Gatito.gif",
+            "fundo": "especial"
+        },
+        {
+            "id": 95,
+            "nome": "Jos\u00e9 Evandro",
+            "moedas": 0,
+            "qr_code_link": "",
+            "xp_atual": 0,
+            "xp_total": 100,
+            "nivel": 1,
+            "avatar": "asset\/img\/avatar\/Abeia.gif",
+            "fundo": "especial"
+        },
+        {
+            "id": 96,
+            "nome": "Joao Victor",
+            "moedas": 0,
+            "qr_code_link": "",
+            "xp_atual": 0,
+            "xp_total": 100,
+            "nivel": 1,
+            "avatar": "asset\/img\/avatar\/Robo Estudante.gif",
+            "fundo": "especial"
+        },
+        {
+            "id": 97,
+            "nome": "Ayra Elo\u00e1",
+            "moedas": 0,
+            "qr_code_link": "http:game.echotec.online\/aluno.php?id=97",
+            "xp_atual": 0,
+            "xp_total": 100,
+            "nivel": 1,
+            "avatar": "asset\/img\/avatar\/Robo Estudante.gif",
+            "fundo": "especial"
+        },
+        {
+            "id": 98,
+            "nome": "Fernanda Andrade",
+            "moedas": 0,
+            "qr_code_link": "http:game.echotec.online\/aluno.php?id=98",
+            "xp_atual": 0,
+            "xp_total": 100,
+            "nivel": 1,
+            "avatar": "asset\/img\/avatar\/Abeia.gif",
+            "fundo": "especial"
+        },
+        {
+            "id": 99,
+            "nome": "Caio Victor",
+            "moedas": 0,
+            "qr_code_link": "",
+            "xp_atual": 0,
+            "xp_total": 100,
+            "nivel": 1,
+            "avatar": "asset\/img\/avatar\/Robo Estudante.gif",
+            "fundo": "especial"
+        },
+        {
+            "id": 100,
+            "nome": "Thayza Rayza",
+            "moedas": 0,
+            "qr_code_link": "",
+            "xp_atual": 0,
+            "xp_total": 100,
+            "nivel": 1,
+            "avatar": "asset\/img\/avatar\/Robo Estudante.gif",
+            "fundo": "especial"
+        },
+        {
+            "id": 101,
+            "nome": "Calebe Soares",
+            "moedas": 0,
+            "qr_code_link": "",
+            "xp_atual": 0,
+            "xp_total": 100,
+            "nivel": 1,
+            "avatar": "asset\/img\/avatar\/Robo Estudante.gif",
+            "fundo": "especial"
+        },
+        {
+            "id": 102,
+            "nome": "Joao Miguel",
+            "moedas": 0,
+            "qr_code_link": "",
+            "xp_atual": 0,
+            "xp_total": 100,
+            "nivel": 1,
+            "avatar": "asset\/img\/avatar\/Robo Estudante.gif",
+            "fundo": "especial"
+        },
+        {
+            "id": 103,
+            "nome": "Antonio Miguel",
+            "moedas": 0,
+            "qr_code_link": "",
+            "xp_atual": 0,
+            "xp_total": 100,
+            "nivel": 1,
+            "avatar": "asset\/img\/avatar\/Robo Estudante.gif",
+            "fundo": "especial"
+        },
+        {
+            "id": 104,
+            "nome": "Luiz Miguel",
+            "moedas": 0,
+            "qr_code_link": "",
+            "xp_atual": 0,
+            "xp_total": 100,
+            "nivel": 1,
+            "avatar": "asset\/img\/avatar\/Robo Estudante.gif",
+            "fundo": "especial"
+        },
+        {
+            "id": 105,
+            "nome": "Alana Iasmin",
+            "moedas": 0,
+            "qr_code_link": "",
+            "xp_atual": 0,
+            "xp_total": 100,
+            "nivel": 1,
+            "avatar": "asset\/img\/avatar\/Robo Estudante.gif",
+            "fundo": "rosa"
+        },
+        {
+            "id": 106,
+            "nome": "Arthur Miguel",
+            "moedas": 0,
+            "qr_code_link": "",
+            "xp_atual": 0,
+            "xp_total": 100,
+            "nivel": 1,
+            "avatar": "asset\/img\/avatar\/Robo Estudante.gif",
+            "fundo": "especial"
+        },
+        {
+            "id": 107,
+            "nome": "Ramon Italo",
+            "moedas": 0,
+            "qr_code_link": "http:game.echotec.online\/aluno.php?id=107",
+            "xp_atual": 0,
+            "xp_total": 250,
+            "nivel": 1,
+            "avatar": "asset\/img\/avatar\/Roboz\u00e3o.gif",
+            "fundo": "dark"
+        },
+        {
+            "id": 108,
+            "nome": "Ana Sofia",
+            "moedas": 0,
+            "qr_code_link": "",
+            "xp_atual": 0,
+            "xp_total": 100,
+            "nivel": 1,
+            "avatar": "asset\/img\/avatar\/Robo Estudante.gif",
+            "fundo": "especial"
+        },
+        {
+            "id": 109,
+            "nome": "Joane",
+            "moedas": 0,
+            "qr_code_link": "",
+            "xp_atual": 0,
+            "xp_total": 100,
+            "nivel": 1,
+            "avatar": "asset\/img\/avatar\/Gatito.gif",
+            "fundo": "dark"
+        },
+        {
+            "id": 110,
+            "nome": "Angelo Isaac",
+            "moedas": 1,
+            "qr_code_link": "http:game.echotec.online\/aluno.php?id=110",
+            "xp_atual": 0,
+            "xp_total": 100,
+            "nivel": 1,
+            "avatar": "asset\/img\/avatar\/Robo Estudante.gif",
+            "fundo": "especial"
+        },
+        {
+            "id": 111,
+            "nome": "Valentina",
+            "moedas": 0,
+            "qr_code_link": "",
+            "xp_atual": 0,
+            "xp_total": 100,
+            "nivel": 1,
+            "avatar": "asset\/img\/avatar\/Robo Estudante.gif",
+            "fundo": "especial"
+        },
+        {
+            "id": 112,
+            "nome": "Sofia Melo",
+            "moedas": 0,
+            "qr_code_link": "",
+            "xp_atual": 0,
+            "xp_total": 100,
+            "nivel": 1,
+            "avatar": "asset\/img\/avatar\/Robo Estudante.gif",
+            "fundo": "especial"
+        },
+        {
+            "id": 113,
+            "nome": "Lara Lohana",
+            "moedas": 0,
+            "qr_code_link": "http:game.echotec.online\/aluno.php?id=113",
+            "xp_atual": 0,
+            "xp_total": 100,
+            "nivel": 1,
+            "avatar": "asset\/img\/avatar\/Robo Estudante.gif",
+            "fundo": "especial"
+        },
+        {
+            "id": 114,
+            "nome": "Ilana",
+            "moedas": 0,
+            "qr_code_link": "",
+            "xp_atual": 0,
+            "xp_total": 100,
+            "nivel": 1,
+            "avatar": "asset\/img\/avatar\/Gatito.gif",
+            "fundo": "especial"
+        },
+        {
+            "id": 115,
+            "nome": "Anderson Jos\u00e9",
+            "moedas": 0,
+            "qr_code_link": "",
+            "xp_atual": 0,
+            "xp_total": 100,
+            "nivel": 1,
+            "avatar": "asset\/img\/avatar\/Abeia.gif",
+            "fundo": "dark"
+        },
+        {
+            "id": 116,
+            "nome": "Maria Clara Silva",
+            "moedas": 0,
+            "qr_code_link": "",
+            "xp_atual": 0,
+            "xp_total": 100,
+            "nivel": 1,
+            "avatar": "asset\/img\/avatar\/Robo Estudante.gif",
+            "fundo": "especial"
+        },
+        {
+            "id": 117,
+            "nome": "Ewerton",
+            "moedas": 0,
+            "qr_code_link": "",
+            "xp_atual": 0,
+            "xp_total": 100,
+            "nivel": 1,
+            "avatar": "asset\/img\/avatar\/Robo Estudante.gif",
+            "fundo": "especial"
+        },
+        {
+            "id": 118,
+            "nome": "Lucas Gabriel",
+            "moedas": 0,
+            "qr_code_link": "",
+            "xp_atual": 0,
+            "xp_total": 100,
+            "nivel": 1,
+            "avatar": "asset\/img\/avatar\/Robo Estudante.gif",
+            "fundo": "especial"
+        },
+        {
+            "id": 119,
+            "nome": "Vitor William",
+            "moedas": 0,
+            "qr_code_link": "",
+            "xp_atual": 0,
+            "xp_total": 100,
+            "nivel": 1,
+            "avatar": "asset\/img\/avatar\/Cachorr\u00e3o.gif",
+            "fundo": "especial"
+        },
+        {
+            "id": 120,
+            "nome": "Ana Leticia",
+            "moedas": 0,
+            "qr_code_link": "",
+            "xp_atual": 0,
+            "xp_total": 100,
+            "nivel": 1,
+            "avatar": "asset\/img\/avatar\/Roboz\u00e3o.gif",
+            "fundo": "especial"
+        },
+        {
+            "id": 121,
+            "nome": "Jo\u00e3o Vitor",
+            "moedas": 0,
+            "qr_code_link": "",
+            "xp_atual": 0,
+            "xp_total": 100,
+            "nivel": 1,
+            "avatar": "asset\/img\/avatar\/Robo Estudante.gif",
+            "fundo": "especial"
+        },
+        {
+            "id": 122,
+            "nome": "Moaby dos Santos",
+            "moedas": 0,
+            "qr_code_link": "",
+            "xp_atual": 0,
+            "xp_total": 100,
+            "nivel": 1,
+            "avatar": "asset\/img\/avatar\/Roboz\u00e3o.gif",
+            "fundo": "especial"
+        },
+        {
+            "id": 123,
+            "nome": "Kathleen",
+            "moedas": 0,
+            "qr_code_link": "",
+            "xp_atual": 0,
+            "xp_total": 100,
+            "nivel": 1,
+            "avatar": "asset\/img\/avatar\/Ratatui.gif",
+            "fundo": "rosa"
+        },
+        {
+            "id": 124,
+            "nome": "Andr\u00e9 Luiz",
+            "moedas": 0,
+            "qr_code_link": "http:game.echotec.online\/aluno.php?id=124",
+            "xp_atual": 0,
+            "xp_total": 100,
+            "nivel": 1,
+            "avatar": "asset\/img\/avatar\/Robo Estudante.gif",
+            "fundo": "especial"
+        },
+        {
+            "id": 125,
+            "nome": "Luiz Fernando",
+            "moedas": 0,
+            "qr_code_link": "http:game.echotec.online\/aluno.php?id=125",
+            "xp_atual": 0,
+            "xp_total": 100,
+            "nivel": 1,
+            "avatar": "asset\/img\/avatar\/Gatito.gif",
+            "fundo": "especial"
+        },
+        {
+            "id": 126,
+            "nome": "Rhayner Thiato",
+            "moedas": 1,
+            "qr_code_link": "http:game.echotec.online\/aluno.php?id=126",
+            "xp_atual": 0,
+            "xp_total": 100,
+            "nivel": 1,
+            "avatar": "asset\/img\/avatar\/Robo Estudante.gif",
+            "fundo": "especial"
+        },
+        {
+            "id": 127,
+            "nome": "Arthur Gabriel",
+            "moedas": 0,
+            "qr_code_link": "http:game.echotec.online\/aluno.php?id=127",
+            "xp_atual": 0,
+            "xp_total": 100,
+            "nivel": 1,
+            "avatar": "asset\/img\/avatar\/Robo Estudante.gif",
+            "fundo": "especial"
+        },
+        {
+            "id": 128,
+            "nome": "Isabela Regina",
+            "moedas": 0,
+            "qr_code_link": "http:game.echotec.online\/aluno.php?id=128",
+            "xp_atual": 0,
+            "xp_total": 100,
+            "nivel": 1,
+            "avatar": "asset\/img\/avatar\/Robo Estudante.gif",
+            "fundo": "especial"
+        },
+        {
+            "id": 129,
+            "nome": "Bernardo Araujo",
+            "moedas": 0,
+            "qr_code_link": "http:game.echotec.online\/aluno.php?id=129",
+            "xp_atual": 0,
+            "xp_total": 100,
+            "nivel": 1,
+            "avatar": "asset\/img\/avatar\/Robo Estudante.gif",
+            "fundo": "especial"
+        },
+        {
+            "id": 130,
+            "nome": "Ray Gustavo",
+            "moedas": 0,
+            "qr_code_link": "http:game.echotec.online\/aluno.php?id=130",
+            "xp_atual": 0,
+            "xp_total": 100,
+            "nivel": 1,
+            "avatar": "asset\/img\/avatar\/Robo Estudante.gif",
+            "fundo": "especial"
+        },
+        {
+            "id": 131,
+            "nome": "Joseph Arthur",
+            "moedas": 0,
+            "qr_code_link": "http:game.echotec.online\/aluno.php?id=131",
+            "xp_atual": 0,
+            "xp_total": 100,
+            "nivel": 1,
+            "avatar": "asset\/img\/avatar\/Robo Estudante.gif",
+            "fundo": "especial"
+        },
+        {
+            "id": 132,
+            "nome": "Vitor Akio",
+            "moedas": 172,
+            "qr_code_link": "http:game.echotec.online\/aluno.php?id=132",
+            "xp_atual": 0,
+            "xp_total": 100,
+            "nivel": 1,
+            "avatar": "asset\/img\/avatar\/Robo Estudante.gif",
+            "fundo": "especial"
+        },
+        {
+            "id": 133,
+            "nome": "Jo\u00e3o Vitor",
+            "moedas": 0,
+            "qr_code_link": "http:game.echotec.online\/aluno.php?id=133",
+            "xp_atual": 0,
+            "xp_total": 100,
+            "nivel": 1,
+            "avatar": "asset\/img\/avatar\/Robo Estudante.gif",
+            "fundo": "especial"
+        },
+        {
+            "id": 134,
+            "nome": "Andr\u00e9 Luiz",
+            "moedas": 0,
+            "qr_code_link": "http:game.echotec.online\/aluno.php?id=134",
+            "xp_atual": 0,
+            "xp_total": 100,
+            "nivel": 1,
+            "avatar": "asset\/img\/avatar\/Robo Estudante.gif",
+            "fundo": "especial"
+        },
+        {
+            "id": 135,
+            "nome": "Ana Luiza",
+            "moedas": 0,
+            "qr_code_link": "http:game.echotec.online\/aluno.php?id=135",
+            "xp_atual": 0,
+            "xp_total": 100,
+            "nivel": 1,
+            "avatar": "asset\/img\/avatar\/Robo Estudante.gif",
+            "fundo": "especial"
+        },
+        {
+            "id": 136,
+            "nome": "Maria Elisa",
+            "moedas": 0,
+            "qr_code_link": "http:game.echotec.online\/aluno.php?id=136",
+            "xp_atual": 0,
+            "xp_total": 100,
+            "nivel": 1,
+            "avatar": "asset\/img\/avatar\/Robo Estudante.gif",
+            "fundo": "especial"
+        },
+        {
+            "id": 137,
+            "nome": "Ana Beatriz",
+            "moedas": 0,
+            "qr_code_link": "http:game.echotec.online\/aluno.php?id=137",
+            "xp_atual": 0,
+            "xp_total": 100,
+            "nivel": 1,
+            "avatar": "asset\/img\/avatar\/Robo Estudante.gif",
+            "fundo": "especial"
+        },
+        {
+            "id": 138,
+            "nome": "Victor Gabriel",
+            "moedas": 0,
+            "qr_code_link": "http:game.echotec.online\/aluno.php?id=138",
+            "xp_atual": 0,
+            "xp_total": 100,
+            "nivel": 1,
+            "avatar": "asset\/img\/avatar\/Robo Estudante.gif",
+            "fundo": "especial"
+        },
+        {
+            "id": 139,
+            "nome": "Nephi ",
+            "moedas": 0,
+            "qr_code_link": "http:game.echotec.online\/aluno.php?id=139",
+            "xp_atual": 0,
+            "xp_total": 100,
+            "nivel": 1,
+            "avatar": "asset\/img\/avatar\/Robo Estudante.gif",
+            "fundo": "especial"
+        },
+        {
+            "id": 140,
+            "nome": "Ed Benjamin",
+            "moedas": 0,
+            "qr_code_link": "http:game.echotec.online\/aluno.php?id=140",
+            "xp_atual": 0,
+            "xp_total": 100,
+            "nivel": 1,
+            "avatar": "asset\/img\/avatar\/Robo Estudante.gif",
+            "fundo": "especial"
+        },
+        {
+            "id": 141,
+            "nome": "Arthur Gabriel",
+            "moedas": 0,
+            "qr_code_link": "http:game.echotec.online\/aluno.php?id=141",
+            "xp_atual": 0,
+            "xp_total": 100,
+            "nivel": 1,
+            "avatar": "asset\/img\/avatar\/Roboz\u00e3o.gif",
+            "fundo": "especial"
+        },
+        {
+            "id": 142,
+            "nome": "Joaquim Andrade",
+            "moedas": 0,
+            "qr_code_link": "http:game.echotec.online\/aluno.php?id=142",
+            "xp_atual": 0,
+            "xp_total": 100,
+            "nivel": 1,
+            "avatar": "asset\/img\/avatar\/Robo Estudante.gif",
+            "fundo": "especial"
+        }
+    ],
+    "alunos_turmas": [
+        {
+            "aluno_id": 86,
+            "turma_id": 20
+        },
+        {
+            "aluno_id": 87,
+            "turma_id": 20
+        },
+        {
+            "aluno_id": 88,
+            "turma_id": 20
+        },
+        {
+            "aluno_id": 89,
+            "turma_id": 21
+        },
+        {
+            "aluno_id": 90,
+            "turma_id": 21
+        },
+        {
+            "aluno_id": 91,
+            "turma_id": 21
+        },
+        {
+            "aluno_id": 92,
+            "turma_id": 21
+        },
+        {
+            "aluno_id": 93,
+            "turma_id": 21
+        },
+        {
+            "aluno_id": 94,
+            "turma_id": 33
+        },
+        {
+            "aluno_id": 95,
+            "turma_id": 33
+        },
+        {
+            "aluno_id": 96,
+            "turma_id": 33
+        },
+        {
+            "aluno_id": 97,
+            "turma_id": 33
+        },
+        {
+            "aluno_id": 98,
+            "turma_id": 33
+        },
+        {
+            "aluno_id": 99,
+            "turma_id": 24
+        },
+        {
+            "aluno_id": 100,
+            "turma_id": 24
+        },
+        {
+            "aluno_id": 101,
+            "turma_id": 24
+        },
+        {
+            "aluno_id": 102,
+            "turma_id": 24
+        },
+        {
+            "aluno_id": 103,
+            "turma_id": 24
+        },
+        {
+            "aluno_id": 104,
+            "turma_id": 25
+        },
+        {
+            "aluno_id": 105,
+            "turma_id": 25
+        },
+        {
+            "aluno_id": 106,
+            "turma_id": 25
+        },
+        {
+            "aluno_id": 107,
+            "turma_id": 25
+        },
+        {
+            "aluno_id": 108,
+            "turma_id": 25
+        },
+        {
+            "aluno_id": 109,
+            "turma_id": 25
+        },
+        {
+            "aluno_id": 110,
+            "turma_id": 26
+        },
+        {
+            "aluno_id": 111,
+            "turma_id": 26
+        },
+        {
+            "aluno_id": 112,
+            "turma_id": 27
+        },
+        {
+            "aluno_id": 113,
+            "turma_id": 27
+        },
+        {
+            "aluno_id": 114,
+            "turma_id": 27
+        },
+        {
+            "aluno_id": 115,
+            "turma_id": 27
+        },
+        {
+            "aluno_id": 116,
+            "turma_id": 27
+        },
+        {
+            "aluno_id": 117,
+            "turma_id": 27
+        },
+        {
+            "aluno_id": 118,
+            "turma_id": 28
+        },
+        {
+            "aluno_id": 119,
+            "turma_id": 28
+        },
+        {
+            "aluno_id": 120,
+            "turma_id": 28
+        },
+        {
+            "aluno_id": 121,
+            "turma_id": 28
+        },
+        {
+            "aluno_id": 122,
+            "turma_id": 28
+        },
+        {
+            "aluno_id": 123,
+            "turma_id": 28
+        },
+        {
+            "aluno_id": 125,
+            "turma_id": 26
+        },
+        {
+            "aluno_id": 131,
+            "turma_id": 20
+        },
+        {
+            "aluno_id": 133,
+            "turma_id": 28
+        },
+        {
+            "aluno_id": 134,
+            "turma_id": 28
+        }
+    ],
+    "missoes": [
+        {
+            "id": 1,
+            "nome": "Avalie o col\u00e9gio no Google",
+            "descricao": "Deixe uma avalia\u00e7\u00e3o no perfil do col\u00e9gio no Google e envie uma captura de tela.",
+            "xp": 100,
+            "moedas": 50,
+            "status": "ativa",
+            "data_criacao": "2024-12-06 23:46:22",
+            "link": "https:\/\/www.google.com\/maps\/place\/\/data=!4m3!3m2!1s0x7737a0f9bb4c19f:0x4f9cf3f9180437d9!12e1?source=g.page.m.ia._&laa=nmx-review-solicitation-ia2",
+            "criador_id": null,
+            "turma_id": null
+        },
+        {
+            "id": 2,
+            "nome": "Poste uma foto no Instagram e marque o col\u00e9gio",
+            "descricao": "Tire uma foto no col\u00e9gio ou durante um evento, poste no Instagram e marque o perfil oficial do col\u00e9gio.",
+            "xp": 150,
+            "moedas": 75,
+            "status": "ativa",
+            "data_criacao": "2024-12-06 23:46:22",
+            "link": "",
+            "criador_id": null,
+            "turma_id": null
+        },
+        {
+            "id": 3,
+            "nome": "Participe de um evento escolar",
+            "descricao": "Compare\u00e7a a um evento promovido pelo col\u00e9gio e registre sua presen\u00e7a com a organiza\u00e7\u00e3o.",
+            "xp": 200,
+            "moedas": 100,
+            "status": "ativa",
+            "data_criacao": "2024-12-06 23:46:22",
+            "link": "",
+            "criador_id": null,
+            "turma_id": null
+        },
+        {
+            "id": 4,
+            "nome": "Indique um amigo para visitar o col\u00e9gio",
+            "descricao": "Indique um amigo para conhecer o col\u00e9gio. A indica\u00e7\u00e3o precisa ser registrada na secretaria.",
+            "xp": 300,
+            "moedas": 150,
+            "status": "ativa",
+            "data_criacao": "2024-12-06 23:46:22",
+            "link": "",
+            "criador_id": null,
+            "turma_id": null
+        },
+        {
+            "id": 5,
+            "nome": "Escreva uma mensagem de agradecimento para os professores",
+            "descricao": "Escreva uma mensagem de agradecimento para seus professores e entregue-a no formato de carta ou email.",
+            "xp": 50,
+            "moedas": 20,
+            "status": "ativa",
+            "data_criacao": "2024-12-06 23:46:22",
+            "link": "",
+            "criador_id": null,
+            "turma_id": null
+        },
+        {
+            "id": 6,
+            "nome": "Compartilhe um post do col\u00e9gio nas redes sociais",
+            "descricao": "Reposte um post oficial do col\u00e9gio no seu Instagram ou Facebook e envie uma captura de tela.",
+            "xp": 75,
+            "moedas": 30,
+            "status": "ativa",
+            "data_criacao": "2024-12-06 23:46:22",
+            "link": "",
+            "criador_id": null,
+            "turma_id": null
+        },
+        {
+            "id": 27,
+            "nome": "Engajamento no Instagram",
+            "descricao": "Curtir, comentar ou compartilhar um post do perfil oficial do Col\u00e9gio",
+            "xp": 100,
+            "moedas": 50,
+            "status": "ativa",
+            "data_criacao": "2025-09-02 16:42:20",
+            "link": "https:\/\/instagram.com",
+            "criador_id": null,
+            "turma_id": null
+        },
+        {
+            "id": 28,
+            "nome": "Guardi\u00f5es da Ordem",
+            "descricao": "Se a sala de aula for mantida limpa e organizada durante toda a semana (verificado pelo professor no final da aula de sexta-feira), todos os alunos da turma ganham moedas.",
+            "xp": 10,
+            "moedas": 25,
+            "status": "ativa",
+            "data_criacao": "2025-09-02 16:49:27",
+            "link": "https:\/\/colegiorosadesharom.com.br",
+            "criador_id": null,
+            "turma_id": null
+        },
+        {
+            "id": 29,
+            "nome": "Missao do nono ano",
+            "descricao": "Essa \u00e9 uma missao teste",
+            "xp": 10,
+            "moedas": 100,
+            "status": "ativa",
+            "data_criacao": "2025-09-03 13:13:07",
+            "link": "",
+            "criador_id": 34,
+            "turma_id": 28
+        },
+        {
+            "id": 30,
+            "nome": "iyygubohbou",
+            "descricao": "tg7yh88ygh7tf",
+            "xp": 100,
+            "moedas": 10,
+            "status": "ativa",
+            "data_criacao": "2025-09-03 15:44:57",
+            "link": "",
+            "criador_id": 34,
+            "turma_id": 27
+        }
+    ],
+    "perguntas": [
+        {
+            "id": 6,
+            "quiz_id": 7,
+            "texto": "Qual o nome do meu pai?"
+        },
+        {
+            "id": 7,
+            "quiz_id": 7,
+            "texto": "bolsonaro era presidente?"
+        },
+        {
+            "id": 8,
+            "quiz_id": 8,
+            "texto": "Qual o nome do meu pai?"
+        },
+        {
+            "id": 9,
+            "quiz_id": 8,
+            "texto": "Com quantos anos eu nasci?"
+        },
+        {
+            "id": 10,
+            "quiz_id": 9,
+            "texto": "Biasmdlkmlqmweomomm?"
+        },
+        {
+            "id": 11,
+            "quiz_id": 9,
+            "texto": "POr que mmakm asalm,l,emom?"
+        },
+        {
+            "id": 12,
+            "quiz_id": 10,
+            "texto": "pergunta 1"
+        },
+        {
+            "id": 13,
+            "quiz_id": 10,
+            "texto": "pergunta 2"
+        },
+        {
+            "id": 14,
+            "quiz_id": 11,
+            "texto": "asdasdasdasdas"
+        }
+    ],
+    "produtos": [
+        {
+            "id": 46,
+            "nome": "Break Card",
+            "moeda": "370.00",
+            "descricao": "Concede 10 minutos de descanso durante o jogo.",
+            "imagem": "asset\/loja\/img\/Design sem nome.gif"
+        },
+        {
+            "id": 47,
+            "nome": "Point Card",
+            "moeda": "590.00",
+            "descricao": "Concede 1 ponto extra em qualquer prova.",
+            "imagem": "asset\/loja\/img\/Design sem nome (1).gif"
+        },
+        {
+            "id": 48,
+            "nome": "Lanche",
+            "moeda": "700.00",
+            "descricao": "Lanche da sua escolha na cantina",
+            "imagem": "asset\/loja\/img\/Pizza.gif"
+        },
+        {
+            "id": 50,
+            "nome": "Tablet",
+            "moeda": "15000.00",
+            "descricao": "8 Polegadas, 4 Ram",
+            "imagem": "asset\/loja\/img\/tablet.gif"
+        }
+    ],
+    "professores": [
+        {
+            "id": 3,
+            "nome": "Professor Teste",
+            "email": "professor@teste.com",
+            "senha": "$2y$10$pW5x78KE27K0LF2DK0\/56ubIvl8nO6FQQx8txYy4BgrRBMQ\/8eNny",
+            "tipo_usuario": "professor"
+        },
+        {
+            "id": 6,
+            "nome": "Admin",
+            "email": "admin@rosa.com",
+            "senha": "$2y$10$p5ReFhMaJFeTrD81weSml.eRT6Wd8dwBBVEvjGBBnIuTUiH.uZ0p2",
+            "tipo_usuario": "secretaria"
+        },
+        {
+            "id": 9,
+            "nome": "Secretario",
+            "email": "secretario@rosa.com",
+            "senha": "$2y$10$hz9xpcXkU0UuVnbl.iWaOOVgW72W3vVH6cS7lEGqdKQFXWQ4AmVBK",
+            "tipo_usuario": "secretaria"
+        },
+        {
+            "id": 29,
+            "nome": "Pr\u00f3 Miriam",
+            "email": "miriam@rosa.com",
+            "senha": "$2y$10$1R6AzMvWDwVKC1nYIQM5ou1PZhYhBbyCM\/dpjQSNCfyVhumnw.NAm",
+            "tipo_usuario": "professor"
+        },
+        {
+            "id": 30,
+            "nome": "Pr\u00f3 Zeneide",
+            "email": "zeneide@rosa.com",
+            "senha": "$2y$10$dOJZYvaTGzXSS0z5nfjGKeO7uwgUTFTaBAF5s1h4fQlbDRkwz6JRa",
+            "tipo_usuario": "professor"
+        },
+        {
+            "id": 31,
+            "nome": "Hebberton Monteiro",
+            "email": "hebberton@rosa.com",
+            "senha": "$2y$10$5Qq6n21cTidMVRf9v3NB8Oik2FZ4gm5tP7s9VfOUGztzvyJJmuSSS",
+            "tipo_usuario": "professor"
+        },
+        {
+            "id": 32,
+            "nome": "Ana Paula",
+            "email": "ana_paula@mail.com",
+            "senha": "$2y$10$\/TxBxG3DQ3zGPoKdJ4leW.XplZOi21b1mm7xD6f5lURGRT8ZlKz8u",
+            "tipo_usuario": "professor"
+        },
+        {
+            "id": 33,
+            "nome": "Iasmin Bezerra",
+            "email": "iasmim@rosa.com",
+            "senha": "$2y$10$C6e6GXR\/LsdBr6S\/HkejmuaAaTH1.D.GozDwYBCdicKxcCGeOXB9a",
+            "tipo_usuario": "professor"
+        },
+        {
+            "id": 34,
+            "nome": "Akio",
+            "email": "akio@rosa.com",
+            "senha": "$2y$10$Z0v6hJOYknN5Wzqsdd\/BTu4.5ZtJB3kbOqnwVdFLaVW2LIgN0fE96",
+            "tipo_usuario": "professor"
+        },
+        {
+            "id": 35,
+            "nome": "Ienne Andrade",
+            "email": "ienne@rosa.com",
+            "senha": "$2y$10$NgnKBvkbxzskjvJUgUIeAuzg2.FhY1thns7m0FD1bED2A.sLHV3W2",
+            "tipo_usuario": "professor"
+        },
+        {
+            "id": 36,
+            "nome": "Maria Geovana",
+            "email": "geovanna@rosa.com",
+            "senha": "$2y$10$y73EL6c2Ojf.Rm6xazs.qetbIUy2rYAV.UwFBHyxuV2LEmGsAejU.",
+            "tipo_usuario": "professor"
+        },
+        {
+            "id": 37,
+            "nome": "Jose Igor",
+            "email": "igor@rosa.com",
+            "senha": "$2y$10$yBT1kULp2QNnaVxWkXcuwuO5nzU2OfDC.s.Yo7mkA9na5xkNMBEV.",
+            "tipo_usuario": "professor"
+        },
+        {
+            "id": 39,
+            "nome": "Maria Luisa",
+            "email": "luisa@rosa.com",
+            "senha": "$2y$10$fBcBZDlOWpUm48yMLZyXUuGUGUwDrEaTlccI.dGxWlqZUm86YMhVm",
+            "tipo_usuario": "professor"
+        },
+        {
+            "id": 40,
+            "nome": "Secret\u00e1rio Teste",
+            "email": "secretaria@mail.com",
+            "senha": "$2y$10$TgmHz7I3y8ryVjC6fQMcaeCdnJoSyy9j39upB.U\/KP6shieZKbxvO",
+            "tipo_usuario": "secretaria"
+        },
+        {
+            "id": 41,
+            "nome": "Professor Teste",
+            "email": "professor@mail.com",
+            "senha": "$2y$10$wxc3wulhVzoxU4J69qcUS.dJS.Iyi5MTKen08tZ7Iv89dFFjqIClq",
+            "tipo_usuario": "professor"
+        }
+    ],
+    "quizzes": [
+        {
+            "id": 0,
+            "nome": "Admin",
+            "descricao": "d",
+            "criador_id": 34,
+            "turma_id": 24,
+            "data_criacao": "2025-08-08 12:49:19"
+        },
+        {
+            "id": 7,
+            "nome": "Nome do Quiz",
+            "descricao": "Descri\u00e7\u00e3o",
+            "criador_id": 29,
+            "turma_id": 20,
+            "data_criacao": "2025-05-01 21:15:00"
+        },
+        {
+            "id": 8,
+            "nome": "Teste 1",
+            "descricao": "Descri\u00e7\u00e3o do teste 1",
+            "criador_id": 29,
+            "turma_id": 20,
+            "data_criacao": "2025-05-01 22:53:38"
+        },
+        {
+            "id": 9,
+            "nome": "Quiz primeiro ano",
+            "descricao": "Responda as perguntas e ganhe moedas",
+            "criador_id": 29,
+            "turma_id": 20,
+            "data_criacao": "2025-05-02 00:35:58"
+        },
+        {
+            "id": 10,
+            "nome": "Quiz Segundo ano",
+            "descricao": "Responda as perguntas e ganhe moedas",
+            "criador_id": 29,
+            "turma_id": 20,
+            "data_criacao": "2025-05-02 00:37:47"
+        },
+        {
+            "id": 11,
+            "nome": "Quiz Segundo ano",
+            "descricao": "Responda as perguntas e ganhe moedas",
+            "criador_id": 29,
+            "turma_id": 21,
+            "data_criacao": "2025-05-02 00:38:13"
+        }
+    ],
+    "quizzes_finalizados": [
+        {
+            "id": 1,
+            "aluno_id": 90,
+            "quiz_id": 11,
+            "data_finalizacao": "2025-05-02 09:05:13"
+        },
+        {
+            "id": 2,
+            "aluno_id": 90,
+            "quiz_id": 11,
+            "data_finalizacao": "2025-05-04 20:06:11"
+        }
+    ],
+    "solicitacoes_missoes": [
+        {
+            "id": 35,
+            "aluno_id": 90,
+            "missao_id": 5,
+            "status": "aprovado",
+            "data_solicitacao": "2025-05-04 20:58:50"
+        },
+        {
+            "id": 36,
+            "aluno_id": 94,
+            "missao_id": 1,
+            "status": "pendente",
+            "data_solicitacao": "2025-09-02 20:23:14"
+        },
+        {
+            "id": 37,
+            "aluno_id": 98,
+            "missao_id": 1,
+            "status": "pendente",
+            "data_solicitacao": "2025-09-02 20:23:40"
+        },
+        {
+            "id": 38,
+            "aluno_id": 98,
+            "missao_id": 5,
+            "status": "pendente",
+            "data_solicitacao": "2025-09-03 14:58:13"
+        },
+        {
+            "id": 39,
+            "aluno_id": 98,
+            "missao_id": 28,
+            "status": "pendente",
+            "data_solicitacao": "2025-09-03 14:59:08"
+        },
+        {
+            "id": 40,
+            "aluno_id": 98,
+            "missao_id": 4,
+            "status": "pendente",
+            "data_solicitacao": "2025-09-03 15:11:19"
+        },
+        {
+            "id": 41,
+            "aluno_id": 98,
+            "missao_id": 3,
+            "status": "pendente",
+            "data_solicitacao": "2025-09-03 16:18:52"
+        },
+        {
+            "id": 42,
+            "aluno_id": 98,
+            "missao_id": 27,
+            "status": "pendente",
+            "data_solicitacao": "2025-09-03 18:25:12"
+        },
+        {
+            "id": 43,
+            "aluno_id": 94,
+            "missao_id": 2,
+            "status": "pendente",
+            "data_solicitacao": "2025-09-03 22:25:21"
+        },
+        {
+            "id": 44,
+            "aluno_id": 117,
+            "missao_id": 30,
+            "status": "pendente",
+            "data_solicitacao": "2025-09-04 19:13:45"
+        },
+        {
+            "id": 45,
+            "aluno_id": 105,
+            "missao_id": 1,
+            "status": "pendente",
+            "data_solicitacao": "2025-09-04 20:21:39"
+        },
+        {
+            "id": 46,
+            "aluno_id": 105,
+            "missao_id": 2,
+            "status": "pendente",
+            "data_solicitacao": "2025-09-04 20:22:45"
+        },
+        {
+            "id": 47,
+            "aluno_id": 109,
+            "missao_id": 1,
+            "status": "pendente",
+            "data_solicitacao": "2025-09-05 09:29:49"
+        },
+        {
+            "id": 48,
+            "aluno_id": 114,
+            "missao_id": 1,
+            "status": "pendente",
+            "data_solicitacao": "2025-09-05 11:09:55"
+        }
+    ],
+    "trocas": [
+        {
+            "id": 39,
+            "aluno_id": 119,
+            "produto_id": 48,
+            "data_troca": "2025-08-11 18:50:42",
+            "status": "rejeitado"
+        },
+        {
+            "id": 40,
+            "aluno_id": 119,
+            "produto_id": 50,
+            "data_troca": "2025-08-11 18:50:55",
+            "status": "rejeitado"
+        },
+        {
+            "id": 41,
+            "aluno_id": 100,
+            "produto_id": 47,
+            "data_troca": "2025-08-14 15:28:10",
+            "status": "rejeitado"
+        },
+        {
+            "id": 42,
+            "aluno_id": 132,
+            "produto_id": 48,
+            "data_troca": "2025-09-03 12:54:31",
+            "status": "pendente"
+        },
+        {
+            "id": 43,
+            "aluno_id": 98,
+            "produto_id": 46,
+            "data_troca": "2025-09-03 15:49:37",
+            "status": "pendente"
+        },
+        {
+            "id": 44,
+            "aluno_id": 98,
+            "produto_id": 46,
+            "data_troca": "2025-09-03 18:24:25",
+            "status": "pendente"
+        },
+        {
+            "id": 45,
+            "aluno_id": 98,
+            "produto_id": 48,
+            "data_troca": "2025-09-04 00:44:49",
+            "status": "pendente"
+        },
+        {
+            "id": 46,
+            "aluno_id": 98,
+            "produto_id": 48,
+            "data_troca": "2025-09-04 00:45:11",
+            "status": "pendente"
+        },
+        {
+            "id": 47,
+            "aluno_id": 98,
+            "produto_id": 46,
+            "data_troca": "2025-09-05 15:17:33",
+            "status": "pendente"
+        }
+    ],
+    "turmas": [
+        {
+            "id": 20,
+            "nome": "1\u00b0 ano",
+            "descricao": null,
+            "ano_letivo": null
+        },
+        {
+            "id": 21,
+            "nome": "2\u00b0 ano",
+            "descricao": null,
+            "ano_letivo": null
+        },
+        {
+            "id": 24,
+            "nome": "5\u00b0 ano",
+            "descricao": null,
+            "ano_letivo": null
+        },
+        {
+            "id": 25,
+            "nome": "6\u00b0 ano",
+            "descricao": null,
+            "ano_letivo": null
+        },
+        {
+            "id": 26,
+            "nome": "7\u00b0 ano",
+            "descricao": null,
+            "ano_letivo": null
+        },
+        {
+            "id": 27,
+            "nome": "8\u00b0 ano",
+            "descricao": null,
+            "ano_letivo": null
+        },
+        {
+            "id": 28,
+            "nome": "9\u00b0 ano",
+            "descricao": null,
+            "ano_letivo": null
+        },
+        {
+            "id": 32,
+            "nome": "3\u00b0 ano",
+            "descricao": "",
+            "ano_letivo": "2025"
+        },
+        {
+            "id": 33,
+            "nome": "4\u00b0 ano",
+            "descricao": "",
+            "ano_letivo": "2025"
+        }
+    ],
+    "turmas_professores": [
+        {
+            "turma_id": 20,
+            "professor_id": 29
+        },
+        {
+            "turma_id": 21,
+            "professor_id": 29
+        },
+        {
+            "turma_id": 24,
+            "professor_id": 31
+        },
+        {
+            "turma_id": 24,
+            "professor_id": 32
+        },
+        {
+            "turma_id": 24,
+            "professor_id": 33
+        },
+        {
+            "turma_id": 24,
+            "professor_id": 34
+        },
+        {
+            "turma_id": 24,
+            "professor_id": 35
+        },
+        {
+            "turma_id": 24,
+            "professor_id": 36
+        },
+        {
+            "turma_id": 24,
+            "professor_id": 37
+        },
+        {
+            "turma_id": 25,
+            "professor_id": 31
+        },
+        {
+            "turma_id": 25,
+            "professor_id": 32
+        },
+        {
+            "turma_id": 25,
+            "professor_id": 33
+        },
+        {
+            "turma_id": 25,
+            "professor_id": 34
+        },
+        {
+            "turma_id": 25,
+            "professor_id": 35
+        },
+        {
+            "turma_id": 25,
+            "professor_id": 36
+        },
+        {
+            "turma_id": 25,
+            "professor_id": 37
+        },
+        {
+            "turma_id": 26,
+            "professor_id": 31
+        },
+        {
+            "turma_id": 26,
+            "professor_id": 32
+        },
+        {
+            "turma_id": 26,
+            "professor_id": 33
+        },
+        {
+            "turma_id": 26,
+            "professor_id": 34
+        },
+        {
+            "turma_id": 26,
+            "professor_id": 35
+        },
+        {
+            "turma_id": 26,
+            "professor_id": 36
+        },
+        {
+            "turma_id": 26,
+            "professor_id": 37
+        },
+        {
+            "turma_id": 27,
+            "professor_id": 31
+        },
+        {
+            "turma_id": 27,
+            "professor_id": 32
+        },
+        {
+            "turma_id": 27,
+            "professor_id": 33
+        },
+        {
+            "turma_id": 27,
+            "professor_id": 34
+        },
+        {
+            "turma_id": 27,
+            "professor_id": 35
+        },
+        {
+            "turma_id": 27,
+            "professor_id": 36
+        },
+        {
+            "turma_id": 27,
+            "professor_id": 37
+        },
+        {
+            "turma_id": 28,
+            "professor_id": 31
+        },
+        {
+            "turma_id": 28,
+            "professor_id": 32
+        },
+        {
+            "turma_id": 28,
+            "professor_id": 33
+        },
+        {
+            "turma_id": 28,
+            "professor_id": 34
+        },
+        {
+            "turma_id": 28,
+            "professor_id": 35
+        },
+        {
+            "turma_id": 28,
+            "professor_id": 36
+        },
+        {
+            "turma_id": 28,
+            "professor_id": 37
+        },
+        {
+            "turma_id": 33,
+            "professor_id": 30
+        }
+    ]
+}

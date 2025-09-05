@@ -70,6 +70,18 @@
             <p>Gerenciar Turmas</p>
           </a>
         </li>
+        <li class="<?= $pagina_ativa === 'gerenciar_alunos_turmas' ? 'active' : ''; ?>">
+          <a href="./gerenciar_alunos_turmas.php">
+            <i class="nc-icon nc-single-02"></i>
+            <p>Alunos e Turmas</p>
+          </a>
+        </li>
+        <li class="<?= $pagina_ativa === 'gerenciar_professores_turmas' ? 'active' : ''; ?>">
+          <a href="./gerenciar_professores_turmas.php">
+            <i class="nc-icon nc-single-02"></i>
+            <p>Professores e Turmas</p>
+          </a>
+        </li>
       </ul>
     </div>
   </div>

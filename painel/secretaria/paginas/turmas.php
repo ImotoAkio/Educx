@@ -279,6 +279,14 @@ include 'include/navbar.php';
                                       data-toggle="tooltip" title="Ver alunos da turma">
                                 <i class="fa fa-users"></i>
                               </button>
+                              <button class="btn btn-success btn-sm" onclick="gerenciarAlunos(<?= $turma['turma_id']; ?>, '<?= addslashes(htmlspecialchars($turma['turma_nome'])); ?>')" 
+                                      data-toggle="tooltip" title="Gerenciar alunos da turma">
+                                <i class="fa fa-user-plus"></i>
+                              </button>
+                              <button class="btn btn-primary btn-sm" onclick="gerenciarProfessores(<?= $turma['turma_id']; ?>, '<?= addslashes(htmlspecialchars($turma['turma_nome'])); ?>')" 
+                                      data-toggle="tooltip" title="Gerenciar professores da turma">
+                                <i class="fa fa-chalkboard-teacher"></i>
+                              </button>
                               <button class="btn btn-warning btn-sm" onclick="editarTurma(<?= $turma['turma_id']; ?>, '<?= addslashes(htmlspecialchars($turma['turma_nome'])); ?>', '<?= addslashes(htmlspecialchars($turma['descricao'])); ?>', '<?= $turma['ano_letivo']; ?>')" 
                                       data-toggle="tooltip" title="Editar turma">
                                 <i class="fa fa-edit"></i>
@@ -523,6 +531,18 @@ include 'include/navbar.php';
         span.text(descricao.length > 80 ? descricao.substring(0, 80) + '...' : descricao);
         $(button).find('i').removeClass('fa-compress').addClass('fa-expand');
       }
+    }
+    
+    // Função para gerenciar alunos da turma
+    function gerenciarAlunos(turmaId, turmaNome) {
+      // Redirecionar para a página de gerenciamento de alunos
+      window.location.href = `gerenciar_alunos_turmas.php?turma_id=${turmaId}&turma_nome=${encodeURIComponent(turmaNome)}`;
+    }
+    
+    // Função para gerenciar professores da turma
+    function gerenciarProfessores(turmaId, turmaNome) {
+      // Redirecionar para a página de gerenciamento de professores
+      window.location.href = `gerenciar_professores_turmas.php?turma_id=${turmaId}&turma_nome=${encodeURIComponent(turmaNome)}`;
     }
     
     // Função para ver alunos da turma
