@@ -1,7 +1,7 @@
 <?php
 // Configuração do banco de dados
 $host = 'localhost'; // Nome do servidor (localhost para XAMPP)
-$dbname = 'coinz'; // Nome do banco de dados
+$dbname = 'u894209272_coinz'; // Nome do banco de dados
 $username = 'root'; // Usuário do banco de dados (padrão é root no XAMPP)
 $password = ''; // Senha do banco de dados (padrão é vazio no XAMPP)
 

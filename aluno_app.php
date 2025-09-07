@@ -8,47 +8,6 @@ if (!isset($_GET['id']) || empty($_GET['id'])) {
 
 $id = (int) $_GET['id'];
 
-// ===== DETECÇÃO DE APP ANDROID =====
-
-// Função para detectar se o acesso vem do app Android
-function isAppAndroid() {
-    $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? '';
-    
-    // Verificar User-Agent do WebView Android
-    if (strpos($userAgent, 'wv') !== false && strpos($userAgent, 'Android') !== false) {
-        return true;
-    }
-    
-    // Verificar parâmetro específico do app
-    if (isset($_GET['app']) && $_GET['app'] === 'android') {
-        return true;
-    }
-    
-    // Verificar header customizado (se o app enviar)
-    if (isset($_SERVER['HTTP_X_APP_SOURCE']) && $_SERVER['HTTP_X_APP_SOURCE'] === 'android') {
-        return true;
-    }
-    
-    return false;
-}
-
-// Se for acesso do app Android, redirecionar para aluno_app.php
-if (isAppAndroid()) {
-    $url = "aluno_app.php?id=" . $id;
-    
-    // Preservar parâmetros adicionais se existirem
-    $params = $_GET;
-    unset($params['id']); // Remove o ID pois já está na URL
-    if (!empty($params)) {
-        $url .= '&' . http_build_query($params);
-    }
-    
-    header("Location: $url");
-    exit();
-}
-
-// ===== FIM DETECÇÃO DE APP =====
-
 // Consulta as informações do aluno
 try {
     $stmt = $pdo->prepare("SELECT id, nome, moedas, avatar, xp_atual, xp_total, nivel, fundo FROM alunos WHERE id = :id");
@@ -66,7 +25,7 @@ try {
 $current_avatar = $aluno['avatar'] ?? '1.gif';
 $current_fundo = $aluno['fundo'] ?? 'wrapper-especial'; // Classe padrão para fundo
 
-// ===== SISTEMA DE PRESENÇA =====
+// ===== SISTEMA DE PRESENÇA PARA APP =====
 
 // Função para verificar se é dia útil (não fim de semana)
 function isDiaUtil($data) {
@@ -121,8 +80,113 @@ function calcularStreak($pdo, $aluno_id) {
     }
 }
 
-// NOTA: Presença só pode ser registrada através do app Android
-// O acesso via navegador web não registra presença automaticamente
+// Processar presença quando a página é carregada (APENAS PARA APP)
+$mostrarModal = false;
+$dadosModal = [];
+
+try {
+    $dataHoje = date('Y-m-d');
+    $horaAtual = date('H:i:s');
+    
+    // Verificar se já houve presença hoje
+    $stmt = $pdo->prepare("SELECT id FROM presencas WHERE aluno_id = :aluno_id AND data_presenca = :data_hoje");
+    $stmt->execute([
+        ':aluno_id' => $id,
+        ':data_hoje' => $dataHoje
+    ]);
+    $presencaExistente = $stmt->fetch();
+    
+    if (!$presencaExistente) {
+        // Verificar se é dia útil
+        if (isDiaUtil($dataHoje)) {
+            // Verificar se está dentro do horário
+            if (isHorarioValido($horaAtual)) {
+                // Calcular streak atual antes de inserir
+                $streakAtual = calcularStreak($pdo, $id) + 1;
+                
+                // Inserir presença
+                $stmt = $pdo->prepare("
+                    INSERT INTO presencas (aluno_id, data_presenca, hora_presenca, streak_atual) 
+                    VALUES (:aluno_id, :data_presenca, :hora_presenca, :streak_atual)
+                ");
+                $stmt->execute([
+                    ':aluno_id' => $id,
+                    ':data_presenca' => $dataHoje,
+                    ':hora_presenca' => $horaAtual,
+                    ':streak_atual' => $streakAtual
+                ]);
+                
+                // Atualizar streak máximo se necessário
+                $stmt = $pdo->prepare("
+                    UPDATE presencas 
+                    SET streak_maximo = GREATEST(streak_maximo, :streak_atual) 
+                    WHERE aluno_id = :aluno_id
+                ");
+                $stmt->execute([
+                    ':streak_atual' => $streakAtual,
+                    ':aluno_id' => $id
+                ]);
+                
+                // Adicionar XP por presença
+                $xpGanho = 10;
+                $stmt = $pdo->prepare("UPDATE alunos SET xp_total = xp_total + :xp WHERE id = :id");
+                $stmt->execute([':xp' => $xpGanho, ':id' => $id]);
+                
+                // Buscar streak máximo
+                $stmt = $pdo->prepare("
+                    SELECT MAX(streak_maximo) as streak_maximo 
+                    FROM presencas 
+                    WHERE aluno_id = :aluno_id
+                ");
+                $stmt->execute([':aluno_id' => $id]);
+                $streakMaximo = $stmt->fetch(PDO::FETCH_ASSOC)['streak_maximo'] ?? $streakAtual;
+                
+                // Configurar dados para a modal
+                $mostrarModal = true;
+                $dadosModal = [
+                    'titulo' => '🎉 Presença Registrada!',
+                    'mensagem' => 'Parabéns! Sua presença foi registrada com sucesso.',
+                    'streak_atual' => $streakAtual,
+                    'streak_maximo' => $streakMaximo,
+                    'xp_ganho' => $xpGanho,
+                    'tipo' => 'sucesso'
+                ];
+                
+            } else {
+                $mostrarModal = true;
+                $dadosModal = [
+                    'titulo' => '⏰ Horário Limite Ultrapassado',
+                    'mensagem' => 'Presença válida apenas até 7:35 da manhã.',
+                    'streak_atual' => calcularStreak($pdo, $id),
+                    'streak_maximo' => 0,
+                    'xp_ganho' => 0,
+                    'tipo' => 'aviso'
+                ];
+            }
+        } else {
+            $mostrarModal = true;
+            $dadosModal = [
+                'titulo' => '📅 Fim de Semana',
+                'mensagem' => 'Finais de semana não contam para presença.',
+                'streak_atual' => calcularStreak($pdo, $id),
+                'streak_maximo' => 0,
+                'xp_ganho' => 0,
+                'tipo' => 'info'
+            ];
+        }
+    }
+    
+} catch (PDOException $e) {
+    $mostrarModal = true;
+    $dadosModal = [
+        'titulo' => '❌ Erro',
+        'mensagem' => 'Erro ao registrar presença: ' . $e->getMessage(),
+        'streak_atual' => 0,
+        'streak_maximo' => 0,
+        'xp_ganho' => 0,
+        'tipo' => 'erro'
+    ];
+}
 
 // ===== FIM SISTEMA DE PRESENÇA =====
 
@@ -181,7 +245,7 @@ $progresso_percentual = round($progresso * 100, 2);
     <link rel="stylesheet" href="asset/button.css">
     <link rel="stylesheet" href="asset/fundos.css">
     <link rel="stylesheet" href="asset/style.css">
-    <title>Página do Aluno</title>
+    <title>Página do Aluno - App</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron&display=swap');
         @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
@@ -571,7 +635,60 @@ $progresso_percentual = round($progresso * 100, 2);
         </div>
     </div>
 
-    <!-- Modal de Presença removida - presença só via app -->
+    <!-- Modal de Presença (APENAS PARA APP) -->
+    <?php if ($mostrarModal): ?>
+    <div class="modal-overlay" id="modalPresenca">
+        <div class="modal-content modal-tipo-<?= $dadosModal['tipo'] ?>">
+            <h2 class="modal-titulo"><?= htmlspecialchars($dadosModal['titulo']) ?></h2>
+            <p class="modal-mensagem"><?= htmlspecialchars($dadosModal['mensagem']) ?></p>
+            
+            <?php if ($dadosModal['streak_atual'] > 0): ?>
+            <div class="streak-info">
+                <div class="streak-item">
+                    <span class="streak-number"><?= $dadosModal['streak_atual'] ?></span>
+                    <span class="streak-label">Streak Atual</span>
+                </div>
+                <div class="streak-item">
+                    <span class="streak-number"><?= $dadosModal['streak_maximo'] ?></span>
+                    <span class="streak-label">Máximo</span>
+                </div>
+            </div>
+            <?php endif; ?>
+            
+            <?php if ($dadosModal['xp_ganho'] > 0): ?>
+            <div class="xp-info">
+                🎯 +<?= $dadosModal['xp_ganho'] ?> XP ganho!
+            </div>
+            <?php endif; ?>
+            
+            <button class="modal-btn" onclick="fecharModal()">Continuar</button>
+        </div>
+    </div>
+    <?php endif; ?>
+
+    <script>
+        function fecharModal() {
+            document.getElementById('modalPresenca').style.display = 'none';
+        }
+
+        // Fechar modal clicando fora dela
+        document.addEventListener('click', function(event) {
+            const modal = document.getElementById('modalPresenca');
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+
+        // Fechar modal com ESC
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                const modal = document.getElementById('modalPresenca');
+                if (modal) {
+                    modal.style.display = 'none';
+                }
+            }
+        });
+    </script>
 
 </body>
 
