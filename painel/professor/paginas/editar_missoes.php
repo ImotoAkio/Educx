@@ -309,7 +309,30 @@ include 'include/navbar.php';
             <span class="badge badge-primary ml-2"><?= count($missoes); ?></span>
           </h5>
           <div class="card-tools">
-            <input type="text" class="form-control form-control-sm" id="searchMissoes" placeholder="Buscar missões..." style="width: 250px;">
+            <div class="row">
+              <div class="col-md-6">
+                <input type="text" class="form-control form-control-sm" id="searchMissoes" placeholder="Buscar missões..." style="width: 250px;">
+              </div>
+              <div class="col-md-6">
+                <select class="form-control form-control-sm" id="filtroTurma" style="width: 200px;">
+                  <option value="">Todas as turmas</option>
+                  <?php
+                  $professor_id = $_SESSION['usuario_id'];
+                  $sql = "SELECT t.id, t.nome 
+                          FROM turmas_professores tp 
+                          JOIN turmas t ON tp.turma_id = t.id 
+                          WHERE tp.professor_id = :professor_id";
+                  $stmt = $pdo->prepare($sql);
+                  $stmt->execute(['professor_id' => $professor_id]);
+                  $turmas = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                  foreach ($turmas as $turma): ?>
+                      <option value="<?= $turma['id']; ?>">
+                          <?= htmlspecialchars($turma['nome']); ?>
+                      </option>
+                  <?php endforeach; ?>
+                </select>
+              </div>
+            </div>
           </div>
         </div>
         <div class="card-body">
@@ -333,6 +356,9 @@ include 'include/navbar.php';
                         <th>
                           <i class="fa fa-link"></i> Link
                         </th>
+                        <th style="cursor: pointer;" onclick="sortTable(6, 'tabelaMissoes')">
+                          <i class="fa fa-users"></i> Turma <i class="fa fa-sort"></i>
+                        </th>
                         <th>
                           <i class="fa fa-cogs"></i> Ações
                         </th>
@@ -340,7 +366,7 @@ include 'include/navbar.php';
                 </thead>
                 <tbody>
     <?php foreach ($missoes as $missao): ?>
-        <tr class="missao-row" data-nome="<?= strtolower($missao['nome']); ?>">
+        <tr class="missao-row" data-nome="<?= strtolower($missao['nome']); ?>" data-turma="<?= $missao['turma_id'] ?? ''; ?>">
             <td>
               <span class="badge badge-secondary"><?= $missao['id']; ?></span>
             </td>
@@ -381,30 +407,33 @@ include 'include/navbar.php';
               <?php endif; ?>
             </td>
             <td>
-              <form method="POST" class="d-inline-block">
-                  <input type="hidden" name="id" value="<?= $missao['id']; ?>">
-                  <input type="hidden" name="nome" value="<?= htmlspecialchars($missao['nome']); ?>">
-                  <input type="hidden" name="descricao" value="<?= htmlspecialchars($missao['descricao']); ?>">
-                  <input type="hidden" name="xp" value="<?= $missao['xp']; ?>">
-                  <input type="hidden" name="moedas" value="<?= $missao['moedas']; ?>">
-                  <input type="hidden" name="link" value="<?= htmlspecialchars($missao['link']); ?>">
-                  <input type="hidden" name="turma_id" value="<?= $missao['turma_id']; ?>">
-                  
-                  <div class="btn-group" role="group">
-                    <button type="submit" name="edit" class="btn btn-success btn-sm" 
-                            data-toggle="tooltip" title="Salvar alterações">
-                      <i class="fa fa-save"></i>
-                    </button>
-                    <button type="button" class="btn btn-info btn-sm" onclick="editarMissao(<?= $missao['id']; ?>)" 
-                            data-toggle="tooltip" title="Editar missão">
-                      <i class="fa fa-edit"></i>
-                    </button>
-                    <button type="button" class="btn btn-danger btn-sm" onclick="confirmarExclusao(<?= $missao['id']; ?>, '<?= htmlspecialchars($missao['nome']); ?>')" 
-                            data-toggle="tooltip" title="Excluir missão">
-                      <i class="fa fa-trash"></i>
-                    </button>
-                  </div>
-              </form>
+              <?php 
+              // Buscar nome da turma
+              if ($missao['turma_id']) {
+                $stmt_turma = $pdo->prepare("SELECT nome FROM turmas WHERE id = :turma_id");
+                $stmt_turma->execute(['turma_id' => $missao['turma_id']]);
+                $turma_nome = $stmt_turma->fetch(PDO::FETCH_ASSOC);
+                if ($turma_nome) {
+                  echo '<span class="badge badge-primary"><i class="fa fa-users"></i> ' . htmlspecialchars($turma_nome['nome']) . '</span>';
+                } else {
+                  echo '<span class="text-muted">Turma não encontrada</span>';
+                }
+              } else {
+                echo '<span class="badge badge-secondary">Todas as turmas</span>';
+              }
+              ?>
+            </td>
+            <td>
+              <div class="btn-group" role="group">
+                <button type="button" class="btn btn-info btn-sm" onclick="editarMissao(<?= $missao['id']; ?>)" 
+                        data-toggle="tooltip" title="Editar missão">
+                  <i class="fa fa-edit"></i>
+                </button>
+                <button type="button" class="btn btn-danger btn-sm" onclick="confirmarExclusao(<?= $missao['id']; ?>, '<?= htmlspecialchars($missao['nome']); ?>')" 
+                        data-toggle="tooltip" title="Excluir missão">
+                  <i class="fa fa-trash"></i>
+                </button>
+              </div>
             </td>
         </tr>
     <?php endforeach; ?>
@@ -422,7 +451,106 @@ include 'include/navbar.php';
     </div>
 </div>
 
-
+<!-- Modal de Edição -->
+<div class="modal fade" id="modalEditarMissao" tabindex="-1" role="dialog" aria-labelledby="modalEditarMissaoLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title" id="modalEditarMissaoLabel">
+          <i class="fa fa-edit"></i> Editar Missão
+        </h5>
+        <button type="button" class="close text-white" onclick="fecharModalEdicao()" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form method="POST" id="formEditarMissao">
+        <div class="modal-body">
+          <input type="hidden" name="id" id="edit_id">
+          
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="edit_turma_id" class="form-label">
+                  <i class="fa fa-users"></i> Turma <span class="text-danger">*</span>
+                </label>
+                <select class="form-control" name="turma_id" id="edit_turma_id" required>
+                  <option value="">Selecione uma turma</option>
+                  <?php
+                  $professor_id = $_SESSION['usuario_id'];
+                  $sql = "SELECT t.id, t.nome 
+                          FROM turmas_professores tp 
+                          JOIN turmas t ON tp.turma_id = t.id 
+                          WHERE tp.professor_id = :professor_id";
+                  $stmt = $pdo->prepare($sql);
+                  $stmt->execute(['professor_id' => $professor_id]);
+                  $turmas = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                  foreach ($turmas as $turma): ?>
+                      <option value="<?= $turma['id']; ?>">
+                          <?= htmlspecialchars($turma['nome']); ?>
+                      </option>
+                  <?php endforeach; ?>
+                </select>
+              </div>
+            </div>
+            
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="edit_nome" class="form-label">
+                  <i class="fa fa-star"></i> Nome da Missão <span class="text-danger">*</span>
+                </label>
+                <input type="text" class="form-control" id="edit_nome" name="nome" required>
+              </div>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="edit_descricao" class="form-label">
+              <i class="fa fa-align-left"></i> Descrição <span class="text-danger">*</span>
+            </label>
+            <textarea class="form-control" id="edit_descricao" name="descricao" rows="3" required></textarea>
+          </div>
+          
+          <div class="row">
+            <div class="col-md-4">
+              <div class="form-group">
+                <label for="edit_xp" class="form-label">
+                  <i class="fa fa-star"></i> XP <span class="text-danger">*</span>
+                </label>
+                <input type="number" class="form-control" id="edit_xp" name="xp" required min="1" max="1000">
+              </div>
+            </div>
+            
+            <div class="col-md-4">
+              <div class="form-group">
+                <label for="edit_moedas" class="form-label">
+                  <i class="fa fa-coins"></i> Moedas <span class="text-danger">*</span>
+                </label>
+                <input type="number" class="form-control" id="edit_moedas" name="moedas" required min="1" max="1000">
+              </div>
+            </div>
+            
+            <div class="col-md-4">
+              <div class="form-group">
+                <label for="edit_link" class="form-label">
+                  <i class="fa fa-link"></i> Link (Opcional)
+                </label>
+                <input type="url" class="form-control" id="edit_link" name="link">
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="fecharModalEdicao()">
+            <i class="fa fa-times"></i> Cancelar
+          </button>
+          <button type="submit" name="edit" class="btn btn-success">
+            <i class="fa fa-save"></i> Salvar Alterações
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
     
@@ -433,25 +561,83 @@ include 'include/navbar.php';
         
         // Search functionality
         $("#searchMissoes").on("keyup", function() {
-          var value = $(this).val().toLowerCase();
+          filtrarMissoes();
+        });
+        
+        // Filter by turma
+        $("#filtroTurma").on("change", function() {
+          filtrarMissoes();
+        });
+        
+        // Função para filtrar missões
+        function filtrarMissoes() {
+          var searchValue = $("#searchMissoes").val().toLowerCase();
+          var turmaValue = $("#filtroTurma").val();
+          
           $(".missao-row").filter(function() {
             var nome = $(this).data('nome');
-            $(this).toggle(nome.indexOf(value) > -1);
+            var turma = $(this).data('turma');
+            
+            var nomeMatch = nome.indexOf(searchValue) > -1;
+            var turmaMatch = turmaValue === '' || turma === turmaValue;
+            
+            $(this).toggle(nomeMatch && turmaMatch);
           });
-        });
+        }
         
         // Auto-hide alerts
         setTimeout(function() {
           $('.alert').fadeOut('slow');
         }, 5000);
         
-        // Form validation
+        // Fechar modal com tecla ESC
+        $(document).keyup(function(e) {
+          if (e.keyCode === 27) { // ESC key
+            fecharModalEdicao();
+          }
+        });
+        
+        // Fechar modal ao clicar fora dela
+        $('#modalEditarMissao').on('click', function(e) {
+          if (e.target === this) {
+            fecharModalEdicao();
+          }
+        });
+        
+        // Form validation - Nova Missão
         $("#formNovaMissao").on("submit", function(e) {
           var nome = $("#nome").val().trim();
           var descricao = $("#descricao").val().trim();
           var xp = $("#xp").val();
           var moedas = $("#moedas").val();
           var turma = $("select[name='turma_id']").val();
+          
+          if (!nome || !descricao || !xp || !moedas || !turma) {
+            e.preventDefault();
+            showToast('error', 'Erro', 'Por favor, preencha todos os campos obrigatórios.');
+            return false;
+          }
+          
+          if (xp < 1 || xp > 1000) {
+            e.preventDefault();
+            showToast('error', 'Erro', 'XP deve estar entre 1 e 1000.');
+            return false;
+          }
+          
+          if (moedas < 1 || moedas > 1000) {
+            e.preventDefault();
+            showToast('error', 'Erro', 'Moedas devem estar entre 1 e 1000.');
+            return false;
+          }
+        });
+        
+        // Form validation - Editar Missão
+        $("#formEditarMissao").on("submit", function(e) {
+          var nome = $("#edit_nome").val().trim();
+          var descricao = $("#edit_descricao").val().trim();
+          var xp = $("#edit_xp").val();
+          var moedas = $("#edit_moedas").val();
+          var turma = $("#edit_turma_id").val();
           
           if (!nome || !descricao || !xp || !moedas || !turma) {
             e.preventDefault();
@@ -538,8 +724,38 @@ include 'include/navbar.php';
       
       // Função para editar missão
       function editarMissao(id) {
-        // Implementar modal de edição
-        showToast('info', 'Informação', 'Modal de edição será implementado em breve.');
+        // Buscar dados da missão
+        $.ajax({
+          url: 'buscar_missao.php',
+          method: 'GET',
+          data: { id: id },
+          dataType: 'json',
+          success: function(data) {
+            if (data.success) {
+              // Preencher o modal com os dados da missão
+              $('#edit_id').val(data.missao.id);
+              $('#edit_nome').val(data.missao.nome);
+              $('#edit_descricao').val(data.missao.descricao);
+              $('#edit_xp').val(data.missao.xp);
+              $('#edit_moedas').val(data.missao.moedas);
+              $('#edit_link').val(data.missao.link);
+              $('#edit_turma_id').val(data.missao.turma_id);
+              
+              // Abrir o modal
+              $('#modalEditarMissao').modal('show');
+              
+              // Garantir que os botões de fechar funcionem
+              $('#modalEditarMissao .close, #modalEditarMissao [data-bs-dismiss="modal"]').off('click').on('click', function() {
+                $('#modalEditarMissao').modal('hide');
+              });
+            } else {
+              showToast('error', 'Erro', 'Erro ao carregar dados da missão: ' + data.message);
+            }
+          },
+          error: function() {
+            showToast('error', 'Erro', 'Erro ao carregar dados da missão.');
+          }
+        });
       }
       
       // Função para confirmar exclusão
@@ -547,6 +763,19 @@ include 'include/navbar.php';
         if (confirm('Tem certeza que deseja excluir a missão "' + nome + '"?\n\nEsta ação não pode ser desfeita.')) {
           window.location.href = '?delete=' + id;
         }
+      }
+      
+      // Função para fechar modal (fallback)
+      function fecharModalEdicao() {
+        $('#modalEditarMissao').modal('hide');
+        // Fallback caso o modal não feche
+        setTimeout(function() {
+          if ($('#modalEditarMissao').hasClass('show')) {
+            $('#modalEditarMissao').removeClass('show').css('display', 'none');
+            $('.modal-backdrop').remove();
+            $('body').removeClass('modal-open');
+          }
+        }, 100);
       }
       
       // Função para mostrar toast notifications

@@ -1,4 +1,7 @@
 <?php
+// Configurar timezone para Brasil
+date_default_timezone_set('America/Sao_Paulo');
+
 require 'db.php';
 
 // Verifica se o ID do aluno foi passado na URL
@@ -33,11 +36,40 @@ function isDiaUtil($data) {
     return $diaSemana >= 1 && $diaSemana <= 5; // Segunda a Sexta
 }
 
-// Função para verificar se está dentro do horário permitido (até 7:35)
+// Função para verificar se está dentro do horário permitido (até 7:30)
 function isHorarioValido($hora) {
-    $horaAtual = new DateTime($hora);
-    $limite = new DateTime('07:35:00');
-    return $horaAtual <= $limite;
+    try {
+        // Criar objetos DateTime com timezone explícito
+        $horaAtual = new DateTime($hora, new DateTimeZone('America/Sao_Paulo'));
+        $limite = new DateTime('07:30:00', new DateTimeZone('America/Sao_Paulo'));
+        
+        // Comparar apenas hora e minuto (ignorar segundos)
+        $horaAtualFormatada = $horaAtual->format('H:i');
+        $limiteFormatado = $limite->format('H:i');
+        
+        return $horaAtualFormatada <= $limiteFormatado;
+    } catch (Exception $e) {
+        // Fallback para método simples em caso de erro
+        $horaAtual = new DateTime($hora);
+        $limite = new DateTime('07:30:00');
+        return $horaAtual <= $limite;
+    }
+}
+
+// Função para verificar se os últimos 5 dias foram todos no horário
+function verificarStreak5DiasNoHorario($pdo, $alunoId) {
+    $stmt = $pdo->prepare("
+        SELECT COUNT(*) as dias_no_horario
+        FROM presencas 
+        WHERE aluno_id = :aluno_id 
+        AND data_presenca >= DATE_SUB(CURDATE(), INTERVAL 4 DAY)
+        AND data_presenca <= CURDATE()
+        AND TIME(hora_presenca) <= '07:30:00'
+    ");
+    $stmt->execute([':aluno_id' => $alunoId]);
+    $diasNoHorario = $stmt->fetch(PDO::FETCH_ASSOC)['dias_no_horario'];
+    
+    return $diasNoHorario == 5;
 }
 
 // Função para calcular streak atual
@@ -87,6 +119,7 @@ $dadosModal = [];
 try {
     $dataHoje = date('Y-m-d');
     $horaAtual = date('H:i:s');
+    $horaFormatada = date('H:i');
     
     // Verificar se já houve presença hoje
     $stmt = $pdo->prepare("SELECT id FROM presencas WHERE aluno_id = :aluno_id AND data_presenca = :data_hoje");
@@ -99,81 +132,151 @@ try {
     if (!$presencaExistente) {
         // Verificar se é dia útil
         if (isDiaUtil($dataHoje)) {
-            // Verificar se está dentro do horário
+            // SEMPRE registrar presença, independente do horário
+            $streakAtual = calcularStreak($pdo, $id) + 1;
+            
+            // Inserir presença
+            $stmt = $pdo->prepare("
+                INSERT INTO presencas (aluno_id, data_presenca, hora_presenca, streak_atual) 
+                VALUES (:aluno_id, :data_presenca, :hora_presenca, :streak_atual)
+            ");
+            $stmt->execute([
+                ':aluno_id' => $id,
+                ':data_presenca' => $dataHoje,
+                ':hora_presenca' => $horaAtual,
+                ':streak_atual' => $streakAtual
+            ]);
+            
+            // Atualizar streak máximo se necessário
+            $stmt = $pdo->prepare("
+                UPDATE presencas 
+                SET streak_maximo = GREATEST(streak_maximo, :streak_atual) 
+                WHERE aluno_id = :aluno_id
+            ");
+            $stmt->execute([
+                ':streak_atual' => $streakAtual,
+                ':aluno_id' => $id
+            ]);
+            
+            // Calcular XP baseado no horário e streak
+            $xpGanho = 0;
+            $xpBonusStreak = 0;
+            $mensagemBonus = '';
+            
             if (isHorarioValido($horaAtual)) {
-                // Calcular streak atual antes de inserir
-                $streakAtual = calcularStreak($pdo, $id) + 1;
-                
-                // Inserir presença
-                $stmt = $pdo->prepare("
-                    INSERT INTO presencas (aluno_id, data_presenca, hora_presenca, streak_atual) 
-                    VALUES (:aluno_id, :data_presenca, :hora_presenca, :streak_atual)
-                ");
-                $stmt->execute([
-                    ':aluno_id' => $id,
-                    ':data_presenca' => $dataHoje,
-                    ':hora_presenca' => $horaAtual,
-                    ':streak_atual' => $streakAtual
-                ]);
-                
-                // Atualizar streak máximo se necessário
-                $stmt = $pdo->prepare("
-                    UPDATE presencas 
-                    SET streak_maximo = GREATEST(streak_maximo, :streak_atual) 
-                    WHERE aluno_id = :aluno_id
-                ");
-                $stmt->execute([
-                    ':streak_atual' => $streakAtual,
-                    ':aluno_id' => $id
-                ]);
-                
-                // Adicionar XP por presença
-                $xpGanho = 10;
+                // Dentro do horário - ganha 1 XP base
+                $xpGanho = 1;
+            }
+            
+            // Verificar bônus de streak de 5 dias (apenas se todos os 5 dias foram no horário)
+            if ($streakAtual == 5) {
+                // Verificar se os últimos 5 dias foram todos no horário E hoje também está no horário
+                if (verificarStreak5DiasNoHorario($pdo, $id) && isHorarioValido($horaAtual)) {
+                    $xpBonusStreak = 5;
+                    $mensagemBonus = "🎊 PARABÉNS! Você completou 5 dias consecutivos NO HORÁRIO! +5 XP de bônus!";
+                } else {
+                    $mensagemBonus = "🎊 Você completou 5 dias consecutivos, mas nem todos foram no horário. Continue tentando!";
+                }
+            }
+            
+            // Calcular XP total
+            $xpTotal = $xpGanho + $xpBonusStreak;
+            
+            // Adicionar XP ao aluno se houver algum
+            if ($xpTotal > 0) {
                 $stmt = $pdo->prepare("UPDATE alunos SET xp_total = xp_total + :xp WHERE id = :id");
-                $stmt->execute([':xp' => $xpGanho, ':id' => $id]);
-                
-                // Buscar streak máximo
-                $stmt = $pdo->prepare("
-                    SELECT MAX(streak_maximo) as streak_maximo 
-                    FROM presencas 
-                    WHERE aluno_id = :aluno_id
-                ");
-                $stmt->execute([':aluno_id' => $id]);
-                $streakMaximo = $stmt->fetch(PDO::FETCH_ASSOC)['streak_maximo'] ?? $streakAtual;
-                
-                // Configurar dados para a modal
+                $stmt->execute([':xp' => $xpTotal, ':id' => $id]);
+            }
+            
+            // Buscar streak máximo
+            $stmt = $pdo->prepare("
+                SELECT MAX(streak_maximo) as streak_maximo 
+                FROM presencas 
+                WHERE aluno_id = :aluno_id
+            ");
+            $stmt->execute([':aluno_id' => $id]);
+            $streakMaximo = $stmt->fetch(PDO::FETCH_ASSOC)['streak_maximo'] ?? $streakAtual;
+            
+            // Configurar modal baseado no horário e streak
+            if ($streakAtual == 5 && $xpBonusStreak > 0) {
+                // Streak de 5 dias NO HORÁRIO - modal especial com bônus
                 $mostrarModal = true;
                 $dadosModal = [
-                    'titulo' => '🎉 Presença Registrada!',
-                    'mensagem' => 'Parabéns! Sua presença foi registrada com sucesso.',
+                    'titulo' => '🎊 STREAK DE 5 DIAS NO HORÁRIO!',
+                    'mensagem' => "INCRÍVEL! Você completou 5 dias consecutivos de presença NO HORÁRIO!",
                     'streak_atual' => $streakAtual,
                     'streak_maximo' => $streakMaximo,
                     'xp_ganho' => $xpGanho,
-                    'tipo' => 'sucesso'
+                    'xp_bonus' => $xpBonusStreak,
+                    'xp_total' => $xpTotal,
+                    'mensagem_bonus' => $mensagemBonus,
+                    'tipo' => 'streak',
+                    'hora_registro' => $horaFormatada,
+                    'dentro_horario' => isHorarioValido($horaAtual)
                 ];
-                
-            } else {
+            } elseif ($streakAtual == 5 && $xpBonusStreak == 0) {
+                // Streak de 5 dias mas não todos no horário - modal informativo
                 $mostrarModal = true;
                 $dadosModal = [
-                    'titulo' => '⏰ Horário Limite Ultrapassado',
-                    'mensagem' => 'Presença válida apenas até 7:35 da manhã.',
-                    'streak_atual' => calcularStreak($pdo, $id),
-                    'streak_maximo' => 0,
-                    'xp_ganho' => 0,
-                    'tipo' => 'aviso'
+                    'titulo' => '🎊 STREAK DE 5 DIAS!',
+                    'mensagem' => "Parabéns! Você completou 5 dias consecutivos de presença!",
+                    'streak_atual' => $streakAtual,
+                    'streak_maximo' => $streakMaximo,
+                    'xp_ganho' => $xpGanho,
+                    'xp_bonus' => $xpBonusStreak,
+                    'xp_total' => $xpTotal,
+                    'mensagem_bonus' => $mensagemBonus,
+                    'tipo' => 'info',
+                    'hora_registro' => $horaFormatada,
+                    'dentro_horario' => isHorarioValido($horaAtual)
+                ];
+            } elseif (isHorarioValido($horaAtual)) {
+                // Dentro do horário
+                $mostrarModal = true;
+                $dadosModal = [
+                    'titulo' => '🎉 Presença Registrada!',
+                    'mensagem' => "Parabéns! Sua presença foi registrada com sucesso às {$horaFormatada}.",
+                    'streak_atual' => $streakAtual,
+                    'streak_maximo' => $streakMaximo,
+                    'xp_ganho' => $xpGanho,
+                    'xp_bonus' => $xpBonusStreak,
+                    'xp_total' => $xpTotal,
+                    'mensagem_bonus' => $mensagemBonus,
+                    'tipo' => 'sucesso',
+                    'hora_registro' => $horaFormatada
+                ];
+            } else {
+                // Fora do horário, mas presença registrada
+                $mostrarModal = true;
+                $dadosModal = [
+                    'titulo' => '⏰ Presença Registrada (Atrasada)',
+                    'mensagem' => "Sua presença foi registrada às {$horaFormatada}, mas o horário limite é 7:30.",
+                    'streak_atual' => $streakAtual,
+                    'streak_maximo' => $streakMaximo,
+                    'xp_ganho' => $xpGanho,
+                    'xp_bonus' => $xpBonusStreak,
+                    'xp_total' => $xpTotal,
+                    'mensagem_bonus' => $mensagemBonus,
+                    'tipo' => 'aviso',
+                    'hora_registro' => $horaFormatada
                 ];
             }
         } else {
+            // Fim de semana - não registra presença
             $mostrarModal = true;
             $dadosModal = [
                 'titulo' => '📅 Fim de Semana',
-                'mensagem' => 'Finais de semana não contam para presença.',
+                'mensagem' => "Hoje é fim de semana ({$horaFormatada}). Presenças só contam de segunda a sexta.",
                 'streak_atual' => calcularStreak($pdo, $id),
                 'streak_maximo' => 0,
                 'xp_ganho' => 0,
-                'tipo' => 'info'
+                'tipo' => 'info',
+                'hora_registro' => $horaFormatada
             ];
         }
+    } else {
+        // Presença já registrada hoje - não mostra modal
+        $mostrarModal = false;
     }
     
 } catch (PDOException $e) {
@@ -184,7 +287,8 @@ try {
         'streak_atual' => 0,
         'streak_maximo' => 0,
         'xp_ganho' => 0,
-        'tipo' => 'erro'
+        'tipo' => 'erro',
+        'hora_registro' => date('H:i')
     ];
 }
 
@@ -564,6 +668,22 @@ $progresso_percentual = round($progresso * 100, 2);
         .modal-tipo-erro {
             border-color: #FF4444;
         }
+
+        .modal-tipo-streak {
+            border-color: #FFD700;
+            border-width: 4px;
+            background: linear-gradient(135deg, #1a1a2e, #16213e, #0f1419);
+            animation: streakGlow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes streakGlow {
+            from {
+                box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+            }
+            to {
+                box-shadow: 0 0 30px rgba(255, 215, 0, 0.8);
+            }
+        }
     </style>
 </head>
 
@@ -642,6 +762,11 @@ $progresso_percentual = round($progresso * 100, 2);
             <h2 class="modal-titulo"><?= htmlspecialchars($dadosModal['titulo']) ?></h2>
             <p class="modal-mensagem"><?= htmlspecialchars($dadosModal['mensagem']) ?></p>
             
+            <!-- Horário de registro -->
+            <div class="hora-info" style="font-family: 'Press Start 2P', cursive; font-size: 0.6em; color: #00FFAB; margin: 15px 0; padding: 10px; background: rgba(0, 255, 171, 0.1); border-radius: 10px;">
+                🕐 Horário: <?= htmlspecialchars($dadosModal['hora_registro']) ?>
+            </div>
+            
             <?php if ($dadosModal['streak_atual'] > 0): ?>
             <div class="streak-info">
                 <div class="streak-item">
@@ -655,9 +780,23 @@ $progresso_percentual = round($progresso * 100, 2);
             </div>
             <?php endif; ?>
             
-            <?php if ($dadosModal['xp_ganho'] > 0): ?>
-            <div class="xp-info">
-                🎯 +<?= $dadosModal['xp_ganho'] ?> XP ganho!
+            <!-- Mensagem de bônus de streak -->
+            <?php if (!empty($dadosModal['mensagem_bonus'])): ?>
+            <div class="bonus-info" style="font-family: 'Press Start 2P', cursive; font-size: 0.5em; color: #FFD700; margin: 15px 0; padding: 15px; background: rgba(255, 215, 0, 0.2); border: 2px solid #FFD700; border-radius: 10px; text-align: center;">
+                <?= htmlspecialchars($dadosModal['mensagem_bonus']) ?>
+            </div>
+            <?php endif; ?>
+            
+            <!-- Informações de XP -->
+            <?php if ($dadosModal['xp_total'] > 0): ?>
+            <div class="xp-info" style="font-family: 'Press Start 2P', cursive; font-size: 0.6em; color: #F3E600; margin: 10px 0; padding: 10px; background: rgba(243, 230, 0, 0.1); border-radius: 10px;">
+                <?php if ($dadosModal['xp_ganho'] > 0 && $dadosModal['xp_bonus'] > 0): ?>
+                    🎯 +<?= $dadosModal['xp_ganho'] ?> XP (presença) + <?= $dadosModal['xp_bonus'] ?> XP (bônus) = <?= $dadosModal['xp_total'] ?> XP total!
+                <?php elseif ($dadosModal['xp_ganho'] > 0): ?>
+                    🎯 +<?= $dadosModal['xp_ganho'] ?> XP ganho!
+                <?php elseif ($dadosModal['xp_bonus'] > 0): ?>
+                    🎯 +<?= $dadosModal['xp_bonus'] ?> XP de bônus!
+                <?php endif; ?>
             </div>
             <?php endif; ?>
             

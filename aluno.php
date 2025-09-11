@@ -1,4 +1,7 @@
 <?php
+// Configurar timezone para Brasil
+date_default_timezone_set('America/Sao_Paulo');
+
 require 'db.php';
 
 // Verifica se o ID do aluno foi passado na URL
