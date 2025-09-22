@@ -83,25 +83,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
 
             if ($acao === 'aprovar') {
-                // Verifica se o aluno tem moedas suficientes
-                if ($troca['moeda'] > 0) {
-                    $stmt = $pdo->prepare("SELECT moedas FROM alunos WHERE id = :aluno_id");
-                    $stmt->execute([':aluno_id' => $troca['aluno_id']]);
-                    $aluno = $stmt->fetch(PDO::FETCH_ASSOC);
-                    
-                    if ($aluno['moedas'] < $troca['moeda']) {
-                        redirecionarComMensagem('tables.php', 'error', "O aluno {$troca['aluno_nome']} não tem moedas suficientes para esta troca.");
-                    }
-                    
-                    // Desconta as moedas do aluno
-                    $stmt = $pdo->prepare("UPDATE alunos SET moedas = moedas - :moeda WHERE id = :aluno_id");
-                    $stmt->execute([
-                        ':moeda' => $troca['moeda'],
-                        ':aluno_id' => $troca['aluno_id']
-                    ]);
-                }
-                
-                // Atualiza o status da troca para 'aprovado'
+                // Apenas atualiza o status da troca para 'aprovado'
+                // As moedas já foram removidas quando o aluno fez a solicitação
                 $stmt = $pdo->prepare("UPDATE trocas SET status = 'aprovado' WHERE id = :id");
                 $stmt->execute([':id' => $troca_id]);
 

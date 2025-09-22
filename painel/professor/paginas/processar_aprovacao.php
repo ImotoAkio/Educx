@@ -5,6 +5,7 @@ session_start();
 // Incluir sistema de feedback
 require 'include/feedback.php';
 
+
 // Verificação de sessão
 if (!isset($_SESSION['usuario_id']) || $_SESSION['tipo_usuario'] !== 'professor') {
     redirecionarComMensagem('../../../login.php', 'error', 'Acesso negado. Faça login novamente.');
@@ -56,6 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 // Confirma a transação
                 $pdo->commit();
+                
                 
                 $mensagem = "Missão '{$solicitacao['missao_nome']}' aprovada para o aluno {$solicitacao['aluno_nome']}. XP: +{$solicitacao['xp']}, Moedas: +{$solicitacao['moedas']}";
                 redirecionarComMensagem('dashboard.php', 'success', $mensagem);

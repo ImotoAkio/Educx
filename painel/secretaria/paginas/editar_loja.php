@@ -125,6 +125,8 @@ Coded by www.creative-tim.com
   <!-- CSS Files -->
   <link href="../assets/css/bootstrap.min.css" rel="stylesheet" />
   <link href="../assets/css/paper-dashboard.css?v=2.0.1" rel="stylesheet" />
+  <!-- Mobile CSS -->
+  <link href="../assets/css/mobile-header.css" rel="stylesheet" />
   <style>
     .navbar-toggler-bar {
       display: none;
@@ -496,6 +498,8 @@ include 'include/navbar.php';
       }, 3000);
     }
   </script>
+  <!-- Footer com scripts mobile -->
+  <?php include 'include/footer.php'; ?>
 </body>
 
 </html>

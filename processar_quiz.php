@@ -126,6 +126,7 @@ try {
         ':total_perguntas' => $total_perguntas
     ]);
     
+    
     // Salva as respostas individuais (se a tabela existir)
     try {
         $stmt = $pdo->prepare("

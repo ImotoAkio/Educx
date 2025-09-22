@@ -555,5 +555,7 @@ $todos_professores = $stmt->fetchAll(PDO::FETCH_ASSOC);
             });
         }
     </script>
+  <!-- Footer com scripts mobile -->
+  <?php include 'include/footer.php'; ?>
 </body>
 </html>

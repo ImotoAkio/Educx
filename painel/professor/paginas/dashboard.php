@@ -553,6 +553,5 @@ include 'include/navbar.php';
       }, 3000);
     }
   </script>
-</body>
 
-</html>
+<?php include 'include/footer.php'; ?>

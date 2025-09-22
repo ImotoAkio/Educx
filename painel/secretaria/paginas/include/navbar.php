@@ -2,8 +2,13 @@
 // Sidebar centralizada para o painel da secretaria
 // A variável $pagina_ativa deve ser definida em cada página antes de incluir este arquivo
 ?>
+
+<!-- Mobile Header -->
+<?php include 'mobile-header.php'; ?>
+
 <div class="wrapper">
-  <div class="sidebar" data-color="white" data-active-color="danger">
+  <!-- Desktop Sidebar -->
+  <div class="sidebar d-none d-md-block" data-color="white" data-active-color="danger">
     <div class="logo">
       <a href="dashboard.php" class="simple-text logo-mini">
         <div class="logo-image-small">
@@ -86,46 +91,10 @@
     </div>
   </div>
 
-  <!-- Painel principal para dispositivos móveis -->
-  <div class="main-panel d-md-none">
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-      <button class="navbar-toggler-icon" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-      </button>
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav ml-auto">
-          <li class="nav-item <?= $pagina_ativa === 'dashboard' ? 'active' : ''; ?>">
-            <a class="nav-link" href="dashboard.php">Dashboard</a>
-          </li>
-          <li class="nav-item <?= $pagina_ativa === 'tables' ? 'active' : ''; ?>">
-            <a class="nav-link" href="tables.php">Aprovar Compras</a>
-          </li>
-          <li class="nav-item <?= $pagina_ativa === 'missoes' ? 'active' : ''; ?>">
-            <a class="nav-link" href="missoes.php">Aprovar Missões</a>
-          </li>
-          <li class="nav-item <?= $pagina_ativa === 'editar_professor' ? 'active' : ''; ?>">
-            <a class="nav-link" href="editar_professor.php">Editar Professores</a>
-          </li>
-          <li class="nav-item <?= $pagina_ativa === 'editar_aluno' ? 'active' : ''; ?>">
-            <a class="nav-link" href="editar_aluno.php">Editar Alunos</a>
-          </li>
-          <li class="nav-item <?= $pagina_ativa === 'editar_secretaria' ? 'active' : ''; ?>">
-            <a class="nav-link" href="editar_secretaria.php">Editar Secretários</a>
-          </li>
-          <li class="nav-item <?= $pagina_ativa === 'editar_loja' ? 'active' : ''; ?>">
-            <a class="nav-link" href="editar_loja.php">Editar Loja</a>
-          </li>
-          <li class="nav-item <?= $pagina_ativa === 'turmas' ? 'active' : ''; ?>">
-            <a class="nav-link" href="turmas.php">Gerenciar Turmas</a>
-          </li>
-        </ul>
-      </div>
-    </nav>
-  </div>
-
-  <!-- Painel principal para telas grandes -->
+  <!-- Painel principal -->
   <div class="main-panel">
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-absolute fixed-top navbar-transparent">
+    <!-- Desktop Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-absolute fixed-top navbar-transparent d-none d-md-block">
       <div class="container-fluid">
         <div class="collapse navbar-collapse justify-content-end" id="navigation">
           <ul class="navbar-nav">

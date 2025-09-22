@@ -335,8 +335,160 @@ include 'include/navbar.php';
     
     // Função para ver detalhes da missão
     function verDetalhesMissao(id) {
-      // Implementar modal com detalhes da missão
-      showToast('info', 'Informação', 'Detalhes da missão serão exibidos em breve.');
+      // Buscar dados da missão via AJAX
+      $.ajax({
+        url: 'ajax/buscar_detalhes_missao.php',
+        method: 'POST',
+        data: { solicitacao_id: id },
+        dataType: 'json',
+        success: function(response) {
+          if (response.success) {
+            mostrarModalDetalhes(response.data);
+          } else {
+            showToast('error', 'Erro', 'Erro ao carregar detalhes da missão: ' + response.message);
+          }
+        },
+        error: function() {
+          showToast('error', 'Erro', 'Erro ao carregar detalhes da missão.');
+        }
+      });
+    }
+    
+    // Função para mostrar modal com detalhes
+    function mostrarModalDetalhes(dados) {
+      var modalHtml = `
+        <div class="modal fade" id="modalDetalhesMissao" tabindex="-1" role="dialog">
+          <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+              <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">
+                  <i class="fa fa-trophy mr-2"></i>Detalhes da Missão
+                </h5>
+                <button type="button" class="close text-white" data-dismiss="modal">
+                  <span>&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <div class="row">
+                  <div class="col-md-6">
+                    <h6 class="text-primary mb-3">
+                      <i class="fa fa-user mr-1"></i> Informações do Aluno
+                    </h6>
+                    <table class="table table-sm">
+                      <tr>
+                        <td><strong>Nome:</strong></td>
+                        <td>${dados.aluno_nome}</td>
+                      </tr>
+                      <tr>
+                        <td><strong>ID:</strong></td>
+                        <td>#${dados.aluno_id}</td>
+                      </tr>
+                      <tr>
+                        <td><strong>XP Atual:</strong></td>
+                        <td><span class="badge badge-success">${dados.aluno_xp}</span></td>
+                      </tr>
+                      <tr>
+                        <td><strong>Moedas:</strong></td>
+                        <td><span class="badge badge-warning">${dados.aluno_moedas}</span></td>
+                      </tr>
+                      <tr>
+                        <td><strong>Nível:</strong></td>
+                        <td><span class="badge badge-info">${dados.aluno_nivel || 'N/A'}</span></td>
+                      </tr>
+                      ${dados.turma_nome ? `
+                      <tr>
+                        <td><strong>Turma:</strong></td>
+                        <td><span class="badge badge-secondary">${dados.turma_nome}</span></td>
+                      </tr>
+                      ` : ''}
+                    </table>
+                  </div>
+                  <div class="col-md-6">
+                    <h6 class="text-success mb-3">
+                      <i class="fa fa-tasks mr-1"></i> Detalhes da Missão
+                    </h6>
+                    <table class="table table-sm">
+                      <tr>
+                        <td><strong>Nome:</strong></td>
+                        <td>${dados.missao_nome}</td>
+                      </tr>
+                      <tr>
+                        <td><strong>Descrição:</strong></td>
+                        <td>${dados.missao_descricao}</td>
+                      </tr>
+                      <tr>
+                        <td><strong>Recompensa XP:</strong></td>
+                        <td><span class="badge badge-success">+${dados.missao_xp}</span></td>
+                      </tr>
+                      <tr>
+                        <td><strong>Recompensa Moedas:</strong></td>
+                        <td><span class="badge badge-warning">+${dados.missao_moedas}</span></td>
+                      </tr>
+                      <tr>
+                        <td><strong>Status:</strong></td>
+                        <td><span class="badge badge-warning">Pendente</span></td>
+                      </tr>
+                    </table>
+                    ${dados.missao_link ? `
+                    <div class="mt-3">
+                      <a href="${dados.missao_link}" target="_blank" class="btn btn-outline-info btn-sm">
+                        <i class="fa fa-external-link"></i> Ver Link da Missão
+                      </a>
+                    </div>
+                    ` : ''}
+                  </div>
+                </div>
+                <hr>
+                <div class="row">
+                  <div class="col-12">
+                    <h6 class="text-info mb-3">
+                      <i class="fa fa-info-circle mr-1"></i> Status da Solicitação
+                    </h6>
+                    <div class="row">
+                      <div class="col-md-4">
+                        <strong>Data:</strong><br>
+                        <span class="text-muted">${dados.data_solicitacao_formatada}</span>
+                      </div>
+                      <div class="col-md-4">
+                        <strong>Hora:</strong><br>
+                        <span class="text-muted">${dados.hora_solicitacao}</span>
+                      </div>
+                      <div class="col-md-4">
+                        <strong>Tempo decorrido:</strong><br>
+                        <span class="text-primary">${dados.tempo_decorrido}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                  <i class="fa fa-times mr-1"></i> Fechar
+                </button>
+                <form method="POST" action="processar_aprovacao.php" class="d-inline">
+                  <input type="hidden" name="solicitacao_id" value="${dados.solicitacao_id}">
+                  <button type="submit" name="acao" value="aprovar" class="btn btn-success">
+                    <i class="fa fa-check mr-1"></i> Aprovar
+                  </button>
+                  <button type="submit" name="acao" value="rejeitar" class="btn btn-danger" 
+                          onclick="return confirm('Tem certeza que deseja rejeitar esta missão?')">
+                    <i class="fa fa-times mr-1"></i> Rejeitar
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+      
+      // Remover modal anterior se existir
+      $('#modalDetalhesMissao').remove();
+      
+      // Adicionar novo modal ao body
+      $('body').append(modalHtml);
+      
+      // Mostrar modal
+      $('#modalDetalhesMissao').modal('show');
     }
     
     // Função para mostrar toast notifications
@@ -388,4 +540,4 @@ include 'include/navbar.php';
     }
   </script>
 
-</html>
+<?php include 'include/footer.php'; ?>

@@ -8,6 +8,7 @@ if (!isset($_SESSION['usuario_id']) || $_SESSION['tipo_usuario'] !== 'professor'
     exit;
 }
 
+
 try {
     // Busca o nome do professor usando o ID da sessão
     $stmt = $pdo->prepare("SELECT nome FROM professores WHERE id = :id");
@@ -42,6 +43,7 @@ $erro = "";
 $sucesso = "";
 $professor_nome = htmlspecialchars($_SESSION['usuario_nome']);
 $current_avatar = $alunoEncontrado['avatar'] ?? 'asset/img/default.gif';
+
 
 
 
@@ -219,10 +221,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['aluno_id']) && isset(
         <header>
             <div class="container-fluid">
                 <div class="row">
-                    <div class="col-4-sm"><a href="paginas/dashboard.php" class="voltar">Painel principal</a></div>
-                    <br>
+                    <div class="col-4-sm">
+                        <a href="paginas/dashboard.php" class="voltar">Painel principal</a>
+                    </div>
                     <div class="col-4-sm center">
                         <h1 class="page-title">Painel do Professor</h1>
+                    </div>
+                    <div class="col-4-sm">
+                        <!-- Espaço vazio para manter layout -->
                     </div>
                 </div>
             </div>
@@ -382,6 +388,9 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+Warning: Undefined array key "xp" in F:\GITHUB\Educx\painel\secretaria\paginas\missoes.php on line 166
+Warning: Undefined array key "xp" in F:\GITHUB\Educx\painel\secretaria\paginas\missoes.php on line 166
+
 </script>
 
 </html>

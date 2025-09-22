@@ -1,104 +1,284 @@
-# Sistema de Gerenciamento de Moedas para Alunos
+# 🎮 Educx - Sistema de Gamificação Escolar
 
-## **Objetivo**
-Criar um sistema que permite aos alunos acumularem moedas virtuais através de bons comportamentos ou perderem moedas por comportamentos inadequados. As moedas podem ser trocadas por brindes no colégio.
-
----
-
-## **Principais Funcionalidades**
-
-### **1. Alunos**
-- Cada aluno possui um crachá com QR Code único.
-- Ao escanear o QR Code, o aluno acessa uma página que exibe:
-  - Seu nome.
-  - Saldo atual de moedas.
-  - Histórico de transações (ganhos e perdas de moedas).
-- **Nota**: Os alunos não precisam de login para acessar o saldo.
-
-### **2. Professores**
-- Professores têm acesso ao sistema via login.
-- Após o login, podem:
-  - Adicionar moedas para um aluno (ex.: "Fez atividade" +5).
-  - Remover moedas de um aluno (ex.: "Conversa em sala" -10).
-  - Visualizar o saldo e histórico de transações de qualquer aluno.
-
-### **3. Admin (Opcional)**
-- Pode cadastrar novos alunos e professores.
-- Gera QR Codes para os alunos.
-- Gerencia os registros no banco de dados.
+## **Visão Geral**
+O Educx é uma plataforma completa de gamificação escolar que recompensa alunos com moedas virtuais e XP (experiência) por atitudes positivas, bom comportamento e participação em atividades. O sistema inclui missões, loja virtual, ranking e painéis administrativos para professores e secretaria.
 
 ---
 
-## **Estrutura do Sistema**
+## **🚀 Funcionalidades Principais**
 
-### **1. Frontend (Interfaces)**
-- **Alunos**: Página simples e visualmente atrativa, mostrando saldo e histórico.
-- **Professores**: Página para login, listagem de alunos e controle de moedas.
-- **QR Code**: Gerado para cada aluno, vinculado ao ID único no banco de dados.
+### **👨‍🎓 Para Alunos**
+- **Acesso via QR Code**: Cada aluno possui um QR Code único para acesso rápido
+- **Sistema de Moedas**: Acumulação de moedas virtuais para troca por recompensas
+- **Sistema de XP**: Experiência que determina o nível do aluno
+- **Missões**: Participação em atividades e desafios propostos pelos professores
+- **Loja Virtual**: Troca de moedas por produtos e recompensas
+- **Ranking**: Competição saudável entre alunos da mesma turma
+- **Personalização**: Avatares e fundos personalizáveis
+- **Histórico Completo**: Acompanhamento de todas as atividades e recompensas
 
-### **2. Backend**
-- **Rotas principais**:
-  - `aluno.php`: Exibe saldo e histórico do aluno com base no ID.
-  - `professor.php`: Dashboard para professores após login.
-  - `add_moedas.php`: Adiciona moedas a um aluno.
-  - `remove_moedas.php`: Remove moedas de um aluno.
-- **Segurança**:
-  - Sistema de autenticação para professores.
-  - Dados do aluno acessíveis somente pelo QR Code.
+### **👨‍🏫 Para Professores**
+- **Painel Administrativo**: Dashboard completo com estatísticas
+- **Gerenciamento de Alunos**: Visualização e edição de dados dos alunos
+- **Criação de Missões**: Desafios personalizados para turmas específicas
+- **Sistema de Aprovação**: Aprovação de missões e trocas dos alunos
+- **Ações Rápidas**: Adição/remoção de XP e moedas via app móvel
+- **Relatórios**: Análise de desempenho e participação dos alunos
+- **Quiz Interativo**: Criação e aplicação de questionários gamificados
 
-### **3. Banco de Dados**
-#### **Tabelas**
-- **`alunos`**: Dados do aluno (ID, nome, moedas, link do QR Code).
-- **`professores`**: Dados de login do professor (ID, nome, email, senha).
-- **`transacoes`**: Histórico de transações (quem, quanto, descrição e quando).
-
----
-
-## **Fluxo do Sistema**
-
-1. **Cadastro de Alunos e Professores**
-   - O administrador cadastra alunos e professores no sistema.
-
-2. **Geração de QR Codes**
-   - Cada aluno recebe um QR Code com o link exclusivo que leva à página de saldo.
-
-3. **Uso pelos Alunos**
-   - Os alunos escaneiam o QR Code para ver moedas acumuladas e histórico.
-
-4. **Uso pelos Professores**
-   - Professores fazem login, selecionam alunos e gerenciam as moedas.
-
-5. **Troca de Moedas por Brindes**
-   - Alunos podem trocar moedas acumuladas por brindes, que são registrados manualmente ou via sistema (opcional).
+### **🏢 Para Secretaria**
+- **Painel de Controle**: Gestão completa do sistema
+- **Aprovação de Trocas**: Controle de recompensas solicitadas pelos alunos
+- **Gestão de Produtos**: Cadastro e edição de itens da loja
+- **Relatórios Financeiros**: Controle de moedas em circulação
+- **Gestão de Usuários**: Cadastro de professores e administradores
 
 ---
 
-## **Tecnologias e Ferramentas**
+## **📱 App Móvel para Professores**
 
-### **Frontend**
-- HTML/CSS/JavaScript: Interfaces responsivas e intuitivas.
+### **Funcionalidades do App**
+- **Leitura de QR Code**: Escaneamento rápido de códigos dos alunos
+- **Ações Instantâneas**: Adição/remoção de XP e moedas
+- **Criação de Missões**: Desafios rápidos para alunos específicos
+- **Histórico em Tempo Real**: Visualização atualizada das atividades
+- **Interface Responsiva**: Otimizada para dispositivos móveis
+
+### **Tecnologia**
+- **WebView**: App funciona como navegador integrado
+- **Autenticação Web**: Login através de páginas web
+- **Sincronização**: Dados atualizados em tempo real
+
+---
+
+## **🛠️ Tecnologias Utilizadas**
 
 ### **Backend**
-- PHP: Processamento de dados e lógica do sistema.
+- **PHP 7.4+**: Lógica do servidor e processamento de dados
+- **MySQL**: Banco de dados relacional
+- **PDO**: Interface de acesso ao banco de dados
+- **Composer**: Gerenciamento de dependências
 
-### **Banco de Dados**
-- MySQL: Armazenamento das informações dos alunos, professores e transações.
+### **Frontend**
+- **HTML5/CSS3**: Estrutura e estilização
+- **JavaScript (ES6+)**: Interatividade e validações
+- **Bootstrap 5**: Framework CSS responsivo
+- **Font Awesome**: Ícones e elementos visuais
+- **Chart.js**: Gráficos e visualizações
 
-### **Outras Ferramentas**
-- Biblioteca de QR Code: Para geração de QR Codes vinculados aos alunos.
+### **Bibliotecas e Ferramentas**
+- **php-qrcode**: Geração de códigos QR
+- **GSAP**: Animações avançadas
+- **Swiper.js**: Carrosséis e sliders
+- **jQuery**: Manipulação do DOM
+
+---
+
+## **🗄️ Estrutura do Banco de Dados**
+
+### **Tabelas Principais**
+- **`alunos`**: Dados pessoais, moedas, XP e configurações
+- **`professores`**: Informações dos educadores e credenciais
+- **`turmas`**: Classes e séries dos alunos
+- **`missoes`**: Desafios e atividades propostas
+- **`solicitacoes_missoes`**: Requisições de missões pelos alunos
+- **`produtos`**: Itens disponíveis na loja virtual
+- **`solicitacoes_trocas`**: Pedidos de troca de moedas por produtos
+- **`log_acoes`**: Auditoria de ações dos professores
+
+### **Relacionamentos**
+- Alunos pertencem a turmas (N:1)
+- Missões podem ser para turmas específicas ou gerais
+- Solicitações vinculam alunos, missões e professores
+- Log de ações registra todas as modificações
 
 ---
 
-## **Principais Usuários**
-1. **Alunos**: Acompanham moedas e histórico.
-2. **Professores**: Gerenciam moedas para os alunos.
-3. **Admin (Opcional)**: Gerencia o cadastro de alunos e professores.
+## **📁 Estrutura do Projeto**
+
+```
+Educx/
+├── 📄 Páginas Principais
+│   ├── index.html              # Página inicial
+│   ├── login.php               # Sistema de autenticação
+│   ├── aluno.php               # Interface do aluno
+│   ├── professor_aluno.php     # Gerenciamento via app móvel
+│   ├── missoes.php             # Lista de missões disponíveis
+│   ├── loja.php                # Loja virtual
+│   └── ranking.php             # Classificação dos alunos
+│
+├── 🎯 Sistema de Missões
+│   ├── confirmar_missao.php    # Confirmação de missão
+│   ├── realizar_missao.php     # Execução de missão
+│   └── resultado_quiz.php      # Resultado de questionários
+│
+├── 🛒 Sistema de Trocas
+│   ├── confirmacao.php         # Confirmação de compra
+│   ├── troca_confirmada.php    # Status da troca
+│   └── verificar_status.php    # Verificação de status
+│
+├── 📊 Painéis Administrativos
+│   ├── painel/professor/       # Dashboard do professor
+│   ├── painel/secretaria/      # Painel da secretaria
+│   └── api/                    # APIs para comunicação
+│
+├── 🎨 Recursos Visuais
+│   ├── assets/                 # CSS, JS e imagens
+│   ├── asset/                  # Recursos específicos do sistema
+│   └── vendor/                 # Bibliotecas externas
+│
+└── 📋 Scripts e Configurações
+    ├── db.php                  # Conexão com banco
+    ├── estrutura_quiz.sql      # Estrutura do banco
+    └── sistema_avatares.sql    # Sistema de avatares
+```
 
 ---
 
-## **Benefícios do Projeto**
-- Incentiva bons comportamentos de forma gamificada.
-- Promove um sistema justo e transparente para alunos e professores.
-- Facilita a gestão de recompensas no ambiente escolar.
+## **🚀 Instalação e Configuração**
+
+### **Requisitos**
+- PHP 7.4 ou superior
+- MySQL 5.7 ou superior
+- Servidor web (Apache/Nginx)
+- Composer (opcional)
+
+### **Passos de Instalação**
+
+1. **Clone o repositório**
+   ```bash
+   git clone https://github.com/seu-usuario/educx.git
+   cd educx
+   ```
+
+2. **Configure o banco de dados**
+   - Crie um banco de dados MySQL
+   - Execute os scripts SQL em `estrutura_quiz.sql` e `sistema_avatares.sql`
+   - Configure as credenciais em `db.php`
+
+3. **Configure o servidor web**
+   - Aponte o DocumentRoot para a pasta do projeto
+   - Certifique-se de que o PHP está habilitado
+
+4. **Instale dependências (opcional)**
+   ```bash
+   composer install
+   ```
+
+5. **Acesse o sistema**
+   - Abra `http://seu-dominio/index.html`
+   - Configure usuários administrativos
+   - Cadastre alunos e professores
 
 ---
+
+## **📱 Configuração do App Móvel**
+
+### **Para Desenvolvedores**
+1. **Crie um projeto React Native** ou similar
+2. **Configure WebView** para carregar as páginas web
+3. **Implemente leitor de QR Code** usando bibliotecas nativas
+4. **Configure navegação** para `professor_aluno.php?id=XXX`
+
+### **URLs Importantes**
+- **Login**: `login.php`
+- **Gerenciamento de Aluno**: `professor_aluno.php?id=XXX`
+- **API de Ações**: `api/professor_acoes.php`
+
+---
+
+## **🔧 Configurações Avançadas**
+
+### **Personalização**
+- **Avatares**: Adicione imagens em `asset/img/avatar/`
+- **Temas**: Modifique CSS em `assets/css/`
+- **Cores**: Ajuste variáveis CSS em `:root`
+
+### **Segurança**
+- **Senhas**: Sistema usa `password_hash()` para criptografia
+- **Sessões**: Controle de acesso baseado em sessões PHP
+- **Validação**: Sanitização de todos os inputs
+
+### **Performance**
+- **Cache**: Implemente cache de consultas frequentes
+- **CDN**: Use CDN para assets estáticos
+- **Otimização**: Minifique CSS e JavaScript
+
+---
+
+## **📊 Funcionalidades por Módulo**
+
+### **🎯 Sistema de Missões**
+- Criação de desafios personalizados
+- Aprovação automática ou manual
+- Recompensas em XP e moedas
+- Categorização por turma
+
+### **🛒 Loja Virtual**
+- Catálogo de produtos
+- Sistema de troca de moedas
+- Aprovação pela secretaria
+- Controle de estoque
+
+### **📈 Sistema de Ranking**
+- Classificação por turma
+- Métricas de desempenho
+- Histórico de evolução
+- Gamificação competitiva
+
+### **👥 Gestão de Usuários**
+- Cadastro de alunos e professores
+- Controle de permissões
+- Auditoria de ações
+- Relatórios de atividade
+
+---
+
+## **🤝 Contribuição**
+
+### **Como Contribuir**
+1. Fork o projeto
+2. Crie uma branch para sua feature
+3. Commit suas mudanças
+4. Push para a branch
+5. Abra um Pull Request
+
+### **Padrões de Código**
+- Use PSR-12 para PHP
+- Comente funções complexas
+- Mantenha consistência no CSS
+- Teste suas alterações
+
+---
+
+## **📞 Suporte e Contato**
+
+- **Email**: ccontato@echotec.site
+- **Telefone**: (87) 9 9168-2773
+- **Endereço**: Avenida 01, nº 86 - Quati, Petrolina - PE
+
+---
+
+## **📄 Licença**
+
+Este projeto está sob a licença MIT. Veja o arquivo `LICENSE` para mais detalhes.
+
+---
+
+## **🔄 Changelog**
+
+### **v2.0.0** - Atual
+- ✅ Sistema completo de gamificação
+- ✅ App móvel para professores
+- ✅ Painéis administrativos responsivos
+- ✅ Sistema de missões e trocas
+- ✅ Ranking e personalização
+
+### **v1.0.0** - Inicial
+- ✅ Sistema básico de moedas
+- ✅ QR Codes para alunos
+- ✅ Painel de professores
+
+---
+
+**Desenvolvido com ❤️ para transformar a educação através da gamificação!**

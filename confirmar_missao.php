@@ -56,8 +56,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     // Insere a nova solicitação
-    $stmt = $pdo->prepare("INSERT INTO solicitacoes_missoes (aluno_id, missao_id) VALUES (:aluno_id, :missao_id)");
+    $stmt = $pdo->prepare("INSERT INTO solicitacoes_missoes (aluno_id, missao_id, data_solicitacao) VALUES (:aluno_id, :missao_id, NOW())");
     $stmt->execute([':aluno_id' => $aluno_id, ':missao_id' => $missao_id]);
+    
 }
 
 // Código existente para GET continua aqui...

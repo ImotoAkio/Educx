@@ -6,7 +6,7 @@ require '../../../db.php';
 require 'include/feedback.php';
 
 // Definir página ativa para a sidebar
-$pagina_ativa = 'criar_quiz';
+$pagina_ativa = 'editar_quiz';
 
 // Verifica se o professor está logado
 if (!isset($_SESSION['usuario_id']) || $_SESSION['tipo_usuario'] !== 'professor') {
@@ -15,7 +15,11 @@ if (!isset($_SESSION['usuario_id']) || $_SESSION['tipo_usuario'] !== 'professor'
 }
 
 $professor_id = $_SESSION['usuario_id'];
-$quiz_id = $_GET['id'];
+$quiz_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+
+if ($quiz_id <= 0) {
+    redirecionarComMensagem('criar_quiz.php', 'error', 'ID do quiz inválido.');
+}
 
 // Verificar se o quiz pertence ao professor
 $stmt = $pdo->prepare("SELECT * FROM quizzes WHERE id = :quiz_id AND criador_id = :professor_id");
@@ -28,7 +32,11 @@ if (!$quiz) {
 
 // Adicionar uma pergunta
 if (isset($_POST['add_pergunta'])) {
-    $texto = $_POST['texto'];
+    $texto = trim($_POST['texto'] ?? '');
+    
+    if (empty($texto)) {
+        redirecionarComMensagem("editar_quiz.php?id=$quiz_id", 'error', 'O texto da pergunta não pode estar vazio.');
+    }
 
     try {
         $sql = "INSERT INTO perguntas (quiz_id, texto) VALUES (:quiz_id, :texto)";
@@ -46,9 +54,13 @@ if (isset($_POST['add_pergunta'])) {
 
 // Adicionar uma alternativa
 if (isset($_POST['add_alternativa'])) {
-    $pergunta_id = $_POST['pergunta_id'];
-    $texto = $_POST['texto'];
+    $pergunta_id = (int)($_POST['pergunta_id'] ?? 0);
+    $texto = trim($_POST['texto'] ?? '');
     $correta = isset($_POST['correta']) ? 1 : 0;
+
+    if ($pergunta_id <= 0 || empty($texto)) {
+        redirecionarComMensagem("editar_quiz.php?id=$quiz_id", 'error', 'Dados da alternativa inválidos.');
+    }
 
     try {
         $sql = "INSERT INTO alternativas (pergunta_id, texto, correta) VALUES (:pergunta_id, :texto, :correta)";
@@ -62,6 +74,43 @@ if (isset($_POST['add_alternativa'])) {
         redirecionarComMensagem("editar_quiz.php?id=$quiz_id", 'success', 'Alternativa adicionada com sucesso!');
     } catch (Exception $e) {
         redirecionarComMensagem("editar_quiz.php?id=$quiz_id", 'error', 'Erro ao adicionar alternativa: ' . $e->getMessage());
+    }
+}
+
+// Deletar pergunta
+if (isset($_POST['delete_pergunta'])) {
+    $pergunta_id = (int)($_POST['pergunta_id'] ?? 0);
+    
+    if ($pergunta_id > 0) {
+        try {
+            // Deletar alternativas primeiro
+            $stmt = $pdo->prepare("DELETE FROM alternativas WHERE pergunta_id = :pergunta_id");
+            $stmt->execute(['pergunta_id' => $pergunta_id]);
+            
+            // Deletar pergunta
+            $stmt = $pdo->prepare("DELETE FROM perguntas WHERE id = :pergunta_id AND quiz_id = :quiz_id");
+            $stmt->execute(['pergunta_id' => $pergunta_id, 'quiz_id' => $quiz_id]);
+            
+            redirecionarComMensagem("editar_quiz.php?id=$quiz_id", 'success', 'Pergunta deletada com sucesso!');
+        } catch (Exception $e) {
+            redirecionarComMensagem("editar_quiz.php?id=$quiz_id", 'error', 'Erro ao deletar pergunta: ' . $e->getMessage());
+        }
+    }
+}
+
+// Deletar alternativa
+if (isset($_POST['delete_alternativa'])) {
+    $alternativa_id = (int)($_POST['alternativa_id'] ?? 0);
+    
+    if ($alternativa_id > 0) {
+        try {
+            $stmt = $pdo->prepare("DELETE FROM alternativas WHERE id = :alternativa_id");
+            $stmt->execute(['alternativa_id' => $alternativa_id]);
+            
+            redirecionarComMensagem("editar_quiz.php?id=$quiz_id", 'success', 'Alternativa deletada com sucesso!');
+        } catch (Exception $e) {
+            redirecionarComMensagem("editar_quiz.php?id=$quiz_id", 'error', 'Erro ao deletar alternativa: ' . $e->getMessage());
+        }
     }
 }
 
@@ -84,248 +133,234 @@ foreach ($perguntas as &$pergunta) {
     $pergunta['alternativas'] = $stmt_alt->fetchAll(PDO::FETCH_ASSOC);
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
-  <meta charset="utf-8" />
-  <link rel="apple-touch-icon" sizes="76x76" href="../assets/img/apple-icon.png">
-  <link rel="icon" type="image/png" href="../assets/img/favicon.png">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-  <title>
-    <i class="fa fa-edit"></i> Editar Quiz - Painel do Professor
-  </title>
-  <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no' name='viewport' />
-  <!--     Fonts and icons     -->
-  <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700,200" rel="stylesheet" />
-  <link href="https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css" rel="stylesheet">
-  <!-- CSS Files -->
-  <link href="../assets/css/bootstrap.min.css" rel="stylesheet" />
-  <link href="../assets/css/paper-dashboard.css?v=2.0.1" rel="stylesheet" />
-  <style>
-    .pergunta-card {
-      border: 2px solid #e9ecef;
-      border-radius: 10px;
-      margin-bottom: 20px;
-      transition: all 0.3s ease;
-    }
+    <meta charset="utf-8" />
+    <link rel="apple-touch-icon" sizes="76x76" href="../assets/img/apple-icon.png">
+    <link rel="icon" type="image/png" href="../assets/img/favicon.png">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <title>Editar Quiz - Painel do Professor</title>
+    <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no' name='viewport' />
     
-    .pergunta-card:hover {
-      border-color: #007bff;
-      box-shadow: 0 4px 8px rgba(0,123,255,0.1);
-    }
+    <!-- CSS Files -->
+    <link href="../assets/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="../assets/css/paper-dashboard.css?v=2.0.1" rel="stylesheet" />
+    <link href="../assets/demo/demo.css" rel="stylesheet" />
     
-    .pergunta-header {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      padding: 15px;
-      border-radius: 8px 8px 0 0;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
+    <!-- Fonts and icons -->
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700,200" rel="stylesheet" />
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css" rel="stylesheet">
     
-    .alternativa-item {
-      background: #f8f9fa;
-      border: 1px solid #dee2e6;
-      border-radius: 8px;
-      padding: 15px;
-      margin-bottom: 10px;
-      transition: all 0.3s ease;
-    }
-    
-    .alternativa-item:hover {
-      background: #e9ecef;
-      border-color: #007bff;
-    }
-    
-    .alternativa-correta {
-      background: #d4edda !important;
-      border-color: #28a745 !important;
-    }
-    
-    .btn-remove {
-      background: #dc3545;
-      color: white;
-      border: none;
-      border-radius: 50%;
-      width: 30px;
-      height: 30px;
-      font-size: 14px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-    
-    .btn-remove:hover {
-      background: #c82333;
-      transform: scale(1.1);
-    }
-    
-    .progress {
-      height: 25px;
-      border-radius: 15px;
-    }
-    
-    .progress-bar {
-      border-radius: 15px;
-      font-weight: bold;
-    }
-  </style>
+    <!-- Mobile Header CSS -->
+    <link rel="stylesheet" href="../assets/css/mobile-header.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 
 <body class="">
-<?php include 'include/navbar.php'; ?>
-  <div class="main-panel">
-    <div class="content">
-      <!-- Exibir mensagens de feedback -->
-      <?php exibirMensagemSessao(); ?>
-      
-      <div class="row">
-        <div class="col-md-12">
-          <div class="card">
-            <div class="card-header">
-              <h5 class="mb-0">
-                <i class="fa fa-edit"></i> Editar Quiz: <?= htmlspecialchars($quiz['nome']); ?>
-              </h5>
-            </div>
-            <div class="card-body">
-              <!-- Barra de Progresso -->
-              <div class="progress mb-4" style="height: 25px;">
-                <div class="progress-bar" id="progress-bar" role="progressbar" 
-                     style="width: <?= count($perguntas) > 0 ? (count($perguntas) * 10) : 0; ?>%;" 
-                     aria-valuenow="<?= count($perguntas); ?>" aria-valuemin="0" aria-valuemax="10">
-                  <span id="progress-text"><?= count($perguntas); ?> pergunta(s) criada(s)</span>
-                </div>
-              </div>
-              
-              <!-- Informações do Quiz -->
-              <div class="alert alert-info">
-                <h6><i class="fa fa-info-circle"></i> Informações do Quiz</h6>
-                <p><strong>Nome:</strong> <?= htmlspecialchars($quiz['nome']); ?></p>
-                <p><strong>Descrição:</strong> <?= htmlspecialchars($quiz['descricao']); ?></p>
-                <p><strong>Data de Criação:</strong> <?= date('d/m/Y H:i', strtotime($quiz['data_criacao'])); ?></p>
-              </div>
-              
-              <!-- Adicionar Nova Pergunta -->
-              <div class="card mb-4">
-                <div class="card-header">
-                  <h6><i class="fa fa-plus"></i> Adicionar Nova Pergunta</h6>
-                </div>
-                <div class="card-body">
-                  <form method="POST" class="row">
-                    <div class="col-md-8">
-                      <div class="form-group">
-                        <label for="texto">Texto da Pergunta:</label>
-                        <input type="text" class="form-control" id="texto" name="texto" 
-                               placeholder="Digite a pergunta aqui..." required>
-                      </div>
+    <div class="wrapper">
+        <!-- Sidebar -->
+        <div class="sidebar" data-color="white" data-active-color="danger">
+            <div class="logo">
+                <a href="dashboard.php" class="simple-text logo-mini">
+                    <div class="logo-image-small">
+                        <i class="nc-icon nc-bank"></i>
                     </div>
-                    <div class="col-md-4">
-                      <div class="form-group">
-                        <label>&nbsp;</label>
-                        <button type="submit" name="add_pergunta" class="btn btn-primary btn-block">
-                          <i class="fa fa-plus"></i> Adicionar Pergunta
-                        </button>
-                      </div>
-                    </div>
-                  </form>
-                </div>
-              </div>
-              
-              <!-- Lista de Perguntas -->
-              <div class="card">
-                <div class="card-header">
-                  <h6><i class="fa fa-list"></i> Perguntas do Quiz</h6>
-                </div>
-                <div class="card-body">
-                  <?php if (empty($perguntas)): ?>
-                    <div class="text-center py-4">
-                      <i class="fa fa-question-circle fa-3x text-muted mb-3"></i>
-                      <h5 class="text-muted">Nenhuma pergunta criada ainda</h5>
-                      <p class="text-muted">Adicione a primeira pergunta usando o formulário acima.</p>
-                    </div>
-                  <?php else: ?>
-                    <?php foreach ($perguntas as $index => $pergunta): ?>
-                      <div class="pergunta-card">
-                        <div class="pergunta-header">
-                          <h6 class="mb-0">
-                            <i class="fa fa-question-circle"></i> 
-                            Pergunta <?= $index + 1; ?>
-                          </h6>
-                          <span class="badge badge-light">
-                            <?= count($pergunta['alternativas']); ?> alternativa(s)
-                          </span>
-                        </div>
-                        <div class="card-body">
-                          <p class="mb-3"><strong><?= htmlspecialchars($pergunta['texto']); ?></strong></p>
-                          
-                          <!-- Lista de Alternativas -->
-                          <?php if (!empty($pergunta['alternativas'])): ?>
-                            <div class="mb-3">
-                              <h6><i class="fa fa-list-ul"></i> Alternativas:</h6>
-                              <?php foreach ($pergunta['alternativas'] as $alt): ?>
-                                <div class="alternativa-item <?= $alt['correta'] ? 'alternativa-correta' : ''; ?>">
-                                  <div class="d-flex justify-content-between align-items-center">
-                                    <span><?= htmlspecialchars($alt['texto']); ?></span>
-                                    <?php if ($alt['correta']): ?>
-                                      <span class="badge badge-success">
-                                        <i class="fa fa-check"></i> Correta
-                                      </span>
-                                    <?php endif; ?>
-                                  </div>
-                                </div>
-                              <?php endforeach; ?>
-                            </div>
-                          <?php endif; ?>
-                          
-                          <!-- Adicionar Alternativa -->
-                          <form method="POST" class="row">
-                            <input type="hidden" name="pergunta_id" value="<?= $pergunta['id']; ?>">
-                            <div class="col-md-6">
-                              <div class="form-group">
-                                <input type="text" class="form-control" name="texto" 
-                                       placeholder="Digite a alternativa..." required>
-                              </div>
-                            </div>
-                            <div class="col-md-3">
-                              <div class="form-group">
-                                <div class="custom-control custom-checkbox">
-                                  <input type="checkbox" class="custom-control-input" id="correta_<?= $pergunta['id']; ?>" name="correta">
-                                  <label class="custom-control-label" for="correta_<?= $pergunta['id']; ?>">
-                                    Alternativa Correta
-                                  </label>
-                                </div>
-                              </div>
-                            </div>
-                            <div class="col-md-3">
-                              <div class="form-group">
-                                <button type="submit" name="add_alternativa" class="btn btn-success btn-block">
-                                  <i class="fa fa-plus"></i> Adicionar
-                                </button>
-                              </div>
-                            </div>
-                          </form>
-                        </div>
-                      </div>
-                    <?php endforeach; ?>
-                  <?php endif; ?>
-                </div>
-              </div>
-              
-              <!-- Botões de Ação -->
-              <div class="text-center mt-4">
-                <a href="criar_quiz.php" class="btn btn-secondary">
-                  <i class="fa fa-arrow-left"></i> Voltar para Criar Quiz
                 </a>
-                <a href="dashboard.php" class="btn btn-primary">
-                  <i class="fa fa-home"></i> Ir para Dashboard
+                <a href="dashboard.php" class="simple-text logo-normal">
+                    Painel Professor
                 </a>
-              </div>
             </div>
-          </div>
+            <div class="sidebar-wrapper">
+                <ul class="nav">
+                    <li class="<?= $pagina_ativa === 'dashboard' ? 'active' : '' ?>">
+                        <a href="./dashboard.php">
+                            <i class="nc-icon nc-bank"></i>
+                            <p>Dashboard</p>
+                        </a>
+                    </li>
+                    <li class="<?= $pagina_ativa === 'missoes' ? 'active' : '' ?>">
+                        <a href="./missoes.php">
+                            <i class="nc-icon nc-diamond"></i>
+                            <p>Missões</p>
+                        </a>
+                    </li>
+                    <li class="<?= $pagina_ativa === 'criar_quiz' ? 'active' : '' ?>">
+                        <a href="./criar_quiz.php">
+                            <i class="nc-icon nc-paper"></i>
+                            <p>Criar Quiz</p>
+                        </a>
+                    </li>
+                    <li class="<?= $pagina_ativa === 'editar_quiz' ? 'active' : '' ?>">
+                        <a href="./editar_quiz.php">
+                            <i class="nc-icon nc-single-copy-04"></i>
+                            <p>Editar Quiz</p>
+                        </a>
+                    </li>
+                </ul>
+            </div>
         </div>
-      </div>
+
+        <!-- Mobile Header -->
+        <?php include 'include/mobile-header.php'; ?>
+
+        <!-- Main Panel -->
+        <div class="main-panel">
+            <!-- Navbar -->
+            <nav class="navbar navbar-expand-lg navbar-absolute fixed-top navbar-transparent">
+                <div class="container-fluid">
+                    <div class="navbar-wrapper">
+                        <div class="navbar-toggle">
+                            <button type="button" class="navbar-toggler">
+                                <span class="navbar-toggler-bar bar1"></span>
+                                <span class="navbar-toggler-bar bar2"></span>
+                                <span class="navbar-toggler-bar bar3"></span>
+                            </button>
+                        </div>
+                        <a class="navbar-brand" href="javascript:;">Editar Quiz</a>
+                    </div>
+                </div>
+            </nav>
+
+            <!-- End Navbar -->
+            <div class="content">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4 class="card-title">
+                                    <i class="fa fa-edit"></i> Editar Quiz: <?= htmlspecialchars($quiz['nome']) ?>
+                                </h4>
+                            </div>
+                            <div class="card-body">
+                                <!-- Exibir mensagens de feedback -->
+                                <?php
+                                if (isset($_SESSION['mensagem_sucesso'])) {
+                                    exibirSucesso($_SESSION['mensagem_sucesso']);
+                                    unset($_SESSION['mensagem_sucesso']);
+                                }
+                                if (isset($_SESSION['mensagem_erro'])) {
+                                    exibirErro($_SESSION['mensagem_erro']);
+                                    unset($_SESSION['mensagem_erro']);
+                                }
+                                ?>
+
+                                <!-- Formulário para adicionar pergunta -->
+                                <div class="row mb-4">
+                                    <div class="col-12">
+                                        <h5><i class="fa fa-plus"></i> Adicionar Nova Pergunta</h5>
+                                        <form method="POST" class="form-inline">
+                                            <div class="form-group mr-3 flex-grow-1">
+                                                <input type="text" name="texto" class="form-control" placeholder="Digite a pergunta..." required style="width: 100%;">
+                                            </div>
+                                            <button type="submit" name="add_pergunta" class="btn btn-success">
+                                                <i class="fa fa-plus"></i> Adicionar Pergunta
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+
+                                <!-- Lista de perguntas existentes -->
+                                <div class="row">
+                                    <div class="col-12">
+                                        <h5><i class="fa fa-list"></i> Perguntas do Quiz</h5>
+                                        
+                                        <?php if (empty($perguntas)): ?>
+                                            <div class="alert alert-info">
+                                                <i class="fa fa-info-circle"></i> Nenhuma pergunta cadastrada ainda. Adicione a primeira pergunta acima.
+                                            </div>
+                                        <?php else: ?>
+                                            <?php foreach ($perguntas as $pergunta): ?>
+                                                <div class="card mb-3">
+                                                    <div class="card-header d-flex justify-content-between align-items-center">
+                                                        <h6 class="mb-0">
+                                                            <i class="fa fa-question-circle"></i> 
+                                                            <?= htmlspecialchars($pergunta['texto']) ?>
+                                                        </h6>
+                                                        <form method="POST" class="d-inline" onsubmit="return confirm('Tem certeza que deseja deletar esta pergunta?')">
+                                                            <input type="hidden" name="pergunta_id" value="<?= $pergunta['id'] ?>">
+                                                            <button type="submit" name="delete_pergunta" class="btn btn-sm btn-danger">
+                                                                <i class="fa fa-trash"></i> Deletar
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                    <div class="card-body">
+                                                        <!-- Formulário para adicionar alternativa -->
+                                                        <form method="POST" class="form-inline mb-3">
+                                                            <input type="hidden" name="pergunta_id" value="<?= $pergunta['id'] ?>">
+                                                            <div class="form-group mr-2 flex-grow-1">
+                                                                <input type="text" name="texto" class="form-control" placeholder="Digite a alternativa..." required>
+                                                            </div>
+                                                            <div class="form-group mr-2">
+                                                                <div class="form-check">
+                                                                    <input type="checkbox" name="correta" class="form-check-input" id="correta_<?= $pergunta['id'] ?>">
+                                                                    <label class="form-check-label" for="correta_<?= $pergunta['id'] ?>">
+                                                                        Correta
+                                                                    </label>
+                                                                </div>
+                                                            </div>
+                                                            <button type="submit" name="add_alternativa" class="btn btn-primary btn-sm">
+                                                                <i class="fa fa-plus"></i> Adicionar
+                                                            </button>
+                                                        </form>
+
+                                                        <!-- Lista de alternativas -->
+                                                        <h6>Alternativas:</h6>
+                                                        <?php if (empty($pergunta['alternativas'])): ?>
+                                                            <p class="text-muted">Nenhuma alternativa cadastrada ainda.</p>
+                                                        <?php else: ?>
+                                                            <div class="list-group">
+                                                                <?php foreach ($pergunta['alternativas'] as $alternativa): ?>
+                                                                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                                                                        <span>
+                                                                            <?= htmlspecialchars($alternativa['texto']) ?>
+                                                                            <?php if ($alternativa['correta']): ?>
+                                                                                <span class="badge badge-success ml-2">Correta</span>
+                                                                            <?php endif; ?>
+                                                                        </span>
+                                                                        <form method="POST" class="d-inline" onsubmit="return confirm('Tem certeza que deseja deletar esta alternativa?')">
+                                                                            <input type="hidden" name="alternativa_id" value="<?= $alternativa['id'] ?>">
+                                                                            <button type="submit" name="delete_alternativa" class="btn btn-sm btn-outline-danger">
+                                                                                <i class="fa fa-trash"></i>
+                                                                            </button>
+                                                                        </form>
+                                                                    </div>
+                                                                <?php endforeach; ?>
+                                                            </div>
+                                                        <?php endif; ?>
+                                                    </div>
+                                                </div>
+                                            <?php endforeach; ?>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                                
+                                <!-- Botões de Ação -->
+                                <div class="text-center mt-4">
+                                    <a href="criar_quiz.php" class="btn btn-secondary">
+                                        <i class="fa fa-arrow-left"></i> Voltar para Criar Quiz
+                                    </a>
+                                    <a href="dashboard.php" class="btn btn-primary">
+                                        <i class="fa fa-home"></i> Ir para Dashboard
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
+
+    <!-- Scripts -->
+    <script src="../assets/js/core/jquery.min.js"></script>
+    <script src="../assets/js/core/popper.min.js"></script>
+    <script src="../assets/js/core/bootstrap.min.js"></script>
+    <script src="../assets/js/plugins/perfect-scrollbar.jquery.min.js"></script>
+    <script src="../assets/js/plugins/chartjs.min.js"></script>
+    <script src="../assets/js/plugins/bootstrap-notify.js"></script>
+    <script src="../assets/js/paper-dashboard.min.js?v=2.0.1" type="text/javascript"></script>
+    <script src="../assets/js/mobile-menu.js"></script>
 </body>
 </html>

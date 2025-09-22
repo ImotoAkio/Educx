@@ -1,0 +1,410 @@
+/* Mobile Header Moderno - Painel do Professor */
+
+/* Reset e base */
+* {
+    box-sizing: border-box;
+}
+
+/* Header Mobile */
+.mobile-header {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1050;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+    padding: 0;
+    height: 60px;
+}
+
+.mobile-header.active {
+    display: block;
+}
+
+/* Container do header */
+.mobile-header-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 100%;
+    padding: 0 15px;
+    max-width: 100%;
+}
+
+/* Logo e título */
+.mobile-header-brand {
+    display: flex;
+    align-items: center;
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 18px;
+}
+
+.mobile-header-brand img {
+    width: 32px;
+    height: 32px;
+    margin-right: 10px;
+    border-radius: 50%;
+}
+
+.mobile-header-brand span {
+    font-size: 16px;
+}
+
+/* Botões de ação */
+.mobile-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Botão de menu hambúrguer */
+.mobile-menu-toggle {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.mobile-menu-toggle:hover {
+    background: rgba(255,255,255,0.1);
+    transform: scale(1.1);
+}
+
+.mobile-menu-toggle.active {
+    background: rgba(255,255,255,0.2);
+}
+
+/* Ícone do hambúrguer animado */
+.hamburger {
+    width: 25px;
+    height: 3px;
+    background: white;
+    margin: 5px 0;
+    transition: 0.3s;
+    border-radius: 2px;
+}
+
+.hamburger.active:nth-child(1) {
+    transform: rotate(-45deg) translate(-5px, 6px);
+}
+
+.hamburger.active:nth-child(2) {
+    opacity: 0;
+}
+
+.hamburger.active:nth-child(3) {
+    transform: rotate(45deg) translate(-5px, -6px);
+}
+
+/* Botão de notificações */
+.mobile-notification-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    position: relative;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mobile-notification-btn:hover {
+    background: rgba(255,255,255,0.1);
+    transform: scale(1.1);
+}
+
+.mobile-notification-badge {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    background: #ff4757;
+    color: white;
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    font-size: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+/* Botão de perfil */
+.mobile-profile-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mobile-profile-btn:hover {
+    background: rgba(255,255,255,0.1);
+    transform: scale(1.1);
+}
+
+/* Menu lateral mobile */
+.mobile-sidebar {
+    position: fixed;
+    top: 60px;
+    left: -280px;
+    width: 280px;
+    height: calc(100vh - 60px);
+    background: white;
+    box-shadow: 2px 0 20px rgba(0,0,0,0.1);
+    transition: left 0.3s ease;
+    z-index: 1040;
+    overflow-y: auto;
+}
+
+.mobile-sidebar.active {
+    left: 0;
+}
+
+/* Overlay para fechar menu */
+.mobile-overlay {
+    position: fixed;
+    top: 60px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 1030;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.mobile-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Lista de navegação mobile */
+.mobile-nav-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.mobile-nav-item {
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.mobile-nav-link {
+    display: flex;
+    align-items: center;
+    padding: 15px 20px;
+    color: #333;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+.mobile-nav-link:hover {
+    background: #f8f9fa;
+    color: #667eea;
+    text-decoration: none;
+}
+
+.mobile-nav-link.active {
+    background: #667eea;
+    color: white;
+}
+
+.mobile-nav-icon {
+    font-size: 20px;
+    margin-right: 15px;
+    width: 24px;
+    text-align: center;
+}
+
+.mobile-nav-text {
+    font-size: 16px;
+}
+
+/* Seção de perfil no menu */
+.mobile-profile-section {
+    padding: 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    text-align: center;
+}
+
+.mobile-profile-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    margin: 0 auto 10px;
+    border: 3px solid white;
+    object-fit: cover;
+}
+
+.mobile-profile-name {
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0;
+}
+
+.mobile-profile-role {
+    font-size: 14px;
+    opacity: 0.8;
+    margin: 5px 0 0;
+}
+
+/* Botões de ação no menu */
+.mobile-menu-actions {
+    padding: 15px 20px;
+    border-top: 1px solid #f0f0f0;
+}
+
+.mobile-action-btn {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 12px 15px;
+    margin-bottom: 10px;
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    color: #333;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.mobile-action-btn:hover {
+    background: #e9ecef;
+    color: #333;
+    text-decoration: none;
+    transform: translateY(-1px);
+}
+
+.mobile-action-btn:last-child {
+    margin-bottom: 0;
+}
+
+.mobile-action-icon {
+    font-size: 16px;
+    margin-right: 10px;
+    width: 20px;
+    text-align: center;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .mobile-header {
+        display: block;
+    }
+    
+    .main-panel {
+        margin-top: 60px;
+    }
+    
+    .sidebar {
+        display: none;
+    }
+}
+
+@media (min-width: 769px) {
+    .mobile-header {
+        display: none !important;
+    }
+    
+    .mobile-sidebar {
+        display: none !important;
+    }
+    
+    .mobile-overlay {
+        display: none !important;
+    }
+}
+
+/* Animações */
+@keyframes slideInLeft {
+    from {
+        transform: translateX(-100%);
+    }
+    to {
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideOutLeft {
+    from {
+        transform: translateX(0);
+    }
+    to {
+        transform: translateX(-100%);
+    }
+}
+
+.mobile-sidebar.slide-in {
+    animation: slideInLeft 0.3s ease;
+}
+
+.mobile-sidebar.slide-out {
+    animation: slideOutLeft 0.3s ease;
+}
+
+/* Melhorias de acessibilidade */
+.mobile-menu-toggle:focus,
+.mobile-notification-btn:focus,
+.mobile-profile-btn:focus {
+    outline: 2px solid rgba(255,255,255,0.5);
+    outline-offset: 2px;
+}
+
+.mobile-nav-link:focus {
+    outline: 2px solid #667eea;
+    outline-offset: -2px;
+}
+
+/* Scrollbar personalizada para o menu */
+.mobile-sidebar::-webkit-scrollbar {
+    width: 4px;
+}
+
+.mobile-sidebar::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.mobile-sidebar::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 2px;
+}
+
+.mobile-sidebar::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}

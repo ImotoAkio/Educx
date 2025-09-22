@@ -34,7 +34,7 @@ try {
 
     // Consulta às trocas pendentes
     $stmtTrocas = $pdo->query("
-        SELECT t.id, a.nome AS aluno_nome, p.nome AS produto_nome 
+        SELECT t.id, t.data_troca, a.nome AS aluno_nome, p.nome AS produto_nome 
         FROM trocas t
         JOIN alunos a ON t.aluno_id = a.id
         JOIN produtos p ON t.produto_id = p.id
@@ -47,6 +47,7 @@ try {
 $stmt = $pdo->query("
     SELECT 
         s.id AS solicitacao_id,
+        s.data_solicitacao,
         a.nome AS aluno_nome,
         m.nome AS missao_nome,
         m.descricao,
@@ -56,6 +57,7 @@ $stmt = $pdo->query("
     JOIN alunos a ON s.aluno_id = a.id
     JOIN missoes m ON s.missao_id = m.id
     WHERE s.status = 'pendente'
+    ORDER BY s.data_solicitacao DESC
 ");
 $solicitacoes = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
@@ -76,17 +78,37 @@ $solicitacoes = $stmt->fetchAll(PDO::FETCH_ASSOC);
   <!-- CSS Files -->
   <link href="../assets/css/bootstrap.min.css" rel="stylesheet" />
   <link href="../assets/css/paper-dashboard.css?v=2.0.1" rel="stylesheet" />
+  <!-- Mobile CSS -->
+  <link href="../assets/css/mobile-header.css" rel="stylesheet" />
   <style>
     .navbar-toggler-bar {
       display: none;
     }
-    .main-panel.d-md-none .navbar-nav .nav-link {
-    color: #000 !important; /* Define a cor do texto como preta */
-  }
-
-  .main-panel.d-md-none .navbar-nav .nav-link:hover {
-    color: #007bff !important; /* Cor de hover azul */
-  }
+    
+    /* Mobile responsive adjustments */
+    @media (max-width: 768px) {
+      .main-panel {
+        margin-top: 64px !important;
+        padding-top: 20px !important;
+      }
+      
+      .content {
+        padding: 15px !important;
+      }
+      
+      .card {
+        margin-bottom: 15px !important;
+      }
+      
+      .table-responsive {
+        font-size: 14px;
+      }
+      
+      .btn {
+        padding: 8px 12px !important;
+        font-size: 13px !important;
+      }
+    }
   </style>
 </head>
 
@@ -259,7 +281,14 @@ include 'include/navbar.php';
                           </td>
                           <td>
                             <span class="text-muted">
-                              <i class="fa fa-calendar"></i> <?= date('d/m/Y H:i', strtotime($troca['data_troca'])); ?>
+                              <i class="fa fa-calendar"></i> 
+                              <?php 
+                              if (isset($troca['data_troca']) && !empty($troca['data_troca'])) {
+                                echo date('d/m/Y H:i', strtotime($troca['data_troca']));
+                              } else {
+                                echo 'Data não disponível';
+                              }
+                              ?>
                             </span>
                           </td>
                           <td>
@@ -319,6 +348,9 @@ include 'include/navbar.php';
                         <th style="cursor: pointer;" onclick="sortTable(4, 'tabelaMissoes')">
                           <i class="fa fa-coins"></i> Moedas <i class="fa fa-sort"></i>
                         </th>
+                        <th style="cursor: pointer;" onclick="sortTable(5, 'tabelaMissoes')">
+                          <i class="fa fa-calendar"></i> Data <i class="fa fa-sort"></i>
+                        </th>
                         <th>
                           <i class="fa fa-cogs"></i> Ações
                         </th>
@@ -357,6 +389,18 @@ include 'include/navbar.php';
                           <td>
                             <span class="badge badge-warning">
                               <i class="fa fa-coins"></i> <?= $solicitacao['moedas']; ?>
+                            </span>
+                          </td>
+                          <td>
+                            <span class="text-muted">
+                              <i class="fa fa-calendar"></i> 
+                              <?php 
+                              if (isset($solicitacao['data_solicitacao']) && !empty($solicitacao['data_solicitacao'])) {
+                                echo date('d/m/Y H:i', strtotime($solicitacao['data_solicitacao']));
+                              } else {
+                                echo 'Data não disponível';
+                              }
+                              ?>
                             </span>
                           </td>
                           <td>
@@ -573,6 +617,9 @@ include 'include/navbar.php';
       }, 3000);
     }
   </script>
+  
+  <!-- Footer com scripts mobile -->
+  <?php include 'include/footer.php'; ?>
 </body>
 
 </html>

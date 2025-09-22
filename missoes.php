@@ -29,7 +29,7 @@ $stmt = $pdo->prepare("
     SELECT m.*
     FROM missoes m
     WHERE m.status = 'ativa'
-      AND (m.turma_id = :turma_id OR m.turma_id IS NULL)
+      AND (m.turma_id = :turma_id OR m.turma_id IS NULL OR m.turma_id = 0 OR m.turma_id = '')
       AND NOT EXISTS (
           SELECT 1 FROM solicitacoes_missoes sm
           WHERE sm.aluno_id = :aluno_id AND sm.missao_id = m.id
@@ -193,6 +193,237 @@ $progresso_percentual = round($progresso * 100, 2);
             width: 24px;
         }
 
+        /* ===== ESTILOS PARA MISSÕES MELHORADAS ===== */
+        
+        .section-header {
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .section-subtitle {
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 10px;
+            margin-bottom: 0;
+        }
+        
+        .missoes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .missao-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            color: white;
+        }
+        
+        .missao-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+            pointer-events: none;
+        }
+        
+        .missao-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+        }
+        
+        .missao-header {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 15px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .missao-icon {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 20px;
+            color: #FFD700;
+        }
+        
+        .missao-title h4 {
+            margin: 0 0 10px 0;
+            font-size: 1.3em;
+            font-weight: 600;
+            color: white;
+        }
+        
+        .missao-badges {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .badge-xp {
+            background: rgba(255, 193, 7, 0.9);
+            color: #000;
+        }
+        
+        .badge-coins {
+            background: rgba(40, 167, 69, 0.9);
+            color: white;
+        }
+        
+        .missao-content {
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .missao-descricao {
+            color: rgba(255, 255, 255, 0.9);
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+        
+        .missao-link {
+            margin-top: 10px;
+        }
+        
+        .link-externo {
+            color: #FFD700;
+            text-decoration: none;
+            font-size: 0.9em;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            transition: color 0.3s ease;
+        }
+        
+        .link-externo:hover {
+            color: #FFF;
+            text-decoration: none;
+        }
+        
+        .missao-footer {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .btn-realizar-missao {
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            border: none;
+            border-radius: 25px;
+            padding: 12px 25px;
+            color: #000;
+            font-weight: 600;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            width: 100%;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+        }
+        
+        .btn-realizar-missao:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
+            color: #000;
+        }
+        
+        .btn-realizar-missao:active {
+            transform: translateY(0);
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+        
+        .empty-icon {
+            font-size: 4em;
+            color: #ddd;
+            margin-bottom: 20px;
+        }
+        
+        .empty-state h4 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .empty-state p {
+            color: #666;
+            font-size: 1.1em;
+        }
+        
+        /* Responsividade */
+        @media (max-width: 768px) {
+            .missoes-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .missao-card {
+                padding: 15px;
+            }
+            
+            .missao-header {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+            
+            .missao-icon {
+                margin-right: 0;
+                margin-bottom: 10px;
+            }
+            
+            .missao-badges {
+                justify-content: center;
+            }
+        }
+        
+        /* Animações */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .missao-card {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
     </style>
 </head>
 <body>
@@ -303,36 +534,70 @@ $quizzes_realizados = $stmt_quizzes_realizados->fetchAll(PDO::FETCH_ASSOC);
     </div>
 </section>
 <?php endif; ?>
+        <!-- Seção de Missões Disponíveis -->
         <section>
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-12">
-                        <h3 class="segment-title left">Missões disponíveis</h3>
-                        <?php 
-                        // Correção: Usar count() em vez de !empty() para maior confiabilidade
-                        if (is_array($missoes) && count($missoes) > 0): 
-                        ?>
-                            <?php foreach ($missoes as $missao): ?>
-                                <article class="hero-card">
-                                    <div class="card-content">
-                                        <h3><?= htmlspecialchars($missao['nome']); ?></h3>
-                                        <p><?= htmlspecialchars($missao['descricao']); ?></p>
-                                        <div style="margin: 10px 0;">
-                                            <span style="background: #ffc107; padding: 5px 10px; border-radius: 15px; margin-right: 10px;">
-                                                <i class="fa fa-star"></i> <?= $missao['xp']; ?> XP
-                                            </span>
-                                            <span style="background: #28a745; padding: 5px 10px; border-radius: 15px;">
-                                                <i class="fa fa-coins"></i> <?= $missao['moedas']; ?> moedas
-                                            </span>
+                        <div class="section-header">
+                            <h3 class="segment-title left">
+                                <i class="fa fa-rocket"></i> Missões Disponíveis
+                            </h3>
+                            <p class="section-subtitle">
+                                <i class="fa fa-info-circle"></i> Complete as missões para ganhar XP e moedas!
+                            </p>
+                        </div>
+                        
+                        <?php if (is_array($missoes) && count($missoes) > 0): ?>
+                            <div class="missoes-grid">
+                                <?php foreach ($missoes as $index => $missao): ?>
+                                    <div class="missao-card" data-aos="fade-up" data-aos-delay="<?= $index * 100; ?>">
+                                        <div class="missao-header">
+                                            <div class="missao-icon">
+                                                <i class="fa fa-trophy"></i>
+                                            </div>
+                                            <div class="missao-title">
+                                                <h4><?= htmlspecialchars($missao['nome']); ?></h4>
+                                                <div class="missao-badges">
+                                                    <span class="badge badge-xp">
+                                                        <i class="fa fa-star"></i> <?= $missao['xp']; ?> XP
+                                                    </span>
+                                                    <span class="badge badge-coins">
+                                                        <i class="fa fa-coins"></i> <?= $missao['moedas']; ?> moedas
+                                                    </span>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <button class="gradient-button" onclick="window.location.href='realizar_missao.php?aluno_id=<?= $aluno_id; ?>&missao_id=<?= $missao['id']; ?>';">
-                                            <span>Realizar Missão</span>
-                                        </button>
+                                        
+                                        <div class="missao-content">
+                                            <p class="missao-descricao"><?= htmlspecialchars($missao['descricao']); ?></p>
+                                            
+                                            <?php if (!empty($missao['link'])): ?>
+                                                <div class="missao-link">
+                                                    <a href="<?= htmlspecialchars($missao['link']); ?>" target="_blank" class="link-externo">
+                                                        <i class="fa fa-external-link"></i> Ver detalhes
+                                                    </a>
+                                                </div>
+                                            <?php endif; ?>
+                                        </div>
+                                        
+                                        <div class="missao-footer">
+                                            <button class="btn-realizar-missao" onclick="window.location.href='realizar_missao.php?aluno_id=<?= $aluno_id; ?>&missao_id=<?= $missao['id']; ?>';">
+                                                <i class="fa fa-play"></i>
+                                                <span>Realizar Missão</span>
+                                            </button>
+                                        </div>
                                     </div>
-                                </article>
-                            <?php endforeach; ?>
+                                <?php endforeach; ?>
+                            </div>
                         <?php else: ?>
-                            <p>Nenhuma missão disponível no momento.</p>
+                            <div class="empty-state">
+                                <div class="empty-icon">
+                                    <i class="fa fa-inbox"></i>
+                                </div>
+                                <h4>Nenhuma missão disponível</h4>
+                                <p>No momento não há missões disponíveis para sua turma. Volte mais tarde!</p>
+                            </div>
                         <?php endif; ?>
                     </div>
                 </div>

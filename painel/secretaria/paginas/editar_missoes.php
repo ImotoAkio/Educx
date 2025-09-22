@@ -22,7 +22,7 @@ if (isset($_POST['add'])) {
     $moedas = $_POST['moedas'];
     $link = $_POST['link'];
     $status = $_POST['status'] ?? 'ativa';
-    $turma_id = $_POST['turma_id'] ?? null;
+    $turma_id = !empty($_POST['turma_id']) ? $_POST['turma_id'] : null;
 
     try {
         $sql = "INSERT INTO missoes (nome, descricao, xp, moedas, link, status, turma_id) VALUES (:nome, :descricao, :xp, :moedas, :link, :status, :turma_id)";
@@ -52,7 +52,7 @@ if (isset($_POST['edit'])) {
     $moedas = $_POST['moedas'];
     $link = $_POST['link'];
     $status = $_POST['status'] ?? 'ativa';
-    $turma_id = $_POST['turma_id'] ?? null;
+    $turma_id = !empty($_POST['turma_id']) ? $_POST['turma_id'] : null;
 
     try {
         $sql = "UPDATE missoes SET nome = :nome, descricao = :descricao, xp = :xp, moedas = :moedas, link = :link, status = :status, turma_id = :turma_id WHERE id = :id";
@@ -138,6 +138,8 @@ Coded by www.creative-tim.com
   <!-- CSS Files -->
   <link href="../assets/css/bootstrap.min.css" rel="stylesheet" />
   <link href="../assets/css/paper-dashboard.css?v=2.0.1" rel="stylesheet" />
+  <!-- Mobile CSS -->
+  <link href="../assets/css/mobile-header.css" rel="stylesheet" />
   <style>
     .navbar-toggler-bar {
       display: none;
@@ -584,6 +586,8 @@ include 'include/navbar.php';
       }, 3000);
     }
   </script>
+  <!-- Footer com scripts mobile -->
+  <?php include 'include/footer.php'; ?>
 </body>
 
 </html>

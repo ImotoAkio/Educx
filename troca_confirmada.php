@@ -29,15 +29,30 @@ $moedas_aluno = (int)$aluno['moedas'];
 $erro = false;
 $mensagem = '';
 
-if ($moedas_aluno >= $moedas_necessarias) {
-	// Subtrai moedas do aluno
-	$novo_saldo = $moedas_aluno - $moedas_necessarias;
-	$stmtUpdate = $pdo->prepare("UPDATE alunos SET moedas = :novo_saldo WHERE id = :aluno_id");
-	$stmtUpdate->execute([':novo_saldo' => $novo_saldo, ':aluno_id' => $alunoId]);
-	$mensagem = "Parabéns! Você acabou de ganhar um <strong>" . htmlspecialchars($produto['nome']) . "</strong>. Vá até a secretaria para retirar seu prêmio! 🤑";
+// Verificar se a troca já foi processada
+$stmtTroca = $pdo->prepare("SELECT status FROM trocas WHERE id = :troca_id");
+$stmtTroca->execute([':troca_id' => $trocaId]);
+$statusTroca = $stmtTroca->fetch(PDO::FETCH_ASSOC);
+
+if ($statusTroca && $statusTroca['status'] !== 'pendente') {
+	// Troca já foi processada
+	if ($statusTroca['status'] === 'aprovado') {
+		$mensagem = "Sua troca foi <strong>aprovada</strong> pela secretaria! Você já pode retirar seu <strong>" . htmlspecialchars($produto['nome']) . "</strong>! 🎉";
+	} else {
+		$mensagem = "Sua troca foi <strong>rejeitada</strong> pela secretaria. As moedas foram devolvidas para sua conta.";
+	}
 } else {
-	$erro = true;
-	$mensagem = "<span style='color: #ff4d4d;'>Saldo insuficiente! Você precisa de <strong>" . $moedas_necessarias . " moedas</strong>, mas só tem <strong>" . $moedas_aluno . " moedas</strong>.";
+	// Processar nova troca
+	if ($moedas_aluno >= $moedas_necessarias) {
+		// Subtrai moedas do aluno
+		$novo_saldo = $moedas_aluno - $moedas_necessarias;
+		$stmtUpdate = $pdo->prepare("UPDATE alunos SET moedas = :novo_saldo WHERE id = :aluno_id");
+		$stmtUpdate->execute([':novo_saldo' => $novo_saldo, ':aluno_id' => $alunoId]);
+		$mensagem = "Solicitação criada! Agora você deve ir até a secretaria para solicitar seu <strong>" . htmlspecialchars($produto['nome']) . "</strong>. As moedas foram reservadas! 🛒";
+	} else {
+		$erro = true;
+		$mensagem = "<span style='color: #ff4d4d;'>Saldo insuficiente! Você precisa de <strong>" . $moedas_necessarias . " moedas</strong>, mas só tem <strong>" . $moedas_aluno . " moedas</strong>.";
+	}
 }
 ?>
 
@@ -78,11 +93,64 @@ if ($moedas_aluno >= $moedas_necessarias) {
 			</div>
 			<div class="checkout-info">
 				<p><strong>Valor:</strong> <span style="color:gold; font-size:1.2em;"><?= htmlspecialchars($produto['moeda']); ?> moedas</span></p>
-				<p><strong>Seu saldo:</strong> <span style="color:gold; font-size:1.2em;"><?= $erro ? $moedas_aluno : $novo_saldo; ?> moedas</span></p>
+				<p><strong>Seu saldo:</strong> <span style="color:gold; font-size:1.2em;">
+					<?php 
+					if ($erro) {
+						echo $moedas_aluno;
+					} elseif (isset($novo_saldo)) {
+						echo $novo_saldo;
+					} else {
+						// Buscar saldo atual do aluno
+						$stmtSaldo = $pdo->prepare("SELECT moedas FROM alunos WHERE id = :aluno_id");
+						$stmtSaldo->execute([':aluno_id' => $alunoId]);
+						$saldoAtual = $stmtSaldo->fetch(PDO::FETCH_ASSOC);
+						echo $saldoAtual['moedas'];
+					}
+					?> moedas</span></p>
 			</div>
 			<div style="margin-top:18px;">
 				<p class="branco" style="font-size:1.1em;"><?= $mensagem; ?></p>
 			</div>
+			
+			<?php if (!$erro && $statusTroca && $statusTroca['status'] === 'aprovado'): ?>
+			<div style="margin-top:20px; padding:15px; background:rgba(40,167,69,0.1); border:2px solid #28a745; border-radius:10px;">
+				<h4 style="color:#28a745; margin-bottom:10px; font-size:1.2em;">
+					<i class="fa fa-check-circle" style="margin-right:8px;"></i>Troca Aprovada!
+				</h4>
+				<p style="color:#fff; font-size:1em; line-height:1.4; margin:0;">
+					<strong>✅</strong> Você já foi até a secretaria<br>
+					<strong>✅</strong> Sua solicitação foi aprovada<br>
+					<strong>✅</strong> Seu <strong><?= htmlspecialchars($produto['nome']); ?></strong> está pronto para retirada!<br>
+					<strong>🎉</strong> Parabéns pela sua conquista!
+				</p>
+				<div style="margin-top:10px; padding:8px; background:rgba(40,167,69,0.2); border-radius:5px;">
+					<small style="color:#28a745;">
+						<i class="fa fa-info-circle" style="margin-right:5px;"></i>
+						<strong>Status:</strong> Aprovado e pronto para retirada na secretaria.
+					</small>
+				</div>
+			</div>
+			<?php elseif (!$erro && (!$statusTroca || $statusTroca['status'] === 'pendente')): ?>
+			<div style="margin-top:20px; padding:15px; background:rgba(255,165,0,0.1); border:2px solid #ffa500; border-radius:10px;">
+				<h4 style="color:#ffa500; margin-bottom:10px; font-size:1.2em;">
+					<i class="fa fa-walking" style="margin-right:8px;"></i>Próximos Passos Obrigatórios
+				</h4>
+				<p style="color:#fff; font-size:1em; line-height:1.4; margin:0;">
+					<strong>1.</strong> Vá até a secretaria da escola<br>
+					<strong>2.</strong> Fale com um responsável<br>
+					<strong>3.</strong> Informe que você fez uma troca online<br>
+					<strong>4.</strong> Mostre esta confirmação<br>
+					<strong>5.</strong> A secretaria aprovará sua solicitação<br>
+					<strong>6.</strong> Retire seu <strong><?= htmlspecialchars($produto['nome']); ?></strong>! 🎉
+				</p>
+				<div style="margin-top:10px; padding:8px; background:rgba(255,165,0,0.2); border-radius:5px;">
+					<small style="color:#ffa500;">
+						<i class="fa fa-exclamation-triangle" style="margin-right:5px;"></i>
+						<strong>Importante:</strong> Você DEVE ir até a secretaria para que sua solicitação seja aprovada. A aprovação só acontece presencialmente!
+					</small>
+				</div>
+			</div>
+			<?php endif; ?>
 			<div style="display:flex; gap:10px; margin-top:18px;">
 				<a href="loja.php?id=<?= $alunoId; ?>" class="gradient-button" style="flex:1; text-align:center;">Voltar para Loja</a>
 				<a href="missoes.php?id=<?= $alunoId; ?>" class="gradient-button" style="flex:1; text-align:center;">Ver Missões</a>

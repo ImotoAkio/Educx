@@ -52,7 +52,7 @@ function isHorarioValido($hora) {
         // Fallback para método simples em caso de erro
         $horaAtual = new DateTime($hora);
         $limite = new DateTime('07:30:00');
-        return $horaAtual <= $limite;
+        return $horaAtual->format('H:i') <= $limite->format('H:i');
     }
 }
 

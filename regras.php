@@ -2,290 +2,838 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Regras do Jogo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Regras do Jogo - Penalidades</title>
     <link rel="stylesheet" href="asset/button.css">
     <link rel="stylesheet" href="asset/style.css">
     <style>
+        * {
+            box-sizing: border-box;
+        }
+        
         body {
             background: #17171f;
             color: #fff;
             font-family: 'Orbitron', Arial, sans-serif;
             margin: 0;
             padding: 0;
+            line-height: 1.4;
         }
+        
         .container {
-            max-width: 600px;
-            margin: 40px auto;
+            max-width: 1000px;
+            margin: 10px auto;
             background: #23233a;
-            border-radius: 20px;
+            border-radius: 15px;
             box-shadow: 0 4px 24px #0008;
-            padding: 32px 24px 24px 24px;
+            padding: 20px 15px;
+            overflow-x: hidden;
         }
+        
         h1 {
             font-family: 'Press Start 2P', cursive;
-            font-size: 2em;
-            margin-bottom: 24px;
+            font-size: 1.2em;
+            margin-bottom: 15px;
             text-align: center;
+            color: #ff6b6b;
+            line-height: 1.3;
         }
-        .accordion {
-            margin-bottom: 16px;
+        
+        .subtitle {
+            text-align: center;
+            font-size: 0.9em;
+            margin-bottom: 20px;
+            color: #ffd93d;
+            padding: 0 10px;
         }
-        .accordion-item {
-            background: #222;
-            border-radius: 10px;
-            margin-bottom: 10px;
-            overflow: hidden;
-            box-shadow: 0 2px 8px #0004;
+        
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            background: #1a1a2e;
+            border-radius: 8px;
+            padding: 3px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
         }
-        .accordion-title {
-            padding: 16px;
+        
+        .tab {
+            flex: 1;
+            min-width: 80px;
+            padding: 10px 8px;
+            text-align: center;
             cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.3s ease;
             font-weight: bold;
-            background: #29294d;
-            transition: background 0.2s;
+            font-size: 0.8em;
+            white-space: nowrap;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+            user-select: none;
         }
-        .accordion-title:hover {
-            background: #34346a;
+        
+        .tab.active {
+            background: #ff6b6b;
+            color: #fff;
         }
-        .accordion-content {
-            max-height: 0;
+        
+        .tab:not(.active) {
+            color: #888;
+        }
+        
+        .tab:not(.active):hover {
+            background: #2a2a3e;
+            color: #fff;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .penalties-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            background: #1a1a2e;
+            border-radius: 8px;
             overflow: hidden;
-            background: #23233a;
-            transition: max-height 0.3s ease;
-            padding: 0 16px;
+            font-size: 0.85em;
         }
-        .accordion-item.active .accordion-content {
-            max-height: 300px;
-            padding: 16px;
+        
+        .penalties-table th {
+            background: #ff6b6b;
+            color: #fff;
+            padding: 12px 8px;
+            text-align: left;
+            font-weight: bold;
+            font-size: 0.8em;
         }
+        
+        .penalties-table td {
+            padding: 12px 8px;
+            border-bottom: 1px solid #2a2a3e;
+            vertical-align: top;
+        }
+        
+        .penalties-table tr:hover {
+            background: #2a2a3e;
+        }
+        
+        .penalty-amount {
+            font-weight: bold;
+            color: #ff6b6b;
+            font-size: 0.9em;
+            white-space: nowrap;
+        }
+        
+        .penalty-category {
+            font-weight: bold;
+            color: #ffd93d;
+            font-size: 0.85em;
+            line-height: 1.3;
+        }
+        
+        .penalty-description {
+            color: #ccc;
+            font-size: 0.8em;
+            line-height: 1.3;
+        }
+        
+        .info-box {
+            background: #1a1a2e;
+            border-left: 4px solid #ffd93d;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 0 8px 8px 0;
+            font-size: 0.85em;
+        }
+        
+        .info-box h3 {
+            margin-top: 0;
+            color: #ffd93d;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+        }
+        
+        .info-box p {
+            margin-bottom: 10px;
+            line-height: 1.4;
+        }
+        
+        .info-box ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+        
+        .info-box li {
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+        
         .back-btn {
             display: block;
-            margin: 32px auto 0 auto;
+            margin: 25px auto 0 auto;
             width: 100%;
             text-align: center;
+            padding: 12px;
+            font-size: 0.9em;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .severity-low { color: #ffd93d; }
+        .severity-medium { color: #ff8c42; }
+        .severity-high { color: #ff6b6b; }
+        .severity-critical { color: #ff4757; }
+        
+        /* Responsividade para tablets */
+        @media (min-width: 768px) {
+            .container {
+                margin: 20px auto;
+                padding: 30px 25px;
+                border-radius: 20px;
+            }
+            
+            h1 {
+                font-size: 1.5em;
+                margin-bottom: 20px;
+            }
+            
+            .subtitle {
+                font-size: 1em;
+                margin-bottom: 25px;
+            }
+            
+            .tabs {
+                margin-bottom: 25px;
+                padding: 4px;
+            }
+            
+            .tab {
+                padding: 12px 16px;
+                font-size: 0.9em;
+            }
+            
+            .penalties-table {
+                font-size: 0.9em;
+                margin-bottom: 25px;
+            }
+            
+            .penalties-table th {
+                padding: 16px 12px;
+                font-size: 0.85em;
+            }
+            
+            .penalties-table td {
+                padding: 16px 12px;
+            }
+            
+            .penalty-amount {
+                font-size: 1em;
+            }
+            
+            .penalty-category {
+                font-size: 0.9em;
+            }
+            
+            .penalty-description {
+                font-size: 0.85em;
+            }
+            
+            .info-box {
+                padding: 20px;
+                margin-bottom: 25px;
+                font-size: 0.9em;
+            }
+            
+            .info-box h3 {
+                font-size: 1em;
+            }
+        }
+        
+        /* Responsividade para desktop */
+        @media (min-width: 1024px) {
+            .container {
+                margin: 30px auto;
+                padding: 35px 30px;
+            }
+            
+            h1 {
+                font-size: 1.8em;
+                margin-bottom: 25px;
+            }
+            
+            .subtitle {
+                font-size: 1.1em;
+                margin-bottom: 30px;
+            }
+            
+            .tabs {
+                margin-bottom: 30px;
+            }
+            
+            .tab {
+                padding: 14px 20px;
+                font-size: 1em;
+            }
+            
+            .penalties-table {
+                font-size: 1em;
+                margin-bottom: 30px;
+            }
+            
+            .penalties-table th {
+                padding: 18px 16px;
+                font-size: 0.9em;
+            }
+            
+            .penalties-table td {
+                padding: 18px 16px;
+            }
+            
+            .penalty-amount {
+                font-size: 1.1em;
+            }
+            
+            .penalty-category {
+                font-size: 1em;
+            }
+            
+            .penalty-description {
+                font-size: 0.9em;
+            }
+            
+            .info-box {
+                padding: 25px;
+                margin-bottom: 30px;
+                font-size: 1em;
+            }
+            
+            .info-box h3 {
+                font-size: 1.1em;
+            }
+        }
+        
+        /* Melhorias para telas muito pequenas */
+        @media (max-width: 480px) {
+            .container {
+                margin: 5px;
+                padding: 15px 10px;
+                border-radius: 10px;
+            }
+            
+            h1 {
+                font-size: 1em;
+                margin-bottom: 12px;
+            }
+            
+            .subtitle {
+                font-size: 0.8em;
+                margin-bottom: 15px;
+            }
+            
+            .tabs {
+                margin-bottom: 15px;
+                padding: 2px;
+            }
+            
+            .tab {
+                padding: 8px 6px;
+                font-size: 0.75em;
+                min-width: 70px;
+            }
+            
+            .penalties-table {
+                font-size: 0.8em;
+                margin-bottom: 15px;
+                display: block;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+            
+            .penalties-table thead {
+                display: none;
+            }
+            
+            .penalties-table tbody {
+                display: block;
+            }
+            
+            .penalties-table tr {
+                display: block;
+                background: #1a1a2e;
+                margin-bottom: 10px;
+                border-radius: 8px;
+                padding: 12px;
+                border: 1px solid #2a2a3e;
+            }
+            
+            .penalties-table td {
+                display: block;
+                padding: 5px 0;
+                border: none;
+                text-align: left;
+            }
+            
+            .penalties-table td:first-child {
+                font-weight: bold;
+                color: #ffd93d;
+                font-size: 0.9em;
+                margin-bottom: 5px;
+            }
+            
+            .penalties-table td:nth-child(2) {
+                font-weight: bold;
+                color: #ff6b6b;
+                font-size: 1em;
+                margin-bottom: 5px;
+            }
+            
+            .penalties-table td:last-child {
+                color: #ccc;
+                font-size: 0.8em;
+                line-height: 1.3;
+            }
+            
+            .penalty-amount {
+                font-size: 1em;
+            }
+            
+            .penalty-category {
+                font-size: 0.9em;
+            }
+            
+            .penalty-description {
+                font-size: 0.8em;
+            }
+            
+            .info-box {
+                padding: 12px;
+                margin-bottom: 15px;
+                font-size: 0.8em;
+            }
+            
+            .info-box h3 {
+                font-size: 0.85em;
+                margin-bottom: 8px;
+            }
+            
+            .back-btn {
+                margin: 20px auto 0 auto;
+                padding: 10px;
+                font-size: 0.85em;
+            }
+        }
+        
+        /* Layout de cartão para telas pequenas */
+        @media (max-width: 600px) {
+            .penalties-table {
+                display: block;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+            
+            .penalties-table thead {
+                display: none;
+            }
+            
+            .penalties-table tbody {
+                display: block;
+            }
+            
+            .penalties-table tr {
+                display: block;
+                background: #1a1a2e;
+                margin-bottom: 12px;
+                border-radius: 10px;
+                padding: 15px;
+                border: 1px solid #2a2a3e;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            }
+            
+            .penalties-table td {
+                display: block;
+                padding: 6px 0;
+                border: none;
+                text-align: left;
+            }
+            
+            .penalties-table td:first-child {
+                font-weight: bold;
+                color: #ffd93d;
+                font-size: 0.9em;
+                margin-bottom: 6px;
+            }
+            
+            .penalties-table td:nth-child(2) {
+                font-weight: bold;
+                color: #ff6b6b;
+                font-size: 1.1em;
+                margin-bottom: 6px;
+            }
+            
+            .penalties-table td:last-child {
+                color: #ccc;
+                font-size: 0.85em;
+                line-height: 1.4;
+            }
+        }
+        
+        /* Scroll suave para abas */
+        .tabs::-webkit-scrollbar {
+            height: 4px;
+        }
+        
+        .tabs::-webkit-scrollbar-track {
+            background: #1a1a2e;
+        }
+        
+        .tabs::-webkit-scrollbar-thumb {
+            background: #ff6b6b;
+            border-radius: 2px;
+        }
+        
+        /* Melhorias de performance para mobile */
+        .penalties-table tr {
+            will-change: transform;
+        }
+        
+        .tab {
+            will-change: background-color, color;
+        }
+        
+        /* Prevenção de zoom em inputs */
+        input, select, textarea {
+            font-size: 16px;
+        }
+        
+        /* Melhorias de acessibilidade */
+        .tab:focus {
+            outline: 2px solid #ffd93d;
+            outline-offset: 2px;
+        }
+        
+        .back-btn:focus {
+            outline: 2px solid #ffd93d;
+            outline-offset: 2px;
+        }
+        
+        /* Otimização para dispositivos com tela pequena */
+        @media (max-width: 360px) {
+            .container {
+                margin: 2px;
+                padding: 12px 8px;
+            }
+            
+            h1 {
+                font-size: 0.9em;
+            }
+            
+            .subtitle {
+                font-size: 0.75em;
+            }
+            
+            .tab {
+                padding: 6px 4px;
+                font-size: 0.7em;
+                min-width: 60px;
+            }
+            
+            .penalties-table tr {
+                padding: 10px;
+            }
+            
+            .penalty-category {
+                font-size: 0.85em;
+            }
+            
+            .penalty-amount {
+                font-size: 0.9em;
+            }
+            
+            .penalty-description {
+                font-size: 0.75em;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Manual Completo do Aluno: A Jornada Educx</h1>
-        <p style="text-align:center; font-size:1.1em; margin-bottom:24px;">Transformando atitudes em conquistas!</p>
+        <h1>💰 Penalidades - Sistema de Moedas</h1>
+        <p class="subtitle">Conheça as ações que podem fazer você perder moedas Educx</p>
 
-        <div class="accordion">
-            <div class="accordion-item" id="cap1">
-                <div class="accordion-title">Capítulo 1: A Aventura Vai Começar!</div>
-                <div class="accordion-content">
-                    <strong>1.1. O que é a Jornada Educx?</strong>
-                    <p>Bem-vindo, aventureiro! A "Jornada Educx" é o nome do nosso programa de gamificação. Nós transformamos o ambiente escolar em um grande jogo, onde suas atitudes, seu esforço e sua colaboração se transformam em conquistas visíveis. Aqui, cada dia é uma chance de evoluir, ganhar recompensas e, o mais importante, se tornar uma versão melhor de si mesmo.</p>
-                    <strong>1.2. Por que transformamos a escola em um jogo?</strong>
-                    <ul>
-                        <li>Reconhecer seu esforço: Não apenas nas notas, mas em tudo o que você faz.</li>
-                        <li>Tornar o aprendizado divertido: Missões e desafios tornam as tarefas mais empolgantes.</li>
-                        <li>Fortalecer a comunidade: Incentivamos o trabalho em equipe e o respeito mútuo.</li>
-                        <li>Celebrar o progresso: Cada pequena vitória é um passo na sua jornada.</li>
-                    </ul>
-                    <strong>1.3. Seus Objetivos Principais</strong>
-                    <ul>
-                        <li>Acumular XP: Para subir de nível e desbloquear títulos de prestígio.</li>
-                        <li>Ganhar Moedas Educx: Para trocar por recompensas incríveis.</li>
-                        <li>Colaborar: Para alcançar objetivos maiores junto com seus colegas.</li>
-                    </ul>
-                </div>
-            </div>
-            <div class="accordion-item" id="cap2">
-                <div class="accordion-title">Capítulo 2: As Ferramentas do Herói</div>
-                <div class="accordion-content">
-                    <strong>2.1. Seu Crachá: A Chave para o Universo Educx</strong>
-                    <p>Seu crachá de estudante é mais importante do que nunca! Ele contém um QR Code mágico. Este código é sua identidade secreta no jogo, a chave que abre seu perfil. Cuide bem dele!</p>
-                    <strong>2.2. A Plataforma Web: Seu Painel de Controle</strong>
-                    <ol>
-                        <li>Abra a câmera do seu celular ou de um tablet da escola.</li>
-                        <li>Aponte para o QR Code do seu crachá.</li>
-                        <li>Um link aparecerá. Clique nele.</li>
-                        <li>Pronto! Você está no seu painel de controle.</li>
-                    </ol>
-                    <strong>2.3. Entendendo seu Perfil</strong>
-                    <ul>
-                        <li><b>XP (Pontos de Experiência):</b> Uma barra de progresso que mostra o quão perto você está do próximo nível. O XP só aumenta, mostrando todo o seu crescimento acumulado.</li>
-                        <li><b>Moedas Educx (💰):</b> O seu "dinheiro" no jogo. É com elas que você adquire as Cartas de Poder. Elas podem aumentar ou diminuir.</li>
-                        <li><b>Nível:</b> Seu título atual na escola (Iniciante, Explorador, etc.). Mostra a todos o seu prestígio e dedicação.</li>
-                    </ul>
-                </div>
-            </div>
-            <div class="accordion-item" id="cap3">
-                <div class="accordion-title">Capítulo 3: Como Acumular Conquistas (XP & Moedas)</div>
-                <div class="accordion-content">
-                    <strong>3.1. Ações do Dia a Dia que Geram XP</strong>
-                    <p>Você ganha XP automaticamente ao realizar ações positivas que fortalecem nossa comunidade. Elas são a base da sua evolução. Para uma lista completa, consulte o Anexo I no final deste manual.</p>
-                    <strong>3.2. Missões: O Caminho para as Moedas Educx</strong>
-                    <p>As Moedas são o prêmio por ir além! Elas são ganhas ao completar Missões. Fique de olho no seu painel na plataforma e nos murais da sala, pois os professores e a coordenação podem lançar novas missões a qualquer momento!</p>
-                    <strong>3.3. Tipos de Missões</strong>
-                    <ul>
-                        <li><b>Missões Individuais:</b> Desafios só para você. Ex: "Crie um resumo criativo sobre a aula de História".</li>
-                        <li><b>Missões de Grupo:</b> Desafios para fazer com sua equipe. Ex: "Apresentem o melhor trabalho sobre o ciclo da água".</li>
-                        <li><b>Missões Relâmpago:</b> Desafios rápidos que aparecem e duram pouco tempo. Ex: "Os 5 primeiros alunos que resolverem este enigma matemático ganham uma recompensa".</li>
-                        <li><b>Missões da Comunidade:</b> Desafios para a turma toda. Ex: "Se a turma inteira mantiver a sala organizada por uma semana, todos ganham uma recompensa".</li>
-                    </ul>
-                    <strong>3.4. O Poder do Professor: Bônus e Penalidades</strong>
-                    <ul>
-                        <li>Conceder Moedas Bônus: Por uma atitude excepcional que não estava prevista em nenhuma missão.</li>
-                        <li>Remover Moedas: Em casos de infração às regras, como forma de aprendizado.</li>
-                    </ul>
-                </div>
-            </div>
-            <div class="accordion-item" id="cap4">
-                <div class="accordion-title">Capítulo 4: A Lojinha de Recompensas</div>
-                <div class="accordion-content">
-                    <strong>4.1. O que são as Cartas de Poder?</strong>
-                    <p>São recompensas simbólicas que te dão pequenas vantagens e privilégios na escola, tornando sua experiência mais divertida. Exemplos: ser o DJ do intervalo, ter mais tempo de recreio, etc.</p>
-                    <strong>4.2. Como Funciona a Lojinha na Prática</strong>
-                    <ol>
-                        <li>Consulte os Itens: Acesse seu perfil na plataforma web e clique na seção "Lojinha".</li>
-                        <li>Verifique os Preços: Os custos em Moedas de cada Carta de Poder são dinâmicos. O preço que você vê hoje pode não ser o mesmo de amanhã!</li>
-                        <li>Faça a Troca: Se tiver moedas suficientes, basta clicar em "Resgatar".</li>
-                        <li>Use seu Poder: A plataforma informará seu professor sobre o resgate. Combine com ele o melhor momento para usar sua recompensa.</li>
-                    </ol>
-                    <strong>4.3. Estratégias: Guardar ou Gastar suas Moedas?</strong>
-                    <p>A decisão é sua! Você pode gastar suas moedas em recompensas menores assim que puder, ou pode economizar para aquela Carta de Poder mais rara e valiosa que pode aparecer futuramente.</p>
-                </div>
-            </div>
-            <div class="accordion-item" id="cap5">
-                <div class="accordion-title">Capítulo 5: Um Dia na Jornada Educx (Exemplo Prático)</div>
-                <div class="accordion-content">
-                    <p><b>8:00:</b> Ana chega na escola no horário e ganha +10 XP. Ela escaneia seu crachá e vê seu perfil.</p>
-                    <p><b>10:15:</b> Durante a aula de Ciências, a professora lança uma Missão de Grupo: "O grupo que construir o modelo de célula mais criativo ganha 80 Moedas cada!" Ana e sua equipe se esforçam e vencem! Ela ganha +80 Moedas.</p>
-                    <p><b>11:00:</b> No seu painel, Ana vê que agora tem moedas suficientes para resgatar a "Carta de +10 min de intervalo". Ela resgata.</p>
-                    <p><b>12:00:</b> Antes do intervalo, ela avisa ao professor, que autoriza o uso da carta. Ana e um amigo aproveitam o tempo extra.</p>
-                    <p><b>14:00:</b> Durante a aula, Ana ajuda um colega que estava com dificuldade em matemática. O professor percebe a atitude proativa e concede a ela um bônus de +10 XP e +5 Moedas.</p>
-                    <p><b>Resultado do dia da Ana:</b> +20 XP e +85 Moedas. Ela se divertiu, colaborou e foi reconhecida.</p>
-                </div>
-            </div>
-            <div class="accordion-item" id="cap6">
-                <div class="accordion-title">Capítulo 6: As Regras de Ouro da Convivência</div>
-                <div class="accordion-content">
-                    <ul>
-                        <li>O professor é seu guia: Ele tem a palavra final sobre a pontuação para garantir que o jogo seja justo e educativo.</li>
-                        <li>Trabalho em equipe vale ouro: Em missões de grupo, o sucesso de um é o sucesso de todos! Cada integrante da equipe recebe a pontuação total.</li>
-                        <li>Respeito acima de tudo: A gamificação segue todas as regras de convivência da escola.</li>
-                        <li>Evoluir, não competir: O objetivo é a sua evolução pessoal e a colaboração com a turma.</li>
-                    </ul>
-                </div>
-            </div>
-            <div class="accordion-item" id="cap7">
-                <div class="accordion-title">Capítulo 7: Perguntas Frequentes (FAQ)</div>
-                <div class="accordion-content">
-                    <b>P: O que acontece se eu perder meu crachá?</b>
-                    <p>R: Avise a secretaria imediatamente para que possam providenciar um novo e vincular ao seu perfil.</p>
-                    <b>P: Um professor pode tirar meus XP?</b>
-                    <p>R: Não. O XP representa seu progresso e conquistas passadas, ele só acumula. Apenas as Moedas, que são uma moeda de troca, podem ser removidas em casos de infração.</p>
-                    <b>P: E se eu faltar no dia de uma missão?</b>
-                    <p>R: Você não será penalizado, mas perderá a oportunidade de ganhar as moedas daquela missão específica. Fique atento às novas missões que surgem todos os dias!</p>
-                    <b>P: Posso dar minhas moedas para um amigo?</b>
-                    <p>R: Não. Suas moedas são fruto do seu esforço pessoal e são intransferíveis. Mas você pode usar suas recompensas, como "tempo extra de intervalo", para beneficiar um amigo.</p>
-                </div>
-            </div>
-            <div class="accordion-item" id="anexo">
-                <div class="accordion-title">Anexo I: Catálogo de Ações da Jornada Educx</div>
-                <div class="accordion-content">
-                    <b>✅ Ações que Impulsionam sua Jornada (Atitudes Positivas)</b>
-                    <ul>
-                        <li><b>Responsabilidade e Compromisso com os Estudos</b>
-                            <ul>
-                                <li>Ser pontual, chegando às aulas no horário.</li>
-                                <li>Usar o fardamento escolar completo e de forma adequada.</li>
-                                <li>Entregar todas as tarefas e trabalhos dentro do prazo.</li>
-                                <li>Trazer todos os materiais necessários para a aula.</li>
-                                <li>Manter seus cadernos e materiais organizados e em dia.</li>
-                                <li>Prestar atenção e se esforçar para participar das explicações.</li>
-                            </ul>
-                        </li>
-                        <li><b>Colaboração, Empatia e Respeito</b>
-                            <ul>
-                                <li>Ajudar um colega que está com dificuldade em uma matéria ou tarefa.</li>
-                                <li>Oferecer ajuda a um professor ou funcionário sem que seja solicitado.</li>
-                                <li>Trabalhar de forma construtiva e respeitosa em atividades de grupo.</li>
-                                <li>Compartilhar seus materiais com um colega que esqueceu os seus.</li>
-                                <li>Ouvir com atenção e respeito a opinião dos colegas, mesmo que discorde.</li>
-                                <li>Dar as boas-vindas e integrar alunos novos na turma.</li>
-                            </ul>
-                        </li>
-                        <li><b>Iniciativa e Proatividade</b>
-                            <ul>
-                                <li>Fazer perguntas inteligentes e pertinentes para aprofundar o entendimento da aula.</li>
-                                <li>Trazer voluntariamente pesquisas, notícias ou curiosidades relacionadas ao conteúdo estudado.</li>
-                                <li>Oferecer-se para ajudar em tarefas da sala (ex: apagar o quadro, organizar a estante, distribuir materiais).</li>
-                                <li>Sugerir ideias para projetos, eventos ou melhorias para a turma e a escola.</li>
-                                <li>Buscar conhecimento extra sobre os assuntos de que mais gosta.</li>
-                            </ul>
-                        </li>
-                        <li><b>Cuidado com o Ambiente e a Comunidade Escolar</b>
-                            <ul>
-                                <li>Manter sua carteira, cadeira e o espaço ao seu redor sempre limpos e organizados.</li>
-                                <li>Não jogar lixo no chão da sala ou do pátio.</li>
-                                <li>Ajudar a manter os espaços comuns (biblioteca, laboratórios, quadra) limpos e em ordem.</li>
-                                <li>Cuidar dos livros, tanto os didáticos quanto os da biblioteca.</li>
-                                <li>Informar a um professor ou à coordenação caso veja algum material ou equipamento da escola danificado.</li>
-                            </ul>
-                        </li>
-                        <li><b>Engajamento Digital Positivo</b>
-                            <ul>
-                                <li>Utilizar o celular ou tablet para pesquisa e atividades pedagógicas, quando autorizado pelo professor.</li>
-                                <li>Participar de forma respeitosa e construtiva nos fóruns de discussão da plataforma da escola.</li>
-                                <li>Com autorização dos pais, interagir positivamente com as publicações nas redes sociais da escola.</li>
-                            </ul>
-                        </li>
-                    </ul>
-                    <b>❌ Ações que Prejudicam sua Jornada (Atitudes a Evitar)</b>
-                    <ul>
-                        <li><b>Desrespeito e Conflitos</b>
-                            <ul>
-                                <li>Praticar qualquer forma de bullying (apelidos maldosos, agressão física, exclusão social, cyberbullying).</li>
-                                <li>Desrespeitar as ordens e orientações de professores e funcionários.</li>
-                                <li>Usar palavras de baixo calão ou linguagem ofensiva.</li>
-                                <li>Interromper a aula com conversas paralelas ou brincadeiras fora de hora.</li>
-                                <li>Criar ou espalhar fofocas e boatos sobre colegas ou professores.</li>
-                            </ul>
-                        </li>
-                        <li><b>Falta de Compromisso com os Estudos</b>
-                            <ul>
-                                <li>Deixar de entregar tarefas e trabalhos de forma recorrente e sem justificativa.</li>
-                                <li>Conversar ou se distrair durante as explicações, atrapalhando a si mesmo e aos outros.</li>
-                                <li>Praticar qualquer tipo de desonestidade acadêmica (colar em provas, plagiar trabalhos da internet ou de colegas).</li>
-                                <li>Recusar-se a participar das atividades propostas em sala de aula.</li>
-                            </ul>
-                        </li>
-                        <li><b>Mau Uso de Materiais e do Espaço Físico</b>
-                            <ul>
-                                <li>Usar o celular, fones de ouvido ou outros dispositivos eletrônicos sem a permissão explícita do professor.</li>
-                                <li>Danificar o patrimônio da escola (pichar ou riscar carteiras, paredes, portas).</li>
-                                <li>Danificar ou usar de forma inadequada os materiais de colegas.</li>
-                                <li>Deixar lixo ou desorganização no seu espaço ao final da aula.</li>
-                            </ul>
-                        </li>
-                        <li><b>Faltas e Atrasos</b>
-                            <ul>
-                                <li>Chegar atrasado às aulas com frequência e sem justificativa plausível.</li>
-                                <li>Faltar às aulas sem apresentar atestado médico ou justificativa dos responsáveis.</li>
-                                <li>Estar no ambiente escolar mas não comparecer à sala de aula ("matar aula").</li>
-                            </ul>
-                        </li>
-                    </ul>
-                </div>
-            </div>
+        <div class="info-box">
+            <h3>ℹ️ Como Funciona o Sistema de Penalidades</h3>
+            <p>As moedas Educx são removidas quando você comete infrações às regras escolares. Lembre-se: o objetivo é sempre o aprendizado e a melhoria do convívio escolar. As penalidades são proporcionais à gravidade da infração e consideram que a média de moedas ganhas por dia é de 10-20.</p>
         </div>
-    <?php
-    // Tenta obter o id do aluno via GET ou SESSION
-    $id_aluno = isset($_GET['id']) ? $_GET['id'] : (isset($_SESSION['id']) ? $_SESSION['id'] : '');
-    ?>
-    <a href="aluno.php<?php echo $id_aluno ? '?id=' . urlencode($id_aluno) : ''; ?>" class="gradient-button back-btn">Voltar</a>
+
+        <div class="tabs">
+            <div class="tab active" onclick="showTab('leves')">Leves</div>
+            <div class="tab" onclick="showTab('moderadas')">Moderadas</div>
+            <div class="tab" onclick="showTab('graves')">Graves</div>
+            <div class="tab" onclick="showTab('criticas')">Críticas</div>
+        </div>
+
+        <!-- TAB LEVES -->
+        <div id="leves" class="tab-content active">
+            <table class="penalties-table">
+                <thead>
+                    <tr>
+                        <th>Comportamento</th>
+                        <th>Penalidade</th>
+                        <th>Descrição</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="penalty-category">Atraso leve (até 5 min)</td>
+                        <td class="penalty-amount severity-low">-2 moedas</td>
+                        <td class="penalty-description">Chegar atrasado sem justificativa válida</td>
+                    </tr>
+                    <tr>
+                        <td class="penalty-category">Material esquecido</td>
+                        <td class="penalty-amount severity-low">-1 moeda</td>
+                        <td class="penalty-description">Esquecer material necessário para a aula</td>
+                    </tr>
+                    <tr>
+                        <td class="penalty-category">Conversa paralela</td>
+                        <td class="penalty-amount severity-low">-2 moedas</td>
+                        <td class="penalty-description">Conversar durante explicações do professor</td>
+                    </tr>
+                    <tr>
+                        <td class="penalty-category">Fardamento inadequado</td>
+                        <td class="penalty-amount severity-low">-1 moeda</td>
+                        <td class="penalty-description">Não usar o uniforme completo ou adequadamente</td>
+                    </tr>
+                    <tr>
+                        <td class="penalty-category">Desorganização do espaço</td>
+                        <td class="penalty-amount severity-low">-1 moeda</td>
+                        <td class="penalty-description">Deixar carteira ou espaço pessoal desorganizado</td>
+                    </tr>
+                    <tr>
+                        <td class="penalty-category">Uso inadequado do celular</td>
+                        <td class="penalty-amount severity-low">-3 moedas</td>
+                        <td class="penalty-description">Usar celular sem autorização do professor</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- TAB MODERADAS -->
+        <div id="moderadas" class="tab-content">
+            <table class="penalties-table">
+                <thead>
+                    <tr>
+                        <th>Comportamento</th>
+                        <th>Penalidade</th>
+                        <th>Descrição</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="penalty-category">Atraso recorrente</td>
+                        <td class="penalty-amount severity-medium">-5 moedas</td>
+                        <td class="penalty-description">Atrasos frequentes sem justificativa</td>
+                    </tr>
+                    <tr>
+                        <td class="penalty-category">Não participar das atividades</td>
+                        <td class="penalty-amount severity-medium">-4 moedas</td>
+                        <td class="penalty-description">Recusar-se a participar de atividades propostas</td>
+                    </tr>
+                    <tr>
+                        <td class="penalty-category">Trabalho não entregue</td>
+                        <td class="penalty-amount severity-medium">-6 moedas</td>
+                        <td class="penalty-description">Não entregar tarefas ou trabalhos no prazo</td>
+                    </tr>
+                    <tr>
+                        <td class="penalty-category">Interrupção constante</td>
+                        <td class="penalty-amount severity-medium">-4 moedas</td>
+                        <td class="penalty-description">Interromper a aula repetidamente</td>
+                    </tr>
+                    <tr>
+                        <td class="penalty-category">Linguagem inadequada</td>
+                        <td class="penalty-amount severity-medium">-5 moedas</td>
+                        <td class="penalty-description">Usar palavras de baixo calão</td>
+                    </tr>
+                    <tr>
+                        <td class="penalty-category">Desrespeito a funcionários</td>
+                        <td class="penalty-amount severity-medium">-7 moedas</td>
+                        <td class="penalty-description">Desrespeitar orientações de funcionários</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- TAB GRAVES -->
+        <div id="graves" class="tab-content">
+            <table class="penalties-table">
+                <thead>
+                    <tr>
+                        <th>Comportamento</th>
+                        <th>Penalidade</th>
+                        <th>Descrição</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="penalty-category">Desonestidade acadêmica</td>
+                        <td class="penalty-amount severity-high">-15 moedas</td>
+                        <td class="penalty-description">Colar em provas ou plagiar trabalhos</td>
+                    </tr>
+                    <tr>
+                        <td class="penalty-category">Danificar patrimônio</td>
+                        <td class="penalty-amount severity-high">-12 moedas</td>
+                        <td class="penalty-description">Pichar, riscar ou danificar materiais da escola</td>
+                    </tr>
+                    <tr>
+                        <td class="penalty-category">Faltas sem justificativa</td>
+                        <td class="penalty-amount severity-high">-10 moedas</td>
+                        <td class="penalty-description">Faltar aulas sem atestado ou justificativa</td>
+                    </tr>
+                    <tr>
+                        <td class="penalty-category">"Matar aula"</td>
+                        <td class="penalty-amount severity-high">-8 moedas</td>
+                        <td class="penalty-description">Estar na escola mas não ir para a sala</td>
+                    </tr>
+                    <tr>
+                        <td class="penalty-category">Desrespeito a professores</td>
+                        <td class="penalty-amount severity-high">-12 moedas</td>
+                        <td class="penalty-description">Desrespeitar ordens ou orientações de professores</td>
+                    </tr>
+                    <tr>
+                        <td class="penalty-category">Criar conflitos</td>
+                        <td class="penalty-amount severity-high">-10 moedas</td>
+                        <td class="penalty-description">Provocar brigas ou conflitos com colegas</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- TAB CRÍTICAS -->
+        <div id="criticas" class="tab-content">
+            <table class="penalties-table">
+                <thead>
+                    <tr>
+                        <th>Comportamento</th>
+                        <th>Penalidade</th>
+                        <th>Descrição</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="penalty-category">Bullying</td>
+                        <td class="penalty-amount severity-critical">-25 moedas</td>
+                        <td class="penalty-description">Praticar qualquer forma de bullying</td>
+                    </tr>
+                    <tr>
+                        <td class="penalty-category">Agressão física</td>
+                        <td class="penalty-amount severity-critical">-30 moedas</td>
+                        <td class="penalty-description">Agressão física contra colegas ou funcionários</td>
+                    </tr>
+                    <tr>
+                        <td class="penalty-category">Cyberbullying</td>
+                        <td class="penalty-amount severity-critical">-20 moedas</td>
+                        <td class="penalty-description">Praticar bullying através de meios digitais</td>
+                    </tr>
+                    <tr>
+                        <td class="penalty-category">Danos graves ao patrimônio</td>
+                        <td class="penalty-amount severity-critical">-20 moedas</td>
+                        <td class="penalty-description">Causar danos significativos à escola</td>
+                    </tr>
+                    <tr>
+                        <td class="penalty-category">Ameaças</td>
+                        <td class="penalty-amount severity-critical">-25 moedas</td>
+                        <td class="penalty-description">Ameaçar colegas, professores ou funcionários</td>
+                    </tr>
+                    <tr>
+                        <td class="penalty-category">Uso de substâncias</td>
+                        <td class="penalty-amount severity-critical">-35 moedas</td>
+                        <td class="penalty-description">Uso de álcool, drogas ou substâncias ilícitas</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="info-box">
+            <h3>💡 Dicas Importantes</h3>
+            <ul>
+                <li><strong>Arrependimento:</strong> Se você se arrepender e demonstrar mudança de comportamento, o professor pode reduzir ou cancelar a penalidade.</li>
+                <li><strong>Reincidência:</strong> Comportamentos repetidos podem ter penalidades maiores.</li>
+                <li><strong>Contexto:</strong> O professor sempre considera o contexto e as circunstâncias antes de aplicar uma penalidade.</li>
+                <li><strong>Recuperação:</strong> Lembre-se que você sempre pode recuperar moedas através de boas ações e missões!</li>
+            </ul>
+        </div>
+
+        <?php
+        // Tenta obter o id do aluno via GET ou SESSION
+        $id_aluno = isset($_GET['id']) ? $_GET['id'] : (isset($_SESSION['id']) ? $_SESSION['id'] : '');
+        ?>
+        <a href="aluno.php<?php echo $id_aluno ? '?id=' . urlencode($id_aluno) : ''; ?>" class="gradient-button back-btn">Voltar ao Painel</a>
     </div>
+
     <script>
-        // Interatividade do acordeão
-        document.querySelectorAll('.accordion-title').forEach(function(title) {
-            title.addEventListener('click', function() {
-                var item = this.parentElement;
-                item.classList.toggle('active');
+        function showTab(tabName) {
+            // Esconder todas as abas
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // Remover classe active de todas as abas
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Mostrar a aba selecionada
+            document.getElementById(tabName).classList.add('active');
+            
+            // Adicionar classe active à aba clicada
+            event.target.classList.add('active');
+            
+            // Scroll suave para o topo da tabela
+            setTimeout(() => {
+                const activeContent = document.getElementById(tabName);
+                if (activeContent) {
+                    activeContent.scrollIntoView({ 
+                        behavior: 'smooth', 
+                        block: 'start' 
+                    });
+                }
+            }, 100);
+        }
+        
+        // Melhorar experiência de toque em dispositivos móveis
+        document.addEventListener('DOMContentLoaded', function() {
+            // Adicionar feedback tátil para abas
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => {
+                tab.addEventListener('touchstart', function() {
+                    this.style.transform = 'scale(0.95)';
+                });
+                
+                tab.addEventListener('touchend', function() {
+                    this.style.transform = 'scale(1)';
+                });
+                
+                tab.addEventListener('touchcancel', function() {
+                    this.style.transform = 'scale(1)';
+                });
+            });
+            
+            // Otimizar scroll para dispositivos móveis
+            const tables = document.querySelectorAll('.penalties-table');
+            tables.forEach(table => {
+                table.addEventListener('touchstart', function() {
+                    this.style.overflowX = 'auto';
+                });
             });
         });
     </script>

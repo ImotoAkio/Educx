@@ -2,8 +2,58 @@
 // Definir a página ativa - deve ser definida antes de incluir este arquivo
 $pagina_ativa = $pagina_ativa ?? 'dashboard';
 ?>
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel do Professor</title>
+    
+    <!-- CSS do Bootstrap -->
+    <link rel="stylesheet" href="../assets/css/bootstrap.min.css">
+    
+    <!-- CSS do Paper Dashboard -->
+    <link rel="stylesheet" href="../assets/css/paper-dashboard.css">
+    
+    <!-- CSS do Mobile Header -->
+    <link rel="stylesheet" href="../assets/css/mobile-header.css">
+    
+    <!-- Font Awesome para ícones -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- CSS customizado -->
+    <style>
+        /* Ajustes para mobile */
+        @media (max-width: 768px) {
+            .main-panel {
+                margin-top: 60px !important;
+                padding-top: 20px;
+            }
+            
+            .sidebar {
+                display: none !important;
+            }
+            
+            .navbar-absolute {
+                display: none !important;
+            }
+        }
+        
+        /* Melhorias gerais */
+        .mobile-header {
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+        
+        .mobile-sidebar {
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+    </style>
+</head>
 <body class="">
 <div class="wrapper">
+    <!-- Sidebar Desktop -->
     <div class="sidebar" data-color="white" data-active-color="danger">
       <div class="logo">
         <a href="dashboard.php" class="simple-text logo-mini">
@@ -41,34 +91,20 @@ $pagina_ativa = $pagina_ativa ?? 'dashboard';
               <p>Criar Quiz</p>
             </a>
           </li>
+          <li class="<?= $pagina_ativa === 'editar_quiz' ? 'active' : '' ?>">
+            <a href="./editar_quiz.php">
+              <i class="nc-icon nc-single-copy-04"></i>
+              <p>Editar Quiz</p>
+            </a>
+          </li>
         </ul>
       </div>
     </div>
 
-    <!-- Painel principal para dispositivos móveis -->
-    <div class="main-panel d-md-none"> <!-- Visível apenas em dispositivos móveis -->
-      <!-- Aqui vai o conteúdo do painel principal -->
-      <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <button class="navbar-toggler-icon" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-          <ul class="navbar-nav ml-auto">
-            <li class="nav-item <?= $pagina_ativa === 'dashboard' ? 'active' : '' ?>">
-              <a class="nav-link" href="dashboard.php">Dashboard <span class="sr-only">(current)</span></a>
-            </li>
-            <li class="nav-item <?= $pagina_ativa === 'missoes' ? 'active' : '' ?>">
-              <a class="nav-link" href="./missoes.php">Aprovar Missões</a>
-            </li>
-            <li class="nav-item <?= $pagina_ativa === 'editar_missoes' ? 'active' : '' ?>">
-              <a class="nav-link" href="./editar_missoes.php">Editar Missões</a>
-            </li>
-            <li class="nav-item <?= $pagina_ativa === 'criar_quiz' ? 'active' : '' ?>">
-              <a class="nav-link" href="./criar_quiz.php">Criar Quiz</a>
-            </li>
-          </ul>
-        </div>
-      </nav>
-    </div>
+    <!-- Mobile Header -->
+    <?php include 'mobile-header.php'; ?>
+    
+    
 
     <!-- Painel principal para telas grandes -->
     <div class="main-panel">
@@ -77,19 +113,6 @@ $pagina_ativa = $pagina_ativa ?? 'dashboard';
         <div class="container-fluid">
           <div class="collapse navbar-collapse justify-content-end" id="navigation">
             <ul class="navbar-nav">
-              <li class="nav-item btn-rotate dropdown">
-                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                  <i class="nc-icon nc-bell-55"></i>
-                  <p>
-                    <span class="d-lg-none d-md-block">Some Actions</span>
-                  </p>
-                </a>
-                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
-                  <a class="dropdown-item" href="#">Action</a>
-                  <a class="dropdown-item" href="#">Another action</a>
-                  <a class="dropdown-item" href="#">Something else here</a>
-                </div>
-              </li>
               <li class="nav-item">
                 <a class="nav-link btn-rotate" href="javascript:;" data-bs-toggle="modal" data-bs-target="#editAccountModal">
                   <i class="nc-icon nc-settings-gear-65"></i>
@@ -103,3 +126,7 @@ $pagina_ativa = $pagina_ativa ?? 'dashboard';
         </div>
       </nav>
       <!-- End Navbar -->
+      
+      <!-- Conteúdo Principal -->
+      <div class="content">
+        <div class="container-fluid">
