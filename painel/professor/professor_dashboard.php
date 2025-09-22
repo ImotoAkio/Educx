@@ -213,6 +213,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['aluno_id']) && isset(
 }
 
     </style>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 
 <body>
@@ -388,9 +393,91 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
-Warning: Undefined array key "xp" in F:\GITHUB\Educx\painel\secretaria\paginas\missoes.php on line 166
-Warning: Undefined array key "xp" in F:\GITHUB\Educx\painel\secretaria\paginas\missoes.php on line 166
 
 </script>
+
+<!-- Modal de Notificação do App Professor -->
+<div class="modal fade" id="modalAppProfessor" tabindex="-1" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 20px; overflow: hidden; border: none; box-shadow: 0 20px 40px rgba(0,0,0,0.3);">
+            <div class="modal-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 30px;">
+                <div class="text-center w-100">
+                    <div style="width: 80px; height: 80px; background: rgba(255,255,255,0.2); border-radius: 20px; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 40px;">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <h4 class="modal-title mb-0">📱 App Professor Disponível!</h4>
+                </div>
+            </div>
+            <div class="modal-body" style="padding: 30px; text-align: center;">
+                <p class="mb-4" style="font-size: 16px; color: #666;">
+                    O aplicativo móvel do professor já está disponível! 
+                    Baixe e instale para ter acesso rápido aos dados dos alunos via QR Code.
+                </p>
+                <div class="d-flex gap-3 justify-content-center">
+                    <a href="../../instalar_app_professor.php" class="btn btn-primary" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; padding: 12px 25px; border-radius: 10px; font-weight: bold;">
+                        <i class="fas fa-download me-2"></i>
+                        Ver Instruções
+                    </a>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal" style="padding: 12px 25px; border-radius: 10px;">
+                        <i class="fas fa-times me-2"></i>
+                        Fechar
+                    </button>
+                </div>
+                <p class="mt-3 mb-0" style="font-size: 12px; color: #999;">
+                    <i class="fas fa-info-circle me-1"></i>
+                    Esta notificação aparecerá apenas uma vez por sessão
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Mostrar modal do app após 5 segundos
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM carregado, verificando modal...');
+    
+    // Modal aparece apenas uma vez por sessão
+    
+    // Verificar se já foi mostrada nesta sessão
+    if (!sessionStorage.getItem('appModalShown')) {
+        console.log('Modal não foi mostrada ainda, aguardando 5 segundos...');
+        setTimeout(function() {
+            console.log('Tentando mostrar modal...');
+            
+            // Testar se jQuery está disponível
+            if (typeof $ !== 'undefined') {
+                console.log('jQuery disponível, mostrando modal...');
+                $('#modalAppProfessor').modal('show');
+                
+                // Marcar como mostrada APÓS mostrar
+                sessionStorage.setItem('appModalShown', 'true');
+                console.log('Modal marcada como mostrada');
+            } else {
+                console.log('jQuery não disponível, tentando método nativo...');
+                // Método alternativo sem jQuery
+                const modal = document.getElementById('modalAppProfessor');
+                if (modal) {
+                    modal.style.display = 'block';
+                    modal.classList.add('show');
+                    document.body.classList.add('modal-open');
+                    
+                    // Marcar como mostrada APÓS mostrar
+                    sessionStorage.setItem('appModalShown', 'true');
+                    console.log('Modal marcada como mostrada');
+                } else {
+                    console.log('Modal não encontrada no DOM');
+                }
+            }
+        }, 5000);
+    } else {
+        console.log('Modal já foi mostrada nesta sessão');
+    }
+});
+</script>
+
+<!-- jQuery e Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
 
 </html>
