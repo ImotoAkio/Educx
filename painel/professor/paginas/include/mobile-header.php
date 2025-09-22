@@ -81,6 +81,13 @@ $professor_avatar = 'assets/img/default-avatar.png'; // Avatar padrão
             </a>
         </li>
         
+        <li class="mobile-nav-item">
+            <a href="gerenciar_loja.php" class="mobile-nav-link <?= $pagina_ativa === 'gerenciar_loja' ? 'active' : '' ?>">
+                <i class="mobile-nav-icon">🏪</i>
+                <span class="mobile-nav-text">Gerenciar Loja</span>
+            </a>
+        </li>
+        
     </ul>
     
     <!-- Ações do Menu -->

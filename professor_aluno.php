@@ -438,7 +438,7 @@ $progresso_nivel = (($aluno['xp_total'] % 100) / 100) * 100;
     <div class="main-container">
         <!-- Header do Aluno -->
         <div class="aluno-header">
-            <img src="asset/img/avatar/<?= htmlspecialchars($aluno['avatar'] ?? 'default.gif') ?>" 
+            <img src="<?= htmlspecialchars($aluno['avatar'] ?? 'asset/img/avatar/default.gif') ?>" 
                  alt="Avatar" class="aluno-avatar">
             <h2 class="mb-2"><?= htmlspecialchars($aluno['nome']) ?></h2>
             <p class="mb-0">

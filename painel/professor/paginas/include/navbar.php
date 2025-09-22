@@ -97,6 +97,12 @@ $pagina_ativa = $pagina_ativa ?? 'dashboard';
               <p>Editar Quiz</p>
             </a>
           </li>
+          <li class="<?= $pagina_ativa === 'gerenciar_loja' ? 'active' : '' ?>">
+            <a href="./gerenciar_loja.php">
+              <i class="nc-icon nc-shop"></i>
+              <p>Gerenciar Loja</p>
+            </a>
+          </li>
         </ul>
       </div>
     </div>
