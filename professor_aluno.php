@@ -2,7 +2,13 @@
 session_start();
 require 'db.php';
 
-
+// Verificar se é professor
+if (!isset($_SESSION['user_type']) || $_SESSION['user_type'] !== 'professor') {
+    // Redirecionar para login com retorno para esta página
+    $current_url = urlencode($_SERVER['REQUEST_URI']);
+    header("Location: professor_login.php?return_to=" . $current_url);
+    exit;
+}
 
 // Verificar se foi passado ID do aluno
 if (!isset($_GET['id']) || empty($_GET['id'])) {
@@ -519,7 +525,7 @@ $progresso_nivel = (($aluno['xp_total'] % 100) / 100) * 100;
             <button class="action-btn btn-danger" onclick="location.reload()">
                 <i class="fas fa-sync-alt"></i> Atualizar Dados
             </button>
-            <a href="painel/professor/professor_dashboard.php" class="action-btn btn-danger">
+            <a href="/painel/professor/professor_dashboard.php" class="action-btn btn-danger">
                 <i class="fas fa-arrow-left"></i> Voltar ao Dashboard
             </a>
         </div>

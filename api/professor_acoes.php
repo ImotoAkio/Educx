@@ -54,8 +54,8 @@ try {
             
             // Registrar no log de ações
             $stmt = $pdo->prepare("
-                INSERT INTO log_acoes_professor (professor_id, aluno_id, tipo_acao, valor, motivo, data_acao) 
-                VALUES (:professor_id, :aluno_id, 'adicionar_xp', :valor, :motivo, NOW())
+                INSERT INTO log_acoes (professor_id, aluno_id, tipo_acao, descricao, xp_alterado, moedas_alteradas, data_acao) 
+                VALUES (:professor_id, :aluno_id, 'adicionar_xp', :motivo, :valor, 0, NOW())
             ");
             $stmt->execute([
                 ':professor_id' => $professor_id,
@@ -71,8 +71,8 @@ try {
             
             // Registrar no log de ações
             $stmt = $pdo->prepare("
-                INSERT INTO log_acoes_professor (professor_id, aluno_id, tipo_acao, valor, motivo, data_acao) 
-                VALUES (:professor_id, :aluno_id, 'remover_xp', :valor, :motivo, NOW())
+                INSERT INTO log_acoes (professor_id, aluno_id, tipo_acao, descricao, xp_alterado, moedas_alteradas, data_acao) 
+                VALUES (:professor_id, :aluno_id, 'remover_xp', :motivo, :valor, 0, NOW())
             ");
             $stmt->execute([
                 ':professor_id' => $professor_id,
@@ -97,8 +97,8 @@ try {
             
             // Registrar no log de ações
             $stmt = $pdo->prepare("
-                INSERT INTO log_acoes_professor (professor_id, aluno_id, tipo_acao, valor, motivo, data_acao) 
-                VALUES (:professor_id, :aluno_id, 'adicionar_moedas', :valor, :motivo, NOW())
+                INSERT INTO log_acoes (professor_id, aluno_id, tipo_acao, descricao, xp_alterado, moedas_alteradas, data_acao) 
+                VALUES (:professor_id, :aluno_id, 'adicionar_moedas', :motivo, 0, :valor, NOW())
             ");
             $stmt->execute([
                 ':professor_id' => $professor_id,
@@ -118,8 +118,8 @@ try {
             
             // Registrar no log de ações
             $stmt = $pdo->prepare("
-                INSERT INTO log_acoes_professor (professor_id, aluno_id, tipo_acao, valor, motivo, data_acao) 
-                VALUES (:professor_id, :aluno_id, 'remover_moedas', :valor, :motivo, NOW())
+                INSERT INTO log_acoes (professor_id, aluno_id, tipo_acao, descricao, xp_alterado, moedas_alteradas, data_acao) 
+                VALUES (:professor_id, :aluno_id, 'remover_moedas', :motivo, 0, :valor, NOW())
             ");
             $stmt->execute([
                 ':professor_id' => $professor_id,
