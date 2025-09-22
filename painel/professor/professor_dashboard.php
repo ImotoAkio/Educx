@@ -218,6 +218,164 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['aluno_id']) && isset(
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- CSS da Notificação Fixa -->
+    <style>
+    .app-notification {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 9999;
+        max-width: 400px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        color: white;
+        animation: slideInUp 0.5s ease-out;
+        overflow: hidden;
+    }
+    
+    .notification-content {
+        display: flex;
+        align-items: center;
+        padding: 15px 20px;
+        gap: 15px;
+    }
+    
+    .notification-icon {
+        width: 50px;
+        height: 50px;
+        background: rgba(255,255,255,0.2);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        flex-shrink: 0;
+    }
+    
+    .notification-text {
+        flex: 1;
+        min-width: 0;
+    }
+    
+    .notification-text h5 {
+        margin: 0 0 5px 0;
+        font-size: 16px;
+        font-weight: bold;
+    }
+    
+    .notification-text p {
+        margin: 0;
+        font-size: 13px;
+        opacity: 0.9;
+        line-height: 1.3;
+    }
+    
+    .notification-actions {
+        display: flex;
+        gap: 8px;
+        flex-shrink: 0;
+    }
+    
+    .btn-notification {
+        padding: 8px 12px;
+        border: none;
+        border-radius: 8px;
+        font-size: 12px;
+        font-weight: bold;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+    
+    .btn-notification.btn-primary {
+        background: rgba(255,255,255,0.2);
+        color: white;
+        border: 1px solid rgba(255,255,255,0.3);
+    }
+    
+    .btn-notification.btn-primary:hover {
+        background: rgba(255,255,255,0.3);
+        color: white;
+        text-decoration: none;
+        transform: translateY(-1px);
+    }
+    
+    .btn-notification.btn-close {
+        background: rgba(255,255,255,0.1);
+        color: white;
+        border: 1px solid rgba(255,255,255,0.2);
+    }
+    
+    .btn-notification.btn-close:hover {
+        background: rgba(255,255,255,0.2);
+        transform: translateY(-1px);
+    }
+    
+    @keyframes slideInUp {
+        from {
+            transform: translateY(100px);
+            opacity: 0;
+        }
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+    
+    @keyframes slideOutDown {
+        from {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        to {
+            transform: translateY(100px);
+            opacity: 0;
+        }
+    }
+    
+    .app-notification.fade-out {
+        animation: slideOutDown 0.3s ease-in forwards;
+    }
+    
+    /* Responsivo */
+    @media (max-width: 768px) {
+        .app-notification {
+            bottom: 10px;
+            right: 10px;
+            left: 10px;
+            max-width: none;
+        }
+        
+        .notification-content {
+            padding: 12px 15px;
+            gap: 12px;
+        }
+        
+        .notification-icon {
+            width: 40px;
+            height: 40px;
+            font-size: 20px;
+        }
+        
+        .notification-text h5 {
+            font-size: 14px;
+        }
+        
+        .notification-text p {
+            font-size: 12px;
+        }
+        
+        .btn-notification {
+            padding: 6px 10px;
+            font-size: 11px;
+        }
+    }
+    </style>
 </head>
 
 <body>
@@ -396,84 +554,57 @@ document.addEventListener('DOMContentLoaded', function() {
 
 </script>
 
-<!-- Modal de Notificação do App Professor -->
-<div class="modal fade" id="modalAppProfessor" tabindex="-1" data-backdrop="static" data-keyboard="false">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content" style="border-radius: 20px; overflow: hidden; border: none; box-shadow: 0 20px 40px rgba(0,0,0,0.3);">
-            <div class="modal-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 30px;">
-                <div class="text-center w-100">
-                    <div style="width: 80px; height: 80px; background: rgba(255,255,255,0.2); border-radius: 20px; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 40px;">
-                        <i class="fas fa-mobile-alt"></i>
-                    </div>
-                    <h4 class="modal-title mb-0">📱 App Professor Disponível!</h4>
-                </div>
-            </div>
-            <div class="modal-body" style="padding: 30px; text-align: center;">
-                <p class="mb-4" style="font-size: 16px; color: #666;">
-                    O aplicativo móvel do professor já está disponível! 
-                    Baixe e instale para ter acesso rápido aos dados dos alunos via QR Code.
-                </p>
-                <div class="d-flex gap-3 justify-content-center">
-                    <a href="../../instalar_app_professor.php" class="btn btn-primary" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; padding: 12px 25px; border-radius: 10px; font-weight: bold;">
-                        <i class="fas fa-download me-2"></i>
-                        Ver Instruções
-                    </a>
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal" style="padding: 12px 25px; border-radius: 10px;">
-                        <i class="fas fa-times me-2"></i>
-                        Fechar
-                    </button>
-                </div>
-                <p class="mt-3 mb-0" style="font-size: 12px; color: #999;">
-                    <i class="fas fa-info-circle me-1"></i>
-                    Esta notificação aparecerá apenas uma vez por sessão
-                </p>
-            </div>
+<!-- Notificação Fixa do App Professor -->
+<div id="notificacaoAppProfessor" class="app-notification" style="display: none;">
+    <div class="notification-content">
+        <div class="notification-icon">
+            <i class="fas fa-mobile-alt"></i>
+        </div>
+        <div class="notification-text">
+            <h5>📱 App Professor Disponível!</h5>
+            <p>Baixe o aplicativo móvel para acesso rápido via QR Code</p>
+        </div>
+        <div class="notification-actions">
+            <a href="../../instalar_app_professor.php" class="btn-notification btn-primary">
+                <i class="fas fa-download"></i>
+                Ver Instruções
+            </a>
+            <button type="button" class="btn-notification btn-close" onclick="fecharNotificacao()">
+                <i class="fas fa-times"></i>
+            </button>
         </div>
     </div>
 </div>
 
 <script>
-// Mostrar modal do app após 5 segundos
+// Mostrar notificação do app após 5 segundos
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('DOM carregado, verificando modal...');
+    console.log('DOM carregado, aguardando 5 segundos para mostrar notificação...');
     
-    // Modal aparece apenas uma vez por sessão
-    
-    // Verificar se já foi mostrada nesta sessão
-    if (!sessionStorage.getItem('appModalShown')) {
-        console.log('Modal não foi mostrada ainda, aguardando 5 segundos...');
-        setTimeout(function() {
-            console.log('Tentando mostrar modal...');
-            
-            // Testar se jQuery está disponível
-            if (typeof $ !== 'undefined') {
-                console.log('jQuery disponível, mostrando modal...');
-                $('#modalAppProfessor').modal('show');
-                
-                // Marcar como mostrada APÓS mostrar
-                sessionStorage.setItem('appModalShown', 'true');
-                console.log('Modal marcada como mostrada');
-            } else {
-                console.log('jQuery não disponível, tentando método nativo...');
-                // Método alternativo sem jQuery
-                const modal = document.getElementById('modalAppProfessor');
-                if (modal) {
-                    modal.style.display = 'block';
-                    modal.classList.add('show');
-                    document.body.classList.add('modal-open');
-                    
-                    // Marcar como mostrada APÓS mostrar
-                    sessionStorage.setItem('appModalShown', 'true');
-                    console.log('Modal marcada como mostrada');
-                } else {
-                    console.log('Modal não encontrada no DOM');
-                }
-            }
-        }, 5000);
-    } else {
-        console.log('Modal já foi mostrada nesta sessão');
-    }
+    // Notificação aparece toda vez que entrar no dashboard
+    setTimeout(function() {
+        console.log('Mostrando notificação...');
+        
+        const notification = document.getElementById('notificacaoAppProfessor');
+        if (notification) {
+            notification.style.display = 'block';
+            console.log('Notificação exibida com sucesso');
+        } else {
+            console.log('Notificação não encontrada no DOM');
+        }
+    }, 5000);
 });
+
+// Função para fechar a notificação
+function fecharNotificacao() {
+    const notification = document.getElementById('notificacaoAppProfessor');
+    if (notification) {
+        notification.classList.add('fade-out');
+        setTimeout(function() {
+            notification.style.display = 'none';
+        }, 300);
+    }
+}
 </script>
 
 <!-- jQuery e Bootstrap JS -->
