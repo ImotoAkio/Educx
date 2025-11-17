@@ -17,9 +17,37 @@ if (!$aluno) {
 	die("Aluno não encontrado.");
 }
 
+// Verificar se existe coluna 'tipo' na tabela produtos
+try {
+	$stmt = $pdo->query("SHOW COLUMNS FROM produtos LIKE 'tipo'");
+	$temColunaTipo = $stmt->rowCount() > 0;
+} catch (PDOException $e) {
+	$temColunaTipo = false;
+}
+
 // Consulta os produtos disponíveis na loja
-$produtosStmt = $pdo->query("SELECT * FROM produtos");
-$produtos = $produtosStmt->fetchAll(PDO::FETCH_ASSOC);
+if ($temColunaTipo) {
+	// Se existe coluna tipo, separar produtos e powercards
+	$stmt = $pdo->query("SELECT * FROM produtos ORDER BY id ASC");
+	$todosProdutos = $stmt->fetchAll(PDO::FETCH_ASSOC);
+	
+	$produtos = [];
+	$powercards = [];
+	
+	foreach ($todosProdutos as $produto) {
+		$tipo = strtolower(trim($produto['tipo'] ?? 'produto'));
+		if ($tipo === 'powercard' || $tipo === 'power_card') {
+			$powercards[] = $produto;
+		} else {
+			$produtos[] = $produto;
+		}
+	}
+} else {
+	// Se não existe coluna tipo, assumir que são todos produtos normais
+	$produtosStmt = $pdo->query("SELECT * FROM produtos ORDER BY id ASC");
+	$produtos = $produtosStmt->fetchAll(PDO::FETCH_ASSOC);
+	$powercards = [];
+}
 ?>
 <!DOCTYPE html>
 <html lang="pt-br">
@@ -28,10 +56,10 @@ $produtos = $produtosStmt->fetchAll(PDO::FETCH_ASSOC);
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Loja</title>
-	<!-- Link para o arquivo CSS -->
 	<link rel="stylesheet" href="asset/loja.css">
-	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.0.0/css/fontawesome.min.css" rel="stylesheet">
-	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.0.0/css/all.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+	<link rel="icon" href="assets/img/favicon.png" type="image/png">
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 	<style>
 		@import url('https://fonts.googleapis.com/css2?family=Orbitron&display=swap');
@@ -39,26 +67,24 @@ $produtos = $produtosStmt->fetchAll(PDO::FETCH_ASSOC);
 
 		.coin-font {
 			font-family: "Press Start 2P", cursive;
-			/* Altere a fonte aqui */
-			font-size: 1.5em;
-			/* Ajuste o tamanho da fonte */
+			font-size: 1.2em;
 			color: gold;
-			/* Altere a cor, se necessário */
 		}
 
 		.coins {
 			display: flex;
 			align-items: center;
+			gap: 5px;
 			font-size: 1.2em;
 		}
 
 		.coins img {
 			width: 24px;
-			margin-right: 10px;
+			height: 24px;
 		}
 
 		.voltar {
-			margin-bottom: 15px;
+			margin-bottom: 0;
 			font: inherit;
 			background-color: #f0f0f0;
 			border: 0;
@@ -81,8 +107,32 @@ $produtos = $produtosStmt->fetchAll(PDO::FETCH_ASSOC);
 				0 0.0625em 0 0 #ececec, 0 0.125em 0 0 #e0e0e0, 0 0.125em 0 0 #dedede,
 				0 0.2em 0 0 #dcdcdc, 0 0.225em 0 0 #cacaca, 0 0.225em 0.375em 0 #cecece;
 		}
-	</style>
 
+		.header-container {
+			display: flex;
+			align-items: center;
+			gap: 15px;
+			flex-wrap: wrap;
+		}
+
+		.header-left {
+			display: flex;
+			align-items: center;
+			gap: 15px;
+		}
+
+		.header-right {
+			margin-left: auto;
+			display: flex;
+			align-items: center;
+			gap: 10px;
+		}
+
+		.review img {
+			width: 12px;
+			height: 12px;
+		}
+	</style>
 </head>
 
 <body>
@@ -90,81 +140,150 @@ $produtos = $produtosStmt->fetchAll(PDO::FETCH_ASSOC);
 		<!-- Cabeçalho -->
 		<header>
 			<div class="container-fluid">
-				<div class="row align-items-center">
-					<div style="display: flex; align-items: center; gap: 18px;">
-						<button class="voltar" onclick="window.location.href='aluno.php?id=<?= $aluno['id']; ?>'">
-							&lt; Voltar
-						</button>
-						<div class="coins">
-							<img src="asset/img/coin.gif" alt="Moeda">
-							<span class="coin-font"><?= htmlspecialchars($aluno['moedas'], ENT_QUOTES, 'UTF-8'); ?></span>
+				<div class="row">
+					<div class="col-4-sm">
+						<div class="header-container">
+							<div class="header-left">
+								<button class="voltar" onclick="window.location.href='aluno.php?id=<?= $aluno['id']; ?>'">
+									<i class="fas fa-chevron-left"></i>
+								</button>
+								<div class="coins">
+									<img src="asset/img/coin.gif" alt="Moeda">
+									<span class="coin-font"><?= htmlspecialchars($aluno['moedas'], ENT_QUOTES, 'UTF-8'); ?></span>
+								</div>
+							</div>
+							<div class="header-right">
+								<a href="#" class="btn"><i class="fas fa-th"></i></a>
+							</div>
 						</div>
 					</div>
+					<div class="col-4-sm center">
+						<h1 class="page-title">Loja</h1>
+					</div>
+					<div class="col-4-sm right"></div>
 				</div>
 			</div>
-
-
 		</header>
 
 		<section>
 			<div class="container-fluid">
-				<!-- Cartão principal -->
+				<!-- HERO CARD -->
 				<div class="row">
 					<div class="col-12">
 						<div class="hero-card">
 							<div class="content-image">
-								<img src="https://design-fenix.com.ar/codepen/ui-store/speaker.png"
-									alt="Imagem do produto principal">
+								<img src="https://design-fenix.com.ar/codepen/ui-store/speaker.png" alt="">
 							</div>
 							<div class="card-content">
-								<h3>Olá, <?= htmlspecialchars($aluno['nome']); ?>.</h3>
-								<p>Explore seus prêmios</p> <!-- Descrição  -->
+								<h3>Olá, <?= htmlspecialchars($aluno['nome']); ?>!</h3>
+								<p>Explore seus prêmios</p>
 								<div class="content-input">
-									<i class="gg-search"></i>
-									<input type="text" placeholder="Pesquisar"> <!-- Placeholder  -->
+									<i class="fas fa-search"></i>
+									<input type="text" placeholder="Pesquisar" id="searchInput">
 								</div>
 							</div>
 						</div>
 					</div>
 				</div>
 
-				<!-- Título da categoria -->
-				<div class="row margin-vertical">
-					<div class="col-6-sm">
-						<h3 class="segment-title left">Populares</h3> <!-- Categoria  -->
+				<!-- Produtos (Grid) -->
+				<?php if (!empty($produtos)): ?>
+					<div class="row margin-vertical">
+						<div class="col-6-sm">
+							<h3 class="segment-title left">Produtos</h3>
+						</div>
+
 					</div>
-
-				</div>
-
-				<!-- Grade de produtos -->
-
-				<div class="row">
-					<?php foreach ($produtos as $produto): ?>
-						<div class="col-6-sm" style="margin-bottom: 28px;">
-							<div class="product">
-								<img src="<?= htmlspecialchars($produto['imagem']); ?>"
-									alt="<?= htmlspecialchars($produto['nome']); ?>">
-								<div class="detail">
-									<h4 class="name"><?= htmlspecialchars($produto['nome']); ?></h4>
-									<!-- Nome do produto  -->
-									<div class="detail-footer">
-										<div class="price left"><?= htmlspecialchars($produto['descricao']); ?></div>
-										<!-- Preço formatado -->
-										<div class="review right"><img src="asset/img/coin.gif"
-												alt="Moedas"><?= number_format($produto['moeda']); ?> moedas</div>
+					<!-- Products grid -->
+					<div class="row" id="productsGrid">
+						<?php foreach ($produtos as $produto): ?>
+							<div class="col-6-sm product-item" data-name="<?= strtolower(htmlspecialchars($produto['nome'])); ?>">
+								<div class="product">
+									<img src="<?= htmlspecialchars($produto['imagem'] ?? ''); ?>" alt="<?= htmlspecialchars($produto['nome']); ?>">
+									<div class="detail">
+										<h4 class="name"><?= htmlspecialchars($produto['nome']); ?></h4>
+										<div class="detail-footer">
+											<div class="price left"><?= htmlspecialchars($produto['descricao'] ?? ''); ?></div>
+											<div class="review right">
+												<img src="https://design-fenix.com.ar/codepen/ui-store/stars.png" alt="">
+												<?= number_format($produto['moeda']); ?>
+											</div>
+										</div>
+									</div>
+									<div class="star">
+										<a href="confirmacao.php?produto_id=<?= $produto['id']; ?>&aluno_id=<?= $aluno['id']; ?>">
+											<img src="https://design-fenix.com.ar/codepen/ui-store/stars.png" alt="">
+										</a>
 									</div>
 								</div>
-								<div class="star">
-									<a
-										href="confirmacao.php?produto_id=<?= $produto['id']; ?>&aluno_id=<?= $aluno['id']; ?>">
-										<img src="asset/img/carrinho.png" alt="Carrinho">
-									</a>
+							</div>
+						<?php endforeach; ?>
+					</div>
+				<?php endif; ?>
+
+				<!-- PowerCards (Featured) -->
+				<?php if (!empty($powercards)): ?>
+					<div class="row margin-vertical">
+						<div class="col-6-sm">
+							<h3 class="segment-title left">PowerCards</h3>
+						</div>
+
+					</div>
+
+					<!-- Feature Products (PowerCards) -->
+					<?php foreach ($powercards as $powercard): ?>
+						<div class="row">
+							<div class="col-12">
+								<div class="featured-product">
+									<div class="content-img">
+										<img src="<?= htmlspecialchars($powercard['imagem'] ?? ''); ?>" alt="<?= htmlspecialchars($powercard['nome']); ?>">
+									</div>
+									<div class="product-detail">
+										<h4 class="product-name"><?= htmlspecialchars($powercard['nome']); ?></h4>
+										<p class="price">
+											<img src="asset/img/coin.gif" alt="Moedas" style="width: 12px; height: 12px; display: inline-block; vertical-align: middle;">
+											<?= number_format($powercard['moeda']); ?> moedas
+										</p>
+									</div>
+									<div class="star">
+										<a href="confirmacao.php?produto_id=<?= $powercard['id']; ?>&aluno_id=<?= $aluno['id']; ?>">
+											<img src="https://design-fenix.com.ar/codepen/ui-store/stars.png" alt="">
+											<span class="review">Comprar</span>
+										</a>
+									</div>
 								</div>
 							</div>
 						</div>
 					<?php endforeach; ?>
+				<?php endif; ?>
+			</div>
+		</section>
+	</div>
 
+	<script>
+		// Prevenir comportamento padrão dos links
+		$("a").on("click", function (e) {
+			// Apenas prevenir se não tiver href válido ou se for um link de ação
+			if ($(this).attr('href') === '#' || $(this).attr('href') === '') {
+				e.preventDefault();
+			}
+		});
 
+		// Funcionalidade de busca
+		$('#searchInput').on('keyup', function() {
+			var searchText = $(this).val().toLowerCase();
+			
+			$('.product-item').each(function() {
+				var productName = $(this).data('name');
+				
+				if (productName.indexOf(searchText) === -1) {
+					$(this).hide();
+				} else {
+					$(this).show();
+				}
+			});
+		});
+	</script>
 </body>
 
 </html>

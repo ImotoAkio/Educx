@@ -18,12 +18,28 @@ $missao_id = (int) $_GET['id'];
 $professor_id = $_SESSION['usuario_id'];
 
 try {
+    // Verificar se a coluna data_limite existe
+    try {
+        $checkColumn = $pdo->query("SHOW COLUMNS FROM missoes LIKE 'data_limite'");
+        $columnExists = $checkColumn->rowCount() > 0;
+    } catch (PDOException $e) {
+        $columnExists = false;
+    }
+    
     // Buscar a missão apenas se ela pertencer ao professor logado
-    $stmt = $pdo->prepare("
-        SELECT id, nome, descricao, xp, moedas, link, turma_id 
-        FROM missoes 
-        WHERE id = :id AND criador_id = :criador_id
-    ");
+    if ($columnExists) {
+        $stmt = $pdo->prepare("
+            SELECT id, nome, descricao, xp, moedas, link, turma_id, DATE_FORMAT(data_limite, '%Y-%m-%d') as data_limite 
+            FROM missoes 
+            WHERE id = :id AND criador_id = :criador_id
+        ");
+    } else {
+        $stmt = $pdo->prepare("
+            SELECT id, nome, descricao, xp, moedas, link, turma_id, NULL as data_limite 
+            FROM missoes 
+            WHERE id = :id AND criador_id = :criador_id
+        ");
+    }
     $stmt->execute([':id' => $missao_id, ':criador_id' => $professor_id]);
     $missao = $stmt->fetch(PDO::FETCH_ASSOC);
     

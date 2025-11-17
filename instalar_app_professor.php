@@ -2,10 +2,7 @@
 session_start();
 
 // Verificar se o usuário está logado como professor
-if (!isset($_SESSION['user_type']) || $_SESSION['user_type'] !== 'professor') {
-    header("Location: login.php");
-    exit;
-}
+
 ?>
 
 <!DOCTYPE html>

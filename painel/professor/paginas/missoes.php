@@ -17,20 +17,51 @@ if (!isset($_SESSION['usuario_id']) || $_SESSION['tipo_usuario'] !== 'professor'
 // Obtém o ID do professor logado
 $professor_id = $_SESSION['usuario_id'];
 
+// Verificar se a coluna data_limite existe
+try {
+    $checkColumn = $pdo->query("SHOW COLUMNS FROM missoes LIKE 'data_limite'");
+    $columnExists = $checkColumn->rowCount() > 0;
+} catch (PDOException $e) {
+    $columnExists = false;
+}
+
 // Buscar todas as solicitações pendentes de missões criadas pelo professor logado
-$stmt = $pdo->prepare("
-    SELECT 
-        s.id AS solicitacao_id,
-        a.nome AS aluno_nome,
-        m.nome AS missao_nome,
-        m.descricao,
-        m.xp,
-        m.moedas
-    FROM solicitacoes_missoes s
-    JOIN alunos a ON s.aluno_id = a.id
-    JOIN missoes m ON s.missao_id = m.id
-    WHERE s.status = 'pendente' AND m.criador_id = :professor_id
-");
+if ($columnExists) {
+    $stmt = $pdo->prepare("
+        SELECT 
+            s.id AS solicitacao_id,
+            a.nome AS aluno_nome,
+            m.nome AS missao_nome,
+            m.descricao,
+            m.xp,
+            m.moedas,
+            m.data_limite
+        FROM solicitacoes_missoes s
+        JOIN alunos a ON s.aluno_id = a.id
+        JOIN missoes m ON s.missao_id = m.id
+        WHERE s.status = 'pendente' 
+          AND m.criador_id = :professor_id
+          AND (m.data_limite IS NULL OR m.data_limite >= CURDATE())
+        ORDER BY s.id DESC
+    ");
+} else {
+    $stmt = $pdo->prepare("
+        SELECT 
+            s.id AS solicitacao_id,
+            a.nome AS aluno_nome,
+            m.nome AS missao_nome,
+            m.descricao,
+            m.xp,
+            m.moedas,
+            NULL AS data_limite
+        FROM solicitacoes_missoes s
+        JOIN alunos a ON s.aluno_id = a.id
+        JOIN missoes m ON s.missao_id = m.id
+        WHERE s.status = 'pendente' 
+          AND m.criador_id = :professor_id
+        ORDER BY s.id DESC
+    ");
+}
 $stmt->execute(['professor_id' => $professor_id]);
 $solicitacoes = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>

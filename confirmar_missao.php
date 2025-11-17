@@ -30,6 +30,7 @@ try {
 } catch (PDOException $e) {
     die("Erro ao consultar o banco de dados: " . $e->getMessage());
 }
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $aluno_id = isset($_GET['aluno_id']) ? (int)$_GET['aluno_id'] : null;
     $missao_id = isset($_GET['missao_id']) ? (int)$_GET['missao_id'] : null;
@@ -58,10 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Insere a nova solicitação
     $stmt = $pdo->prepare("INSERT INTO solicitacoes_missoes (aluno_id, missao_id, data_solicitacao) VALUES (:aluno_id, :missao_id, NOW())");
     $stmt->execute([':aluno_id' => $aluno_id, ':missao_id' => $missao_id]);
-    
 }
-
-// Código existente para GET continua aqui...
 ?>
 
 <!DOCTYPE html>
@@ -69,90 +67,225 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Confirmação de Troca</title>
+    <title>Confirmação de Missão</title>
     <link rel="stylesheet" href="asset/loja.css">
+    <link rel="stylesheet" href="asset/button.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="icon" href="assets/img/favicon.png" type="image/png">
     <style>
-        img {
-            width: 150px; /* Tamanho da imagem */
-            height: auto; /* Mantém a proporção da imagem */
-            margin-left: 20%; /* Espaço abaixo da imagem */
-            margin-bottom: 10px;
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+        
+        * {
+            box-sizing: border-box;
         }
-        .branco{
-    color: #ffffff;
-}
-        /* From Uiverse.io by adamgiebl */ 
-button {
-  color: #090909;
-  padding: 0.7em 1.7em;
-  font-size: 18px;
-  border-radius: 0.5em;
-  background: #e8e8e8;
-  cursor: pointer;
-  border: 1px solid #e8e8e8;
-  transition: all 0.3s;
-  box-shadow: 6px 6px 12px #c5c5c5, -6px -6px 12px #ffffff;
-}
 
-button:hover {
-  border: 1px solid white;
-}
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            overflow-x: hidden;
+        }
 
-button:active {
-  box-shadow: 4px 4px 12px #c5c5c5, -4px -4px 12px #ffffff;
-}
-.branco{
-    color: #ffffff;
-}
+        .hero-card {
+            min-height: auto !important;
+            height: auto !important;
+        }
 
+        .hero-card .card-content {
+            padding: 30px;
+            min-height: auto;
+            text-align: center;
+        }
+
+        .hero-card .card-content h1 {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 1.2em;
+            color: #17171f;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .hero-card .card-content h3 {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 1em;
+            color: #17171f;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .hero-card .card-content p {
+            font-size: 16px;
+            color: #17171f;
+            margin-bottom: 20px;
+            line-height: 1.6;
+            word-wrap: break-word;
+        }
+
+        .success-icon {
+            font-size: 80px;
+            color: #4ade80;
+            margin: 20px 0;
+            animation: bounce 1s ease infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .mission-image {
+            width: 200px;
+            height: auto;
+            margin: 20px auto;
+            display: block;
+            border-radius: 15px;
+        }
+
+        .reward-info {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin: 25px 0;
+            flex-wrap: wrap;
+        }
+
+        .reward-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(23, 23, 31, 0.1);
+            padding: 15px 20px;
+            border-radius: 12px;
+        }
+
+        .reward-item img {
+            width: 32px;
+            height: 32px;
+        }
+
+        .reward-item span {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 1.1em;
+            color: #17171f;
+        }
+
+        .btn-voltar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 20px;
+            font-family: 'Orbitron', monospace;
+        }
+
+        .btn-voltar:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+            color: white;
+            text-decoration: none;
+        }
+
+        .btn-voltar:active {
+            transform: translateY(0);
+        }
+
+        .alert-box {
+            background: rgba(74, 222, 128, 0.1);
+            border: 2px solid #4ade80;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            color: #17171f;
+        }
+
+        .alert-box p {
+            margin: 0;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .alert-box i {
+            color: #4ade80;
+            margin-right: 10px;
+        }
     </style>
 </head>
 <body>
 <div id="wrapper">
-		<!-- Cabeçalho -->
-		<header>
-			<div class="container-fluid">
-				<div class="row">
-				<a href="aluno.php?id=<?= $aluno['id']; ?>" class="btn" style="color: #ffffff;">
-    			<i class="fas fa-chevron-left"></i>
-				</a>
+    <!-- Cabeçalho -->
+    <header>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-4-sm">
+                    <a href="aluno.php?id=<?= $aluno['id']; ?>" class="btn" style="color: #ffffff;">
+                        <i class="fas fa-chevron-left"></i>
+                    </a>
+                </div>
+                <div class="col-4-sm center">
+                    <h1 class="page-title">Confirmação</h1>
+                </div>
+                <div class="col-4-sm right"></div>
+            </div>
+        </div>
+    </header>
 
-					<div class="col-4-sm center">
-						<h1 class="page-title">Confirmação de Missão</h1> <!-- Título  -->
-					</div>
-
-
-				</div>
-			</div>
-		</header>
-
-		<section>
-			<div class="container-fluid">
-				<!-- Cartão principal -->
-				<div class="row">
-					<div class="col-12">
-						<div class="hero-card1">
-
-							<div class="card-content">
-								<h3 class="branco">Parabéns! Você acabou de realizar a missão <?= htmlspecialchars($missao['nome']); ?></h3> 
-								<img src="asset/img/professor.png" alt="Parabens";>
-                                <p class="branco">Vá até a secretaria ou professor responsável e apresente a comprovação da sua missão! </p> <!-- Descrição  -->
-                                <div>
-                                <br>
-                            <form action="aluno.php?id=<?= $aluno_id;?>" method="POST">
-                                <input type="hidden" name="produto_id" value="<?= $produtoId; ?>">
-                                <input type="hidden" name="aluno_id" value="<?= $alunoId; ?>">
-                                <button type="submit">Voltar pagina inicial</button>
+    <section>
+        <div class="container-fluid">
+            <!-- Cartão principal -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="hero-card">
+                        <div class="card-content">
+                            <div class="success-icon">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            
+                            <h3>Parabéns!</h3>
+                            
+                            <p>Você acabou de realizar a missão:</p>
+                            
+                            <h1><?= htmlspecialchars($missao['nome']); ?></h1>
+                            
+                            <img src="asset/img/professor.png" alt="Professor" class="mission-image">
+                            
+                            <div class="reward-info">
+                                <div class="reward-item">
+                                    <img src="asset/img/xp.gif" alt="XP">
+                                    <span>+<?= htmlspecialchars($missao['xp']); ?> XP</span>
+                                </div>
+                                <div class="reward-item">
+                                    <img src="asset/img/coin.gif" alt="Moedas">
+                                    <span>+<?= htmlspecialchars($missao['moedas']); ?> moedas</span>
+                                </div>
+                            </div>
+                            
+                            <div class="alert-box">
+                                <p>
+                                    <i class="fas fa-info-circle"></i>
+                                    <strong>Importante:</strong> Vá até a secretaria ou professor responsável e apresente a comprovação da sua missão para receber suas recompensas!
+                                </p>
+                            </div>
+                            
+                            <form action="aluno.php?id=<?= $aluno_id; ?>" method="GET">
+                                <input type="hidden" name="id" value="<?= $aluno_id; ?>">
+                                <button type="submit" class="btn-voltar">
+                                    <i class="fas fa-home"></i> Voltar para Início
+                                </button>
                             </form>
-                                    
-									
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-
-
-
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
 </body>
 </html>

@@ -14,6 +14,9 @@ if (!isset($_SESSION['usuario_id']) || $_SESSION['tipo_usuario'] !== 'professor'
   exit;
 }
 
+// Obtém o ID do professor logado
+$professor_id = $_SESSION['usuario_id'];
+
 try {
   // Conexão ao banco de dados
   $pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
@@ -41,19 +44,55 @@ try {
 } catch (PDOException $e) {
   die("Erro ao conectar ao banco de dados: " . $e->getMessage());
 }
-$stmt = $pdo->query("
-    SELECT 
-        s.id AS solicitacao_id,
-        a.nome AS aluno_nome,
-        m.nome AS missao_nome,
-        m.descricao,
-        m.xp,
-        m.moedas
-    FROM solicitacoes_missoes s
-    JOIN alunos a ON s.aluno_id = a.id
-    JOIN missoes m ON s.missao_id = m.id
-    WHERE s.status = 'pendente'
-");
+
+// Consulta às solicitações de missões pendentes - apenas missões criadas pelo professor logado
+// Verificar se a coluna data_limite existe
+try {
+    $checkColumn = $pdo->query("SHOW COLUMNS FROM missoes LIKE 'data_limite'");
+    $columnExists = $checkColumn->rowCount() > 0;
+} catch (PDOException $e) {
+    $columnExists = false;
+}
+
+if ($columnExists) {
+    // Se a coluna existe, filtrar por validade
+    $stmt = $pdo->prepare("
+        SELECT 
+            s.id AS solicitacao_id,
+            a.nome AS aluno_nome,
+            m.nome AS missao_nome,
+            m.descricao,
+            m.xp,
+            m.moedas,
+            m.data_limite
+        FROM solicitacoes_missoes s
+        JOIN alunos a ON s.aluno_id = a.id
+        JOIN missoes m ON s.missao_id = m.id
+        WHERE s.status = 'pendente'
+          AND m.criador_id = :professor_id
+          AND (m.data_limite IS NULL OR m.data_limite >= CURDATE())
+        ORDER BY s.id DESC
+    ");
+} else {
+    // Se a coluna não existe, buscar sem filtrar por validade
+    $stmt = $pdo->prepare("
+        SELECT 
+            s.id AS solicitacao_id,
+            a.nome AS aluno_nome,
+            m.nome AS missao_nome,
+            m.descricao,
+            m.xp,
+            m.moedas,
+            NULL AS data_limite
+        FROM solicitacoes_missoes s
+        JOIN alunos a ON s.aluno_id = a.id
+        JOIN missoes m ON s.missao_id = m.id
+        WHERE s.status = 'pendente'
+          AND m.criador_id = :professor_id
+        ORDER BY s.id DESC
+    ");
+}
+$stmt->execute([':professor_id' => $professor_id]);
 $solicitacoes = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 

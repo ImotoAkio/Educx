@@ -183,6 +183,8 @@ $progresso_percentual = round($progresso * 100, 2);
     <!--<link rel="stylesheet" href="asset/loja.css">-->
     <link rel="stylesheet" href="asset/button.css">
     <link rel="stylesheet" href="asset/fundos.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="icon" href="assets/img/favicon.png" type="image/png">
     <link rel="stylesheet" href="asset/style.css">
     <title>Página do Aluno</title>
     <style>
@@ -570,7 +572,10 @@ $progresso_percentual = round($progresso * 100, 2);
                 <a href="ranking.php?id=<?= $aluno['id']; ?>" class="gradient-button"><span>Ranking</span></a>
                 <a href="personalizar.php?id=<?= $aluno['id']; ?>" class="gradient-button"><span>Personalizar</span></a>
             </div>
-            <a href="regras.php?id=<?= $aluno['id']; ?>" class="gradient-button footer-full-btn" style="margin-top: 10px;"><span>Regras</span></a>
+            <div style="display: flex; gap: 10px; margin-top: 10px; width: 100%;">
+                <a href="regras.php?id=<?= $aluno['id']; ?>" class="gradient-button" style="flex: 1;"><span>Regras</span></a>
+                <a href="extrato.php?id=<?= $aluno['id']; ?>" class="gradient-button" style="flex: 1;"><span>Extrato</span></a>
+            </div>
         </div>
     </div>
 

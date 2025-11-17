@@ -22,6 +22,14 @@ $professor_id = $_SESSION['usuario_id'];
 
 
 
+// Verificar se a coluna data_limite existe
+try {
+    $checkColumn = $pdo->query("SHOW COLUMNS FROM missoes LIKE 'data_limite'");
+    $columnExists = $checkColumn->rowCount() > 0;
+} catch (PDOException $e) {
+    $columnExists = false;
+}
+
 // Função para adicionar uma missão
 if (isset($_POST['add'])) {
   $nome = $_POST['nome'];
@@ -31,20 +39,37 @@ if (isset($_POST['add'])) {
   $link = $_POST['link'];
   $criador_id = $_SESSION['usuario_id'];
   $turma_id = $_POST['turma_id']; // Turma selecionada pelo professor
+  $data_limite = !empty($_POST['data_limite']) ? $_POST['data_limite'] : null;
 
   try {
-    $sql = "INSERT INTO missoes (nome, descricao, xp, moedas, link, criador_id, turma_id) 
-            VALUES (:nome, :descricao, :xp, :moedas, :link, :criador_id, :turma_id)";
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute([
-        'nome' => $nome,
-        'descricao' => $descricao,
-        'xp' => $xp,
-        'moedas' => $moedas,
-        'link' => $link,
-        'criador_id' => $criador_id,
-        'turma_id' => $turma_id
-    ]);
+    if ($columnExists) {
+      $sql = "INSERT INTO missoes (nome, descricao, xp, moedas, link, criador_id, turma_id, data_limite) 
+              VALUES (:nome, :descricao, :xp, :moedas, :link, :criador_id, :turma_id, :data_limite)";
+      $stmt = $pdo->prepare($sql);
+      $stmt->execute([
+          'nome' => $nome,
+          'descricao' => $descricao,
+          'xp' => $xp,
+          'moedas' => $moedas,
+          'link' => $link,
+          'criador_id' => $criador_id,
+          'turma_id' => $turma_id,
+          'data_limite' => $data_limite
+      ]);
+    } else {
+      $sql = "INSERT INTO missoes (nome, descricao, xp, moedas, link, criador_id, turma_id) 
+              VALUES (:nome, :descricao, :xp, :moedas, :link, :criador_id, :turma_id)";
+      $stmt = $pdo->prepare($sql);
+      $stmt->execute([
+          'nome' => $nome,
+          'descricao' => $descricao,
+          'xp' => $xp,
+          'moedas' => $moedas,
+          'link' => $link,
+          'criador_id' => $criador_id,
+          'turma_id' => $turma_id
+      ]);
+    }
     
     redirecionarComMensagem('editar_missoes.php', 'success', "Missão '$nome' criada com sucesso!");
   } catch (Exception $e) {
@@ -61,24 +86,43 @@ if (isset($_POST['edit'])) {
   $moedas = $_POST['moedas'];
   $link = $_POST['link'];
   $turma_id = $_POST['turma_id']; // Nova turma selecionada pelo professor
+  $data_limite = !empty($_POST['data_limite']) ? $_POST['data_limite'] : null;
 
   $professor_id = $_SESSION['usuario_id'];
 
   try {
-    $sql = "UPDATE missoes 
-            SET nome = :nome, descricao = :descricao, xp = :xp, moedas = :moedas, link = :link, turma_id = :turma_id 
-            WHERE id = :id AND criador_id = :criador_id";
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute([
-        'id' => $id,
-        'nome' => $nome,
-        'descricao' => $descricao,
-        'xp' => $xp,
-        'moedas' => $moedas,
-        'link' => $link,
-        'turma_id' => $turma_id,
-        'criador_id' => $professor_id
-    ]);
+    if ($columnExists) {
+      $sql = "UPDATE missoes 
+              SET nome = :nome, descricao = :descricao, xp = :xp, moedas = :moedas, link = :link, turma_id = :turma_id, data_limite = :data_limite 
+              WHERE id = :id AND criador_id = :criador_id";
+      $stmt = $pdo->prepare($sql);
+      $stmt->execute([
+          'id' => $id,
+          'nome' => $nome,
+          'descricao' => $descricao,
+          'xp' => $xp,
+          'moedas' => $moedas,
+          'link' => $link,
+          'turma_id' => $turma_id,
+          'data_limite' => $data_limite,
+          'criador_id' => $professor_id
+      ]);
+    } else {
+      $sql = "UPDATE missoes 
+              SET nome = :nome, descricao = :descricao, xp = :xp, moedas = :moedas, link = :link, turma_id = :turma_id 
+              WHERE id = :id AND criador_id = :criador_id";
+      $stmt = $pdo->prepare($sql);
+      $stmt->execute([
+          'id' => $id,
+          'nome' => $nome,
+          'descricao' => $descricao,
+          'xp' => $xp,
+          'moedas' => $moedas,
+          'link' => $link,
+          'turma_id' => $turma_id,
+          'criador_id' => $professor_id
+      ]);
+    }
 
     if ($stmt->rowCount() > 0) {
       redirecionarComMensagem('editar_missoes.php', 'success', "Missão '$nome' atualizada com sucesso!");
@@ -288,6 +332,19 @@ include 'include/navbar.php';
                   </div>
                 </div>
                 
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label for="data_limite" class="form-label">
+                        <i class="fa fa-calendar"></i> Data Limite <span class="text-danger">*</span>
+                      </label>
+                      <input type="date" class="form-control" id="data_limite" name="data_limite" required
+                             min="<?= date('Y-m-d'); ?>">
+                      <small class="form-text text-muted">Data até quando a missão estará disponível</small>
+                    </div>
+                  </div>
+                </div>
+                
                 <div class="text-center mt-4">
                   <button type="submit" name="add" class="btn btn-success btn-lg">
                     <i class="fa fa-plus-circle"></i> Criar Missão
@@ -359,6 +416,9 @@ include 'include/navbar.php';
                         <th style="cursor: pointer;" onclick="sortTable(6, 'tabelaMissoes')">
                           <i class="fa fa-users"></i> Turma <i class="fa fa-sort"></i>
                         </th>
+                        <th style="cursor: pointer;" onclick="sortTable(7, 'tabelaMissoes')">
+                          <i class="fa fa-calendar"></i> Data Limite <i class="fa fa-sort"></i>
+                        </th>
                         <th>
                           <i class="fa fa-cogs"></i> Ações
                         </th>
@@ -420,6 +480,31 @@ include 'include/navbar.php';
                 }
               } else {
                 echo '<span class="badge badge-secondary">Todas as turmas</span>';
+              }
+              ?>
+            </td>
+            <td>
+              <?php 
+              if (!empty($missao['data_limite'])) {
+                $data_limite = new DateTime($missao['data_limite']);
+                $hoje = new DateTime();
+                $diferenca = $hoje->diff($data_limite);
+                
+                if ($data_limite < $hoje) {
+                  echo '<span class="badge badge-danger" data-toggle="tooltip" title="Missão expirada">';
+                  echo '<i class="fa fa-calendar-times"></i> ' . $data_limite->format('d/m/Y');
+                  echo '</span>';
+                } else if ($diferenca->days <= 3) {
+                  echo '<span class="badge badge-warning" data-toggle="tooltip" title="Expira em ' . $diferenca->days . ' dia(s)">';
+                  echo '<i class="fa fa-calendar"></i> ' . $data_limite->format('d/m/Y');
+                  echo '</span>';
+                } else {
+                  echo '<span class="badge badge-success">';
+                  echo '<i class="fa fa-calendar-check"></i> ' . $data_limite->format('d/m/Y');
+                  echo '</span>';
+                }
+              } else {
+                echo '<span class="text-muted">Sem limite</span>';
               }
               ?>
             </td>
@@ -535,6 +620,19 @@ include 'include/navbar.php';
                   <i class="fa fa-link"></i> Link (Opcional)
                 </label>
                 <input type="url" class="form-control" id="edit_link" name="link">
+              </div>
+            </div>
+          </div>
+          
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="edit_data_limite" class="form-label">
+                  <i class="fa fa-calendar"></i> Data Limite <span class="text-danger">*</span>
+                </label>
+                <input type="date" class="form-control" id="edit_data_limite" name="data_limite" required
+                       min="<?= date('Y-m-d'); ?>">
+                <small class="form-text text-muted">Data até quando a missão estará disponível</small>
               </div>
             </div>
           </div>
@@ -734,6 +832,7 @@ include 'include/navbar.php';
             if (data.success) {
               // Preencher o modal com os dados da missão
               $('#edit_id').val(data.missao.id);
+              $('#edit_data_limite').val(data.missao.data_limite || '');
               $('#edit_nome').val(data.missao.nome);
               $('#edit_descricao').val(data.missao.descricao);
               $('#edit_xp').val(data.missao.xp);

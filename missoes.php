@@ -24,17 +24,39 @@ if (!$turma) {
 
 $turma_id = $turma['turma_id'];
 
-// Consulta apenas as missões que o aluno ainda não realizou
-$stmt = $pdo->prepare("
-    SELECT m.*
-    FROM missoes m
-    WHERE m.status = 'ativa'
-      AND (m.turma_id = :turma_id OR m.turma_id IS NULL OR m.turma_id = 0 OR m.turma_id = '')
-      AND NOT EXISTS (
-          SELECT 1 FROM solicitacoes_missoes sm
-          WHERE sm.aluno_id = :aluno_id AND sm.missao_id = m.id
-      )
-");
+// Verificar se a coluna data_limite existe
+try {
+    $checkColumn = $pdo->query("SHOW COLUMNS FROM missoes LIKE 'data_limite'");
+    $columnExists = $checkColumn->rowCount() > 0;
+} catch (PDOException $e) {
+    $columnExists = false;
+}
+
+// Consulta apenas as missões que o aluno ainda não realizou e que ainda estão válidas
+if ($columnExists) {
+    $stmt = $pdo->prepare("
+        SELECT m.*
+        FROM missoes m
+        WHERE m.status = 'ativa'
+          AND (m.turma_id = :turma_id OR m.turma_id IS NULL OR m.turma_id = 0 OR m.turma_id = '')
+          AND (m.data_limite IS NULL OR m.data_limite >= CURDATE())
+          AND NOT EXISTS (
+              SELECT 1 FROM solicitacoes_missoes sm
+              WHERE sm.aluno_id = :aluno_id AND sm.missao_id = m.id
+          )
+    ");
+} else {
+    $stmt = $pdo->prepare("
+        SELECT m.*
+        FROM missoes m
+        WHERE m.status = 'ativa'
+          AND (m.turma_id = :turma_id OR m.turma_id IS NULL OR m.turma_id = 0 OR m.turma_id = '')
+          AND NOT EXISTS (
+              SELECT 1 FROM solicitacoes_missoes sm
+              WHERE sm.aluno_id = :aluno_id AND sm.missao_id = m.id
+          )
+    ");
+}
 $stmt->execute([':turma_id' => $turma_id, ':aluno_id' => $aluno_id]);
 $missoes = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -108,12 +130,36 @@ $progresso_percentual = round($progresso * 100, 2);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="asset/louja.css">
+    <link rel="stylesheet" href="asset/loja.css">
     <link rel="stylesheet" href="asset/button.css">
     <title>Missões</title>
     <style>
                 @import url('https://fonts.googleapis.com/css2?family=Orbitron&display=swap');
                 @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+        
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            overflow-x: hidden;
+        }
+        
+        #wrapper {
+            width: 100%;
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+        
+        .container-fluid {
+            width: 100%;
+            max-width: 100%;
+            padding: 0 15px;
+            box-sizing: border-box;
+        }
         .level {
             position: absolute;
             top: 10px;
@@ -151,49 +197,60 @@ $progresso_percentual = round($progresso * 100, 2);
             transform: skew(-30deg) translateY(-100%);
             line-height: 1.5;
         }
-        .voltar {
-	margin-bottom: 15px;
-  font: inherit;
-  background-color: #f0f0f0;
-  border: 0;
-  color: #242424;
-  border-radius: 0.5em;
-  font-size: 1.35rem;
-  padding: 0.375em 1em;
-  font-weight: 600;
-  text-shadow: 0 0.0625em 0 #fff;
-  box-shadow: inset 0 0.0625em 0 0 #f4f4f4, 0 0.0625em 0 0 #efefef,
-    0 0.125em 0 0 #ececec, 0 0.25em 0 0 #e0e0e0, 0 0.3125em 0 0 #dedede,
-    0 0.375em 0 0 #dcdcdc, 0 0.425em 0 0 #cacaca, 0 0.425em 0.5em 0 #cecece;
-  transition: 0.15s ease;
-  cursor: pointer;
-}
-.voltar:active {
-  translate: 0 0.225em;
-  box-shadow: inset 0 0.03em 0 0 #f4f4f4, 0 0.03em 0 0 #efefef,
-    0 0.0625em 0 0 #ececec, 0 0.125em 0 0 #e0e0e0, 0 0.125em 0 0 #dedede,
-    0 0.2em 0 0 #dcdcdc, 0 0.225em 0 0 #cacaca, 0 0.225em 0.375em 0 #cecece;
-}
-.coin-font {
-    font-family: "Press Start 2P", cursive; /* Altere a fonte aqui */
-    font-size: 1.2em; /* Ajuste o tamanho da fonte */
-    color: gold; /* Altere a cor, se necessário */
-}
-.xp-font {
-    font-family: "Press Start 2P", cursive; /* Altere a fonte aqui */
-    font-size: 1.2em; /* Ajuste o tamanho da fonte */
-    color: yellow; /* Altere a cor, se necessário */
-}
-.coins {
+        .header-container {
+            display: flex;
             align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+        
+        .voltar {
+            margin-bottom: 0;
+            font: inherit;
+            background-color: #f0f0f0;
+            border: 0;
+            color: #242424;
+            border-radius: 0.5em;
+            font-size: 1.35rem;
+            padding: 0.375em 1em;
+            font-weight: 600;
+            text-shadow: 0 0.0625em 0 #fff;
+            box-shadow: inset 0 0.0625em 0 0 #f4f4f4, 0 0.0625em 0 0 #efefef,
+                0 0.125em 0 0 #ececec, 0 0.25em 0 0 #e0e0e0, 0 0.3125em 0 0 #dedede,
+                0 0.375em 0 0 #dcdcdc, 0 0.425em 0 0 #cacaca, 0 0.425em 0.5em 0 #cecece;
+            transition: 0.15s ease;
+            cursor: pointer;
+        }
+        .voltar:active {
+            translate: 0 0.225em;
+            box-shadow: inset 0 0.03em 0 0 #f4f4f4, 0 0.03em 0 0 #efefef,
+                0 0.0625em 0 0 #ececec, 0 0.125em 0 0 #e0e0e0, 0 0.125em 0 0 #dedede,
+                0 0.2em 0 0 #dcdcdc, 0 0.225em 0 0 #cacaca, 0 0.225em 0.375em 0 #cecece;
+        }
+        .coin-font {
+            font-family: "Press Start 2P", cursive;
+            font-size: 1.2em;
+            color: gold;
+        }
+        .xp-font {
+            font-family: "Press Start 2P", cursive;
+            font-size: 1.2em;
+            color: yellow;
+        }
+        .coins {
+            display: flex;
+            align-items: center;
+            gap: 5px;
             font-size: 1.2em;
             padding-right: 20px;
         }
-.coins img {
+        .coins img {
             width: 24px;
+            height: 24px;
         }
 
-        /* ===== ESTILOS PARA MISSÕES MELHORADAS ===== */
+        /* ===== ESTILOS PARA MISSÕES - NOVO DESIGN ===== */
         
         .section-header {
             margin-bottom: 30px;
@@ -209,154 +266,147 @@ $progresso_percentual = round($progresso * 100, 2);
         
         .missoes-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 20px;
             margin-top: 20px;
+            width: 100%;
+            box-sizing: border-box;
         }
         
-        .missao-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 15px;
-            padding: 20px;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-            transition: all 0.3s ease;
-            position: relative;
+        /* From Uiverse.io by andrew-demchenk0 */ 
+        .card {
+            --main-color: #000;
+            --bg-color: #EBD18D;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            width: 100%;
+            max-width: 100%;
+            padding: 25px;
+            background: var(--bg-color);
+            border-radius: 20px;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            box-sizing: border-box;
             overflow: hidden;
-            color: white;
         }
         
-        .missao-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
-            pointer-events: none;
-        }
-        
-        .missao-card:hover {
+        .card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
         }
         
-        .missao-header {
+        .card__wrapper {
             display: flex;
-            align-items: flex-start;
-            margin-bottom: 15px;
-            position: relative;
-            z-index: 1;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
         }
         
-        .missao-icon {
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
+        .card___wrapper-acounts {
+            position: relative;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            z-index: 1;
+            cursor: pointer;
+        }
+        
+        .card___wrapper-acounts > div:nth-child(2) {
+            position: absolute;
+            left: 25px;
+            z-index: -1;
+        }
+        
+        .card___wrapper-acounts > div:nth-child(3) {
+            position: absolute;
+            left: 50px;
+            z-index: -2;
+        }
+        
+        .card__score {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: 500;
+            font-size: 16px;
+            color: #fff;
+            width: 40px;
+            height: 40px;
+            border-radius: 100%;
+            background: var(--main-color);
+        }
+        
+        .card__acounts {
+            width: 42px;
+            height: 42px;
+        }
+        
+        .card__acounts svg {
+            width: 100%;
+            height: 100%;
+        }
+        
+        .card__menu {
+            width: 40px;
+            height: 40px;
+            background: #F6DB96;
+            border-radius: 100%;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-right: 15px;
-            font-size: 20px;
-            color: #FFD700;
+            cursor: pointer;
+            transition: background 0.3s ease;
         }
         
-        .missao-title h4 {
-            margin: 0 0 10px 0;
-            font-size: 1.3em;
-            font-weight: 600;
-            color: white;
+        .card__menu:hover {
+            background: #f0d080;
         }
         
-        .missao-badges {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
+        .card__title {
+            margin-top: 50px;
+            font-weight: 900;
+            font-size: 25px;
+            color: var(--main-color);
         }
         
-        .badge {
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 0.8em;
-            font-weight: 600;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-        }
-        
-        .badge-xp {
-            background: rgba(255, 193, 7, 0.9);
-            color: #000;
-        }
-        
-        .badge-coins {
-            background: rgba(40, 167, 69, 0.9);
-            color: white;
-        }
-        
-        .missao-content {
-            margin-bottom: 20px;
-            position: relative;
-            z-index: 1;
-        }
-        
-        .missao-descricao {
-            color: rgba(255, 255, 255, 0.9);
+        .card__subtitle {
+            margin-top: 15px;
+            font-weight: 400;
+            font-size: 15px;
+            color: var(--main-color);
             line-height: 1.5;
-            margin-bottom: 15px;
         }
         
-        .missao-link {
+        .card__indicator {
+            margin-top: 50px;
+            font-weight: 500;
+            font-size: 14px;
+            color: var(--main-color);
+        }
+        
+        .card__progress {
             margin-top: 10px;
         }
         
-        .link-externo {
-            color: #FFD700;
-            text-decoration: none;
-            font-size: 0.9em;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            transition: color 0.3s ease;
-        }
-        
-        .link-externo:hover {
-            color: #FFF;
-            text-decoration: none;
-        }
-        
-        .missao-footer {
-            position: relative;
-            z-index: 1;
-        }
-        
-        .btn-realizar-missao {
-            background: linear-gradient(45deg, #FFD700, #FFA500);
-            border: none;
-            border-radius: 25px;
-            padding: 12px 25px;
-            color: #000;
-            font-weight: 600;
-            font-size: 1em;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+        .card__progress progress {
             width: 100%;
-            justify-content: center;
-            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+            height: 4px;
+            border-radius: 100px;
         }
         
-        .btn-realizar-missao:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
-            color: #000;
+        .card__progress progress::-webkit-progress-bar {
+            background-color: #00000030;
+            border-radius: 100px;
         }
         
-        .btn-realizar-missao:active {
-            transform: translateY(0);
+        .card__progress progress::-webkit-progress-value {
+            background-color: var(--main-color);
+            border-radius: 100px;
+        }
+        
+        .card__progress progress::-moz-progress-bar {
+            background-color: var(--main-color);
+            border-radius: 100px;
         }
         
         .empty-state {
@@ -386,25 +436,20 @@ $progresso_percentual = round($progresso * 100, 2);
             .missoes-grid {
                 grid-template-columns: 1fr;
                 gap: 15px;
+                padding: 0 10px;
             }
             
-            .missao-card {
-                padding: 15px;
+            .card {
+                padding: 20px;
+                max-width: 100%;
             }
             
-            .missao-header {
-                flex-direction: column;
-                align-items: center;
-                text-align: center;
+            .header-container {
+                padding: 0 10px;
             }
             
-            .missao-icon {
-                margin-right: 0;
-                margin-bottom: 10px;
-            }
-            
-            .missao-badges {
-                justify-content: center;
+            .container-fluid {
+                padding: 0 10px;
             }
         }
         
@@ -420,7 +465,7 @@ $progresso_percentual = round($progresso * 100, 2);
             }
         }
         
-        .missao-card {
+        .card {
             animation: fadeInUp 0.6s ease-out;
         }
 
@@ -551,42 +596,38 @@ $quizzes_realizados = $stmt_quizzes_realizados->fetchAll(PDO::FETCH_ASSOC);
                         <?php if (is_array($missoes) && count($missoes) > 0): ?>
                             <div class="missoes-grid">
                                 <?php foreach ($missoes as $index => $missao): ?>
-                                    <div class="missao-card" data-aos="fade-up" data-aos-delay="<?= $index * 100; ?>">
-                                        <div class="missao-header">
-                                            <div class="missao-icon">
-                                                <i class="fa fa-trophy"></i>
+                                    <div class="card" onclick="window.location.href='realizar_missao.php?aluno_id=<?= $aluno_id; ?>&missao_id=<?= $missao['id']; ?>';">
+                                        <div class="card__wrapper">
+                                            <div class="card___wrapper-acounts">
+                                                <div class="card__score">+<?= $missao['xp']; ?></div>
+                                                <div class="card__acounts"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><circle r="60" fill="#ffd8c9" cy="64" cx="64"></circle><circle r="48" opacity=".3" fill="#fff" cy="64" cx="64"></circle><path fill="#393c54" d="m64 14a31 31 0 0 1 31 31v41.07a9.93 9.93 0 0 1 -9.93 9.93h-42.14a9.93 9.93 0 0 1 -9.93-9.93v-41.07a31 31 0 0 1 31-31z"></path><circle r="7" fill="#fbc0aa" cy="60" cx="89"></circle><path fill="#00adfe" d="m64 124a59.7 59.7 0 0 0 34.7-11.07l-3.33-10.29a10 10 0 0 0 -9.37-6.64h-43.95a10 10 0 0 0 -9.42 6.64l-3.33 10.29a59.7 59.7 0 0 0 34.7 11.07z"></path><path fill="#ff8475" d="m46.54 121.45a59.93 59.93 0 0 0 34.92 0l-2.46-25.45h-30z"></path><path fill="#f85565" d="m48.13 105h31.74l-.39-4h-30.96z"></path><path fill="#ffd8c9" d="m76 96a12 12 0 0 1 -24 0z"></path><path stroke-width="14" stroke-linejoin="round" stroke-linecap="round" stroke="#fbc0aa" fill="none" d="m64 83v12"></path><circle r="7" fill="#fbc0aa" cy="60" cx="39"></circle><path fill="#ffd8c9" d="m64 90a25 25 0 0 1 -25-25v-16.48a25 25 0 1 1 50 0v16.48a25 25 0 0 1 -25 25z"></path><path stroke-width="5" stroke-linejoin="round" stroke-linecap="round" stroke="#fbc0aa" fill="none" d="m64 64.75v6.5"></path><path fill="#515570" d="m64.83 18.35a27.51 27.51 0 0 0 -28.32 27.47v4.76a2 2 0 0 0 2 2h.58a1 1 0 0 0 .86-.49l4.05-7.09 2.48 4.13a1 1 0 0 0 1.71 0l2.48-4.13 2.47 4.13a1 1 0 0 0 1.72 0l2.47-4.13 2.48 4.13a1 1 0 0 0 1.71 0l2.48-4.13 2.48 4.13a1 1 0 0 0 1.71 0l2.48-4.13 2.47 4.13a1 1 0 0 0 1.72 0l2.47-4.13 2.48 4.13a1 1 0 0 0 1.71 0l2.48-4.13 4 7.09a1 1 0 0 0 .86.49h.58a2 2 0 0 0 2-2v-4.18c.05-14.95-11.66-27.61-26.61-28.05z"></path><path fill="#f85565" d="m47.35 113h33.29l-.38-4h-32.52z"></path><path fill="#f85565" d="m46.58 121h34.84l-.39-4h-34.06z"></path><path opacity=".7" fill="#ff8475" d="m58.52 79.39c0-.84 11-.84 11 0 0 1.79-2.45 3.25-5.48 3.25s-5.52-1.46-5.52-3.25z"></path><path opacity=".7" fill="#f85565" d="m69.48 79.29c0 .78-11 .78-11 0 .04-1.79 2.52-3.29 5.52-3.29s5.48 1.5 5.48 3.29z"></path><circle r="3" fill="#515570" cy="58.75" cx="76.25"></circle><path stroke-linejoin="round" stroke-linecap="round" stroke="#515570" fill="none" d="m70.75 59.84a6.61 6.61 0 0 1 11.5-1.31"></path><path style="fill:none;stroke-linecap:round;stroke-linejoin:round;stroke:#515570;stroke-width:2;opacity:.2" d="m72.11 51.46 5.68-.4a4.62 4.62 0 0 1 4.21 2.1l.77 1.21"></path><circle r="3" fill="#515570" cy="58.75" cx="51.75"></circle><g stroke-linecap="round" fill="none"><path stroke-linejoin="round" stroke="#515570" d="m57.25 59.84a6.61 6.61 0 0 0 -11.5-1.31"></path><path stroke-width="2" stroke-linejoin="round" stroke="#515570" opacity=".2" d="m55.89 51.45-5.68-.39a4.59 4.59 0 0 0 -4.21 2.11l-.77 1.21"></path><path stroke-miterlimit="10" stroke="#f85565" d="m57.25 78.76a17.4 17.4 0 0 0 6.75 1.12 17.4 17.4 0 0 0 6.75-1.12"></path></g></svg></div>
+                                                <div class="card__acounts"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><circle r="60" fill="#ff8475" cy="64" cx="64"></circle><circle r="48" opacity=".4" fill="#f85565" cy="64" cx="64"></circle><path fill="#7f3838" d="m64 14a32 32 0 0 1 32 32v41a6 6 0 0 1 -6 6h-52a6 6 0 0 1 -6-6v-41a32 32 0 0 1 32-32z"></path><path opacity=".4" fill="#393c54" d="m62.73 22h2.54a23.73 23.73 0 0 1 23.73 23.73v42.82a4.45 4.45 0 0 1 -4.45 4.45h-41.1a4.45 4.45 0 0 1 -4.45-4.45v-42.82a23.73 23.73 0 0 1 23.73-23.73z"></path><circle r="7" fill="#fbc0aa" cy="65" cx="89"></circle><path fill="#4bc190" d="m64 124a59.67 59.67 0 0 0 34.69-11.06l-3.32-9.3a10 10 0 0 0 -9.37-6.64h-43.95a10 10 0 0 0 -9.42 6.64l-3.32 9.3a59.67 59.67 0 0 0 34.69 11.06z"></path><path opacity=".3" fill="#356cb6" d="m45 110 5.55 2.92-2.55 8.92a60.14 60.14 0 0 0 9 1.74v-27.08l-12.38 10.25a2 2 0 0 0 .38 3.25z"></path><path opacity=".3" fill="#356cb6" d="m71 96.5v27.09a60.14 60.14 0 0 0 9-1.74l-2.54-8.93 5.54-2.92a2 2 0 0 0 .41-3.25z"></path><path fill="#fff" d="m57 123.68a58.54 58.54 0 0 0 14 0v-25.68h-14z"></path><path stroke-width="14" stroke-linejoin="round" stroke-linecap="round" stroke="#fbc0aa" fill="none" d="m64 88.75v9.75"></path><circle r="7" fill="#fbc0aa" cy="65" cx="39"></circle><path fill="#ffd8c9" d="m64 91a25 25 0 0 1 -25-25v-16.48a25 25 0 1 1 50 0v16.48a25 25 0 0 1 -25 25z"></path><path fill="#bc5b57" d="m91.49 51.12v-4.72c0-14.95-11.71-27.61-26.66-28a27.51 27.51 0 0 0 -28.32 27.42v5.33a2 2 0 0 0 2 2h6.81a8 8 0 0 0 6.5-3.33l4.94-6.88a18.45 18.45 0 0 1 1.37 1.63 22.84 22.84 0 0 0 17.87 8.58h13.45a2 2 0 0 0 2.04-2.03z"></path><path style="fill:none;stroke-linecap:round;stroke:#fff;stroke-miterlimit:10;stroke-width:2;opacity:.1" d="m62.76 36.94c4.24 8.74 10.71 10.21 16.09 10.21h5"></path><path style="fill:none;stroke-linecap:round;stroke:#fff;stroke-miterlimit:10;stroke-width:2;opacity:.1" d="m71 35c2.52 5.22 6.39 6.09 9.6 6.09h3"></path><circle r="3" fill="#515570" cy="62.28" cx="76"></circle><circle r="3" fill="#515570" cy="62.28" cx="52"></circle><ellipse ry="2.98" rx="4.58" opacity=".1" fill="#f85565" cy="69.67" cx="50.42"></ellipse><ellipse ry="2.98" rx="4.58" opacity=".1" fill="#f85565" cy="69.67" cx="77.58"></ellipse><g stroke-linejoin="round" stroke-linecap="round" fill="none"><path stroke-width="4" stroke="#fbc0aa" d="m64 67v4"></path><path stroke-width="2" stroke="#515570" opacity=".2" d="m55 56h-9.25"></path><path stroke-width="2" stroke="#515570" opacity=".2" d="m82 56h-9.25"></path></g><path opacity=".4" fill="#f85565" d="m64 84c5 0 7-3 7-3h-14s2 3 7 3z"></path><path fill="#f85565" d="m65.07 78.93-.55.55a.73.73 0 0 1 -1 0l-.55-.55c-1.14-1.14-2.93-.93-4.27.47l-1.7 1.6h14l-1.66-1.6c-1.34-1.4-3.13-1.61-4.27-.47z"></path></svg></div>
                                             </div>
-                                            <div class="missao-title">
-                                                <h4><?= htmlspecialchars($missao['nome']); ?></h4>
-                                                <div class="missao-badges">
-                                                    <span class="badge badge-xp">
-                                                        <i class="fa fa-star"></i> <?= $missao['xp']; ?> XP
-                                                    </span>
-                                                    <span class="badge badge-coins">
-                                                        <i class="fa fa-coins"></i> <?= $missao['moedas']; ?> moedas
-                                                    </span>
-                                                </div>
-                                            </div>
+                                            <div class="card__menu" onclick="event.stopPropagation(); window.location.href='realizar_missao.php?aluno_id=<?= $aluno_id; ?>&missao_id=<?= $missao['id']; ?>';"><svg xmlns="http://www.w3.org/2000/svg" width="4" viewBox="0 0 4 20" height="20" fill="none"><g fill="#000"><path d="m2 4c1.10457 0 2-.89543 2-2s-.89543-2-2-2-2 .89543-2 2 .89543 2 2 2z"></path><path d="m2 12c1.10457 0 2-.8954 2-2 0-1.10457-.89543-2-2-2s-2 .89543-2 2c0 1.1046.89543 2 2 2z"></path><path d="m2 20c1.10457 0 2-.8954 2-2s-.89543-2-2-2-2 .8954-2 2 .89543 2 2 2z"></path></g></svg></div>
                                         </div>
+                                        <div class="card__title"><?= htmlspecialchars($missao['nome']); ?></div>
+                                        <div class="card__subtitle"><?= htmlspecialchars($missao['descricao']); ?></div>
+                                        <div class="card__indicator"><span class="card__indicator-amount"><?= $missao['moedas']; ?> moedas</span> / <span class="card__indicator-percentage"><?= $missao['xp']; ?> XP</span></div>
+                                        <?php if (!empty($missao['data_limite'])): 
+                                            $data_limite = new DateTime($missao['data_limite']);
+                                            $hoje = new DateTime();
+                                            $diferenca = $hoje->diff($data_limite);
+                                            $dias_restantes = $diferenca->days;
+                                            $cor_badge = ($data_limite < $hoje) ? 'danger' : (($dias_restantes <= 3) ? 'warning' : 'info');
+                                        ?>
+                                        <div style="margin-top: 10px; font-size: 0.85em;">
+                                            <span class="badge badge-<?= $cor_badge; ?>" style="padding: 5px 10px;">
+                                                <i class="fa fa-calendar"></i> 
+                                                <?php if ($data_limite < $hoje): ?>
+                                                    Expirada em <?= $data_limite->format('d/m/Y'); ?>
+                                                <?php else: ?>
+                                                    Expira em <?= $dias_restantes; ?> dia(s) - <?= $data_limite->format('d/m/Y'); ?>
+                                                <?php endif; ?>
+                                            </span>
+                                        </div>
+                                        <?php endif; ?>
                                         
-                                        <div class="missao-content">
-                                            <p class="missao-descricao"><?= htmlspecialchars($missao['descricao']); ?></p>
-                                            
-                                            <?php if (!empty($missao['link'])): ?>
-                                                <div class="missao-link">
-                                                    <a href="<?= htmlspecialchars($missao['link']); ?>" target="_blank" class="link-externo">
-                                                        <i class="fa fa-external-link"></i> Ver detalhes
-                                                    </a>
-                                                </div>
-                                            <?php endif; ?>
-                                        </div>
-                                        
-                                        <div class="missao-footer">
-                                            <button class="btn-realizar-missao" onclick="window.location.href='realizar_missao.php?aluno_id=<?= $aluno_id; ?>&missao_id=<?= $missao['id']; ?>';">
-                                                <i class="fa fa-play"></i>
-                                                <span>Realizar Missão</span>
-                                            </button>
-                                        </div>
+                                        <div class="card__progress"><progress max="100" value="0"></progress></div>
                                     </div>
                                 <?php endforeach; ?>
                             </div>

@@ -17,23 +17,84 @@ if (!isset($_SESSION['usuario_id']) || $_SESSION['tipo_usuario'] !== 'secretaria
     exit;
 }
 
+// Verificar se existe coluna 'tipo' na tabela produtos
+try {
+    $stmt = $pdo->query("SHOW COLUMNS FROM produtos LIKE 'tipo'");
+    $temColunaTipo = $stmt->rowCount() > 0;
+} catch (PDOException $e) {
+    $temColunaTipo = false;
+}
+
+// Verificar se existe coluna 'imagem' na tabela produtos
+try {
+    $stmt = $pdo->query("SHOW COLUMNS FROM produtos LIKE 'imagem'");
+    $temColunaImagem = $stmt->rowCount() > 0;
+} catch (PDOException $e) {
+    $temColunaImagem = false;
+}
+
+// Verificar se o diretório de upload existe e criar se necessário
+$upload_dir = '../../../asset/loja/img/';
+if (!is_dir($upload_dir)) {
+    mkdir($upload_dir, 0755, true);
+}
+
 // Adicionar produto
 if (isset($_POST['add'])) {
     $nome = $_POST['nome'];
     $descricao = $_POST['descricao'];
     $moeda = $_POST['moeda'];
-    $quantidade = $_POST['quantidade'];
+    $tipo = isset($_POST['tipo']) ? $_POST['tipo'] : 'produto';
+    $imagem = null;
 
     try {
+        // Processar upload de imagem
+        if ($temColunaImagem && isset($_FILES['imagem']) && $_FILES['imagem']['error'] === UPLOAD_ERR_OK) {
+            $imagemTmp = $_FILES['imagem']['tmp_name'];
+            $imagemNome = basename($_FILES['imagem']['name']);
+            $extensao = strtolower(pathinfo($imagemNome, PATHINFO_EXTENSION));
+            $tiposPermitidos = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+            
+            if (in_array($extensao, $tiposPermitidos)) {
+                // Gerar nome único para evitar conflitos
+                $nomeUnico = 'produto_' . time() . '_' . uniqid() . '.' . $extensao;
+                $destino = $upload_dir . $nomeUnico;
+                $caminhoParaBanco = 'asset/loja/img/' . $nomeUnico;
+                
+                if (move_uploaded_file($imagemTmp, $destino)) {
+                    $imagem = $caminhoParaBanco;
+                } else {
+                    throw new Exception('Erro ao fazer upload da imagem.');
+                }
+            } else {
+                throw new Exception('Tipo de arquivo não permitido. Use JPG, PNG, GIF ou WebP.');
+            }
+        }
+        
         // Insere o produto
-        $sql = "INSERT INTO produtos (nome, descricao, moeda, quantidade) VALUES (:nome, :descricao, :moeda, :quantidade)";
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute([
+        $campos = ['nome', 'descricao', 'moeda'];
+        $valores = [':nome', ':descricao', ':moeda'];
+        $params = [
             'nome' => $nome,
             'descricao' => $descricao,
-            'moeda' => $moeda,
-            'quantidade' => $quantidade
-        ]);
+            'moeda' => $moeda
+        ];
+        
+        if ($temColunaTipo) {
+            $campos[] = 'tipo';
+            $valores[] = ':tipo';
+            $params['tipo'] = $tipo;
+        }
+        
+        if ($temColunaImagem && $imagem) {
+            $campos[] = 'imagem';
+            $valores[] = ':imagem';
+            $params['imagem'] = $imagem;
+        }
+        
+        $sql = "INSERT INTO produtos (" . implode(', ', $campos) . ") VALUES (" . implode(', ', $valores) . ")";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute($params);
         
         redirecionarComMensagem('editar_loja.php', 'success', "Produto '$nome' adicionado com sucesso!");
     } catch (Exception $e) {
@@ -47,18 +108,64 @@ if (isset($_POST['edit'])) {
     $nome = $_POST['nome'];
     $descricao = $_POST['descricao'];
     $moeda = $_POST['moeda'];
-    $quantidade = $_POST['quantidade'];
+    $tipo = isset($_POST['tipo']) ? $_POST['tipo'] : 'produto';
+    $imagemAtual = isset($_POST['imagem_atual']) ? $_POST['imagem_atual'] : null;
+    $novaImagem = null;
 
     try {
-        $sql = "UPDATE produtos SET nome = :nome, descricao = :descricao, moeda = :moeda, quantidade = :quantidade WHERE id = :id";
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute([
+        // Processar upload de nova imagem
+        if ($temColunaImagem && isset($_FILES['imagem']) && $_FILES['imagem']['error'] === UPLOAD_ERR_OK) {
+            $imagemTmp = $_FILES['imagem']['tmp_name'];
+            $imagemNome = basename($_FILES['imagem']['name']);
+            $extensao = strtolower(pathinfo($imagemNome, PATHINFO_EXTENSION));
+            $tiposPermitidos = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+            
+            if (in_array($extensao, $tiposPermitidos)) {
+                // Remover imagem antiga se existir
+                if ($imagemAtual && file_exists('../../../' . $imagemAtual)) {
+                    unlink('../../../' . $imagemAtual);
+                }
+                
+                // Gerar nome único para a nova imagem
+                $nomeUnico = 'produto_' . $id . '_' . time() . '_' . uniqid() . '.' . $extensao;
+                $destino = $upload_dir . $nomeUnico;
+                $caminhoParaBanco = 'asset/loja/img/' . $nomeUnico;
+                
+                if (move_uploaded_file($imagemTmp, $destino)) {
+                    $novaImagem = $caminhoParaBanco;
+                } else {
+                    throw new Exception('Erro ao fazer upload da imagem.');
+                }
+            } else {
+                throw new Exception('Tipo de arquivo não permitido. Use JPG, PNG, GIF ou WebP.');
+            }
+        }
+        
+        // Atualiza o produto
+        $campos = ['nome = :nome', 'descricao = :descricao', 'moeda = :moeda'];
+        $params = [
             'id' => $id,
             'nome' => $nome,
             'descricao' => $descricao,
-            'moeda' => $moeda,
-            'quantidade' => $quantidade
-        ]);
+            'moeda' => $moeda
+        ];
+        
+        if ($temColunaTipo) {
+            $campos[] = 'tipo = :tipo';
+            $params['tipo'] = $tipo;
+        }
+        
+        if ($temColunaImagem && $novaImagem) {
+            $campos[] = 'imagem = :imagem';
+            $params['imagem'] = $novaImagem;
+        } elseif ($temColunaImagem && !$imagemAtual) {
+            // Se não tinha imagem e não foi enviada nova, mantém NULL
+            $campos[] = 'imagem = NULL';
+        }
+        
+        $sql = "UPDATE produtos SET " . implode(', ', $campos) . " WHERE id = :id";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute($params);
         
         redirecionarComMensagem('editar_loja.php', 'success', "Produto '$nome' atualizado com sucesso!");
     } catch (Exception $e) {
@@ -71,12 +178,24 @@ if (isset($_GET['delete'])) {
     $id = $_GET['delete'];
 
     try {
-        // Busca o nome do produto antes de deletar
-        $stmt = $pdo->prepare("SELECT nome FROM produtos WHERE id = :id");
+        // Busca o produto antes de deletar (incluindo imagem)
+        if ($temColunaImagem) {
+            $stmt = $pdo->prepare("SELECT nome, imagem FROM produtos WHERE id = :id");
+        } else {
+            $stmt = $pdo->prepare("SELECT nome FROM produtos WHERE id = :id");
+        }
         $stmt->execute(['id' => $id]);
         $produto = $stmt->fetch(PDO::FETCH_ASSOC);
         
         if ($produto) {
+            // Remove a imagem do servidor se existir
+            if ($temColunaImagem && isset($produto['imagem']) && !empty($produto['imagem'])) {
+                $imagemPath = '../../../' . $produto['imagem'];
+                if (file_exists($imagemPath)) {
+                    unlink($imagemPath);
+                }
+            }
+            
             $sql = "DELETE FROM produtos WHERE id = :id";
             $stmt = $pdo->prepare($sql);
             $stmt->execute(['id' => $id]);
@@ -179,9 +298,11 @@ include 'include/navbar.php';
                         <th style="cursor: pointer;" onclick="sortTable(3, 'tabelaProdutos')">
                           <i class="fa fa-coins"></i> Preço <i class="fa fa-sort"></i>
                         </th>
+                        <?php if ($temColunaTipo): ?>
                         <th style="cursor: pointer;" onclick="sortTable(4, 'tabelaProdutos')">
-                          <i class="fa fa-cubes"></i> Quantidade <i class="fa fa-sort"></i>
+                          <i class="fa fa-tag"></i> Tipo <i class="fa fa-sort"></i>
                         </th>
+                        <?php endif; ?>
                         <th>
                           <i class="fa fa-cogs"></i> Ações
                         </th>
@@ -214,14 +335,21 @@ include 'include/navbar.php';
                               <i class="fa fa-coins"></i> <?= $produto['moeda']; ?> moedas
                             </span>
                           </td>
+                          <?php if ($temColunaTipo): ?>
                           <td>
-                            <span class="badge badge-info">
-                              <i class="fa fa-cubes"></i> <?= isset($produto['quantidade']) ? $produto['quantidade'] : 1; ?>
+                            <?php 
+                            $tipo_produto = strtolower(trim($produto['tipo'] ?? 'produto'));
+                            $badge_class = ($tipo_produto === 'powercard' || $tipo_produto === 'power_card') ? 'badge-warning' : 'badge-primary';
+                            $tipo_display = ($tipo_produto === 'powercard' || $tipo_produto === 'power_card') ? 'PowerCard' : 'Produto';
+                            ?>
+                            <span class="badge <?= $badge_class; ?>">
+                              <i class="fa fa-tag"></i> <?= htmlspecialchars($tipo_display); ?>
                             </span>
                           </td>
+                          <?php endif; ?>
                           <td>
                             <div class="btn-group" role="group">
-                              <button class="btn btn-info btn-sm" onclick="editarProduto(<?= $produto['id']; ?>, '<?= addslashes(htmlspecialchars($produto['nome'])); ?>', '<?= addslashes(htmlspecialchars($produto['descricao'])); ?>', <?= $produto['moeda']; ?>, <?= isset($produto['quantidade']) ? $produto['quantidade'] : 1; ?>)" 
+                              <button class="btn btn-info btn-sm" onclick="editarProduto(<?= $produto['id']; ?>, '<?= addslashes(htmlspecialchars($produto['nome'])); ?>', '<?= addslashes(htmlspecialchars($produto['descricao'])); ?>', <?= $produto['moeda']; ?>, '<?= isset($produto['tipo']) ? htmlspecialchars($produto['tipo']) : 'produto'; ?>', '<?= isset($produto['imagem']) ? htmlspecialchars($produto['imagem']) : ''; ?>')" 
                                       data-toggle="tooltip" title="Editar produto">
                                 <i class="fa fa-edit"></i>
                               </button>
@@ -261,12 +389,22 @@ include 'include/navbar.php';
                 <span aria-hidden="true">&times;</span>
               </button>
             </div>
-            <form method="POST">
+            <form method="POST" enctype="multipart/form-data">
               <div class="modal-body">
                 <div class="form-group">
                   <label for="nome">Nome do Produto</label>
                   <input type="text" class="form-control" id="nome" name="nome" required>
                 </div>
+                <?php if ($temColunaImagem): ?>
+                <div class="form-group">
+                  <label for="imagem">Imagem do Produto</label>
+                  <input type="file" class="form-control-file" id="imagem" name="imagem" accept="image/jpeg,image/jpg,image/png,image/gif,image/webp">
+                  <small class="form-text text-muted">Formatos aceitos: JPG, PNG, GIF, WebP</small>
+                  <div id="preview_imagem_add" style="margin-top: 10px; display: none;">
+                    <img id="img_preview_add" src="" alt="Preview" style="max-width: 200px; max-height: 200px; border: 1px solid #ddd; border-radius: 4px;">
+                  </div>
+                </div>
+                <?php endif; ?>
                 <div class="form-group">
                   <label for="descricao">Descrição</label>
                   <textarea class="form-control" id="descricao" name="descricao" rows="3" required></textarea>
@@ -275,10 +413,16 @@ include 'include/navbar.php';
                   <label for="moeda">Preço (moedas)</label>
                   <input type="number" class="form-control" id="moeda" name="moeda" min="1" required>
                 </div>
+                <?php if ($temColunaTipo): ?>
                 <div class="form-group">
-                  <label for="quantidade">Quantidade Disponível</label>
-                  <input type="number" class="form-control" id="quantidade" name="quantidade" min="1" value="1" required>
+                  <label for="tipo">Tipo do Item</label>
+                  <select class="form-control" id="tipo" name="tipo" required>
+                    <option value="produto">Produto</option>
+                    <option value="powercard">PowerCard</option>
+                  </select>
+                  <small class="form-text text-muted">Produtos aparecem em grid, PowerCards aparecem em destaque</small>
                 </div>
+                <?php endif; ?>
               </div>
               <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
@@ -303,13 +447,24 @@ include 'include/navbar.php';
                 <span aria-hidden="true">&times;</span>
               </button>
             </div>
-            <form method="POST">
+            <form method="POST" enctype="multipart/form-data">
               <div class="modal-body">
                 <input type="hidden" id="edit_id" name="id">
+                <input type="hidden" id="edit_imagem_atual" name="imagem_atual">
                 <div class="form-group">
                   <label for="edit_nome">Nome do Produto</label>
                   <input type="text" class="form-control" id="edit_nome" name="nome" required>
                 </div>
+                <?php if ($temColunaImagem): ?>
+                <div class="form-group">
+                  <label for="edit_imagem">Imagem do Produto</label>
+                  <input type="file" class="form-control-file" id="edit_imagem" name="imagem" accept="image/jpeg,image/jpg,image/png,image/gif,image/webp">
+                  <small class="form-text text-muted">Deixe em branco para manter a imagem atual. Formatos aceitos: JPG, PNG, GIF, WebP</small>
+                  <div id="preview_imagem_edit" style="margin-top: 10px;">
+                    <img id="img_preview_edit" src="" alt="Preview" style="max-width: 200px; max-height: 200px; border: 1px solid #ddd; border-radius: 4px; display: none;">
+                  </div>
+                </div>
+                <?php endif; ?>
                 <div class="form-group">
                   <label for="edit_descricao">Descrição</label>
                   <textarea class="form-control" id="edit_descricao" name="descricao" rows="3" required></textarea>
@@ -318,10 +473,16 @@ include 'include/navbar.php';
                   <label for="edit_moeda">Preço (moedas)</label>
                   <input type="number" class="form-control" id="edit_moeda" name="moeda" min="1" required>
                 </div>
+                <?php if ($temColunaTipo): ?>
                 <div class="form-group">
-                  <label for="edit_quantidade">Quantidade Disponível</label>
-                  <input type="number" class="form-control" id="edit_quantidade" name="quantidade" min="1" required>
+                  <label for="edit_tipo">Tipo do Item</label>
+                  <select class="form-control" id="edit_tipo" name="tipo" required>
+                    <option value="produto">Produto</option>
+                    <option value="powercard">PowerCard</option>
+                  </select>
+                  <small class="form-text text-muted">Produtos aparecem em grid, PowerCards aparecem em destaque</small>
                 </div>
+                <?php endif; ?>
               </div>
               <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
@@ -434,14 +595,57 @@ include 'include/navbar.php';
     }
     
     // Função para editar produto
-    function editarProduto(id, nome, descricao, moeda, quantidade) {
+    function editarProduto(id, nome, descricao, moeda, tipo, imagem) {
       $('#edit_id').val(id);
       $('#edit_nome').val(nome);
       $('#edit_descricao').val(descricao);
       $('#edit_moeda').val(moeda);
-      $('#edit_quantidade').val(quantidade);
+      <?php if ($temColunaTipo): ?>
+      if (typeof tipo !== 'undefined' && tipo) {
+        $('#edit_tipo').val(tipo.toLowerCase());
+      }
+      <?php endif; ?>
+      <?php if ($temColunaImagem): ?>
+      if (typeof imagem !== 'undefined' && imagem) {
+        $('#edit_imagem_atual').val(imagem);
+        $('#img_preview_edit').attr('src', '../../../' + imagem).show();
+      } else {
+        $('#edit_imagem_atual').val('');
+        $('#img_preview_edit').hide();
+      }
+      <?php endif; ?>
       $('#editProdutoModal').modal('show');
     }
+    
+    <?php if ($temColunaImagem): ?>
+    // Preview de imagem ao selecionar arquivo (adicionar)
+    $('#imagem').on('change', function(e) {
+      var file = e.target.files[0];
+      if (file) {
+        var reader = new FileReader();
+        reader.onload = function(e) {
+          $('#img_preview_add').attr('src', e.target.result);
+          $('#preview_imagem_add').show();
+        };
+        reader.readAsDataURL(file);
+      } else {
+        $('#preview_imagem_add').hide();
+      }
+    });
+    
+    // Preview de imagem ao selecionar arquivo (editar)
+    $('#edit_imagem').on('change', function(e) {
+      var file = e.target.files[0];
+      if (file) {
+        var reader = new FileReader();
+        reader.onload = function(e) {
+          $('#img_preview_edit').attr('src', e.target.result);
+          $('#img_preview_edit').show();
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+    <?php endif; ?>
     
     // Função para confirmar exclusão
     function confirmarExclusao(id, nome) {

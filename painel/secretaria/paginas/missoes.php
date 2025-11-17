@@ -17,33 +17,73 @@ if (!isset($_SESSION['usuario_id']) || $_SESSION['tipo_usuario'] !== 'secretaria
     exit;
 }
 
+// Verificar se a coluna data_limite existe
+try {
+    $checkColumn = $pdo->query("SHOW COLUMNS FROM missoes LIKE 'data_limite'");
+    $columnExists = $checkColumn->rowCount() > 0;
+} catch (PDOException $e) {
+    $columnExists = false;
+}
+
 // Buscar todas as solicitações pendentes com dados completos
-$stmt = $pdo->query("
-    SELECT 
-        s.id AS solicitacao_id,
-        s.data_solicitacao,
-        s.status,
-        a.id AS aluno_id,
-        a.nome AS aluno_nome,
-        a.xp_total AS aluno_xp,
-        a.moedas AS aluno_moedas,
-        a.nivel AS aluno_nivel,
-        a.avatar AS aluno_avatar,
-        m.id AS missao_id,
-        m.nome AS missao_nome,
-        m.descricao AS missao_descricao,
-        m.xp AS missao_xp,
-        m.moedas AS missao_moedas,
-        m.link AS missao_link,
-        m.status AS missao_status,
-        t.nome AS turma_nome
-    FROM solicitacoes_missoes s
-    JOIN alunos a ON s.aluno_id = a.id
-    JOIN missoes m ON s.missao_id = m.id
-    LEFT JOIN turmas t ON a.id IN (SELECT aluno_id FROM alunos_turmas WHERE turma_id = t.id)
-    WHERE s.status = 'pendente'
-    ORDER BY s.data_solicitacao DESC
-");
+if ($columnExists) {
+    $stmt = $pdo->query("
+        SELECT 
+            s.id AS solicitacao_id,
+            s.data_solicitacao,
+            s.status,
+            a.id AS aluno_id,
+            a.nome AS aluno_nome,
+            a.xp_total AS aluno_xp,
+            a.moedas AS aluno_moedas,
+            a.nivel AS aluno_nivel,
+            a.avatar AS aluno_avatar,
+            m.id AS missao_id,
+            m.nome AS missao_nome,
+            m.descricao AS missao_descricao,
+            m.xp AS missao_xp,
+            m.moedas AS missao_moedas,
+            m.link AS missao_link,
+            m.status AS missao_status,
+            m.data_limite AS missao_data_limite,
+            t.nome AS turma_nome
+        FROM solicitacoes_missoes s
+        JOIN alunos a ON s.aluno_id = a.id
+        JOIN missoes m ON s.missao_id = m.id
+        LEFT JOIN turmas t ON a.id IN (SELECT aluno_id FROM alunos_turmas WHERE turma_id = t.id)
+        WHERE s.status = 'pendente'
+          AND (m.data_limite IS NULL OR m.data_limite >= CURDATE())
+        ORDER BY s.data_solicitacao DESC
+    ");
+} else {
+    $stmt = $pdo->query("
+        SELECT 
+            s.id AS solicitacao_id,
+            s.data_solicitacao,
+            s.status,
+            a.id AS aluno_id,
+            a.nome AS aluno_nome,
+            a.xp_total AS aluno_xp,
+            a.moedas AS aluno_moedas,
+            a.nivel AS aluno_nivel,
+            a.avatar AS aluno_avatar,
+            m.id AS missao_id,
+            m.nome AS missao_nome,
+            m.descricao AS missao_descricao,
+            m.xp AS missao_xp,
+            m.moedas AS missao_moedas,
+            m.link AS missao_link,
+            m.status AS missao_status,
+            NULL AS missao_data_limite,
+            t.nome AS turma_nome
+        FROM solicitacoes_missoes s
+        JOIN alunos a ON s.aluno_id = a.id
+        JOIN missoes m ON s.missao_id = m.id
+        LEFT JOIN turmas t ON a.id IN (SELECT aluno_id FROM alunos_turmas WHERE turma_id = t.id)
+        WHERE s.status = 'pendente'
+        ORDER BY s.data_solicitacao DESC
+    ");
+}
 $solicitacoes = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 <!--
