@@ -8,31 +8,85 @@
     <meta name="robots" content="index, follow"> <!-- Instruções para indexar e seguir links -->
     <meta name="author" content="Sua Empresa ou Nome"> <!-- Autoria do site -->
     <meta name="description"
-        content="Plataforma de gamificação escolar que recompensa os alunos com moedas, XP e benefícios por atitudes positivas e boas ações. Motivação e desenvolvimento pessoal e acadêmico.">
+        content="Acabe com a evasão escolar usando gamificação. Plataforma Educx premia desempenho, engaja estudantes e reduz evasão. Implantação simples, resultados imediatos para escolas.">
     <!-- Descrição do site para SEO -->
     <meta name="keywords"
-        content="gamificação escolar, recompensas, XP, moedas, educação, motivação, comportamento positivo, plataformas educacionais, gamificação para alunos, plataforma de aprendizado">
+        content="gamificação escolar, plataforma educacional B2B, redução evasão escolar, gestão comportamental alunos, engajamento estudantil, sistema recompensas escolar, tecnologia educacional, gamificação para escolas, plataforma educacional, reduzir evasão escolar, engajar alunos, sistema de pontuação escolar">
     <!-- Palavras-chave -->
     <meta property="og:type" content="website"> <!-- Tipo de conteúdo para Open Graph -->
-    <meta property="og:title" content="Plataforma de Gamificação Escolar"> <!-- Título para redes sociais -->
+    <meta property="og:title" content="Educx - Acabe com a Evasão Escolar usando Gamificação"> <!-- Título para redes sociais -->
     <meta property="og:description"
-        content="Plataforma de gamificação escolar que recompensa os alunos por atitudes positivas com moedas, XP e novos níveis.">
+        content="Plataforma completa de gamificação educacional que premia desempenho, engaja estudantes e reduz evasão escolar. Implantação simples, resultados imediatos.">
     <!-- Descrição para Open Graph -->
     <meta property="og:image" content="assets/img/logo.png"> <!-- Imagem para pré-visualização no Facebook -->
-    <meta property="og:url" content="URL_DO_SEU_SITE"> <!-- URL para redes sociais -->
-    <meta property="og:site_name" content="Plataforma de Gamificação Escolar"> <!-- Nome do site para Open Graph -->
+    <meta property="og:url" content="https://educx.com.br"> <!-- URL para redes sociais -->
+    <meta property="og:site_name" content="Educx - Gamificação Escolar"> <!-- Nome do site para Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="pt_BR">
     <meta name="twitter:card" content="summary_large_image"> <!-- Card para Twitter -->
     <meta name="twitter:site" content="@SeuTwitter"> <!-- Twitter handle -->
-    <meta name="twitter:title" content="Plataforma de Gamificação Escolar"> <!-- Título para Twitter -->
+    <meta name="twitter:title" content="Educx - Acabe com a Evasão Escolar usando Gamificação"> <!-- Título para Twitter -->
     <meta name="twitter:description"
-        content="Plataforma de gamificação escolar que motiva os alunos com recompensas por atitudes positivas.">
+        content="Plataforma completa de gamificação educacional que premia desempenho, engaja estudantes e reduz evasão escolar. Implantação simples, resultados imediatos.">
     <!-- Descrição para Twitter -->
     <meta name="twitter:image" content="assets/img/logo.png"> <!-- Imagem para Twitter -->
     <link rel="icon" href="assets/img/favicon.png" sizes="20x20" type="image/png"> <!-- Ícone do site -->
-    <link rel="canonical" href="URL_DO_SEU_SITE"> <!-- URL canônica para SEO -->
+    <link rel="canonical" href="https://educx.com.br"> <!-- URL canônica para SEO -->
+    <link rel="alternate" hreflang="pt-BR" href="https://educx.com.br">
+    
+    <!-- Structured Data (Schema.org) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "Educx",
+      "url": "https://educx.com.br",
+      "logo": "https://educx.com.br/assets/img/logo.png",
+      "description": "Plataforma de gamificação educacional que reduz evasão escolar e engaja estudantes",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Avenida 01, nº 86 - Quati",
+        "addressLocality": "Petrolina",
+        "addressRegion": "PE",
+        "addressCountry": "BR"
+      },
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "telephone": "+55-87-99168-2773",
+        "contactType": "customer service",
+        "email": "ccontato@echotec.site",
+        "availableLanguage": "Portuguese"
+      },
+      "sameAs": [
+        "https://www.instagram.com/educx",
+        "https://www.facebook.com/educx"
+      ]
+    }
+    </script>
+    
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "Educx",
+      "applicationCategory": "EducationalApplication",
+      "operatingSystem": "Web",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "BRL",
+        "description": "Plataforma de gamificação educacional"
+      },
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.8",
+        "reviewCount": "15"
+      }
+    }
+    </script>
 
     <!-- Título da Página -->
-    <title>Educx</title> <!-- Título da página -->
+    <title>Educx - Transforme sua escola com Gamificação | Reduza a Evasão Escolar</title> <!-- Título da página -->
 
     <!-- Stylesheet -->
     <link rel="stylesheet" href="assets/css/bootstrap.min.css">
@@ -65,29 +119,27 @@
                 </button>
             </div>
             <div class="logo">
-                <a href="index.html"><img src="assets/img/logo.png" alt="Logo da Plataforma"></a>
+                <a href="index.html" aria-label="Educx - Página Inicial"><img src="assets/img/logo.png" alt="Educx - Plataforma de Gamificação Escolar" width="150" height="50"></a>
             </div>
             <div class="collapse navbar-collapse" id="xdyat_main_menu">
                 <ul class="navbar-nav menu-open ps-lg-5 pe-xl-4 text-end">
                     <!-- Home -->
-                    <li class="menu-item-has-children">
-                        <a class="active" href="#">Início</a>
-                        <ul class="sub-menu">
-                            <li><a href="index.html">Página Inicial</a></li>
-                        </ul>
-                    </li>
+                    <li><a class="active" href="#hero">Início</a></li>
             
-                    <!-- Missões -->
-                    <li><a href="#missoes-box">Missões</a></li>
+                    <!-- Problemas -->
+                    <li><a href="#dores">Desafios</a></li>
             
-                    <!-- Recompensas -->
-                    <li><a href="#recompensas-box">Recompensas</a></li>
+                    <!-- Solução -->
+                    <li><a href="#solucao">Solução</a></li>
             
-                    <!-- Sobre -->
-                    <li><a href="#sobre-box">Sobre</a></li>
+                    <!-- Prova Social -->
+                    <li><a href="#prova-social">Cases</a></li>
             
-                    <!-- Contato 
-                    <li><a href="#contato-box">Contato</a></li>-->
+                    <!-- Diferenciais -->
+                    <li><a href="#diferenciais">Diferenciais</a></li>
+            
+                    <!-- Contato -->
+                    <li><a href="#contato">Contato</a></li>
                 </ul>
             </div>
 
@@ -105,13 +157,13 @@
                             <path d="M0 0V3H24V0H0ZM24 21H16V18H24V21ZM24 12H8V9H24V12Z" fill="#fff" />
                         </svg>
                     </button>
-                    <a class="btn btn-main style-small" href="login.php">
+                    <a class="btn btn-main style-small" href="#contato">
                         <span>
                             <span>
                                 <img src="assets/img/btn-arrow.png" alt="img">
                                 ~  
                             </span>
-                            <span>Conectar</span>
+                            <span>Agendar Demonstração</span>
                         </span>
                     </a>
                 </div>
@@ -119,13 +171,13 @@
 
             <!-- Botão de Conectar para Mobile -->
             <div class="nav-right-part-mobile d-lg-none">
-                <a class="btn btn-main style-small" href="login.php">
+                <a class="btn btn-main style-small" href="#contato">
                     <span>
                         <span>
                             <img src="assets/img/btn-arrow.png" alt="img">
                             ~  
                         </span>
-                        <span>Conectar</span>
+                        <span>Agendar</span>
                     </span>
                 </a>
             </div>
@@ -147,23 +199,21 @@
             <div class="sidebar-inner">
                 <!-- Logo -->
                 <div class="thumb">
-                    <img src="assets/img/logo.png" alt="Logo da Plataforma">
+                    <img src="assets/img/logo.png" alt="Educx - Plataforma de Gamificação Escolar" width="150" height="50">
                 </div>
 
                 <!-- Descrição -->
-                <p>Bem-vindo à nossa plataforma de gamificação escolar! Aqui, valorizamos cada atitude positiva e
-                    esforço de nossos alunos. A cada missão cumprida, você conquista recompensas e avança no
-                    aprendizado!</p>
+                <p>Transforme o comportamento dos alunos e acabe com a evasão escolar usando Gamificação. Uma plataforma completa que premia o desempenho, engaja estudantes e facilita a vida dos professores.</p>
 
-                <!-- Botão de Conectar para Mobile -->
+                <!-- Botão de Agendar para Mobile -->
                 <div class="btn-box d-inline-block mb-4">
-                    <a class="btn btn-main style-small" href="login.php">
+                    <a class="btn btn-main style-small" href="#contato">
                         <span>
                             <span>
                                 <img src="assets/img/btn-arrow.png" alt="img">
                                 ~  
                             </span>
-                            <span>Conectar</span>
+                            <span>Agendar Demonstração</span>
                         </span>
                     </a>
                 </div>
@@ -191,192 +241,143 @@
 
     <!-- off canvas end -->
 
-    <!-- page title start -->
-    <div class="banner-area bg-relative banner-area-1" style="background-image: url('./assets/img/banner/3.png');">
+    <!-- Hero Section - B2B -->
+    <div class="banner-area bg-relative banner-area-1" id="hero" style="background-image: url('./assets/img/banner/3.png');">
         <img class="chain-style" src="assets/img/banner/5.png" alt="img">
         <img class="chain-style right-to-left-move" src="assets/img/banner/5.png" alt="img">
         <div class="container">
             <div class="row">
                 <div class="col-lg-7">
                     <div class="banner-content">
-                        <h1 class="title move-line-3d">
-                            <span class="light">
-                                Conquiste o
-                                <img class="line-img" src="assets/img/banner/4.png" alt="img">
+                        <img class="line-img mb-3" src="assets/img/banner/4.png" alt="Educx Gamificação" style="max-width: 180px; height: auto;">
+                        <h1 class="title move-line-3d" style="font-size: 3rem; line-height: 1.2;">
+                            <span class="light" style="font-size: 2.2rem;">
+                                Acabe com a Evasão Escolar
                             </span>
-                            <span class="font-large">
-                                Aprendizado <span class="color-base">com recompensas</span>
+                            <span class="font-large" style="font-size: 2.8rem;">
+                                Transforme sua escola com <span class="color-base">Gamificação</span>
                             </span>
-
                         </h1>
-                        <h4 class="sub-title split_chars">Descubra a gamificação educacional</h4>
-                        <div class="btn-box d-inline-block fade-slide bottom">
-                            <a class="btn btn-main style-small" href="#">
+                        <h2 class="sub-title split_chars" style="font-size: 1.15rem; margin-top: 1rem; line-height: 1.5;">Plataforma completa que premia desempenho, engaja estudantes e reduz evasão. Implantação simples, resultados imediatos.</h2>
+                        <div class="btn-box d-inline-flex gap-3 fade-slide bottom">
+                            <a class="btn btn-main style-small" href="https://wa.me/5587991682773?text=Olá!%20Gostaria%20de%20agendar%20uma%20demonstração%20da%20Educx" target="_blank">
                                 <span>
-                                    <span>Saiba mais</span>
+                                    <span>Agendar Demonstração</span>
+                                </span>
+                            </a>
+                            <a class="btn btn-main style-small" href="#prova-social" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3);">
+                                <span>
+                                    <span>Ver Case de Sucesso</span>
                                 </span>
                             </a>
                         </div>
-
                     </div>
                 </div>
                 <div class="col-lg-5 mt-lg-0 mt-5">
                     <div class="banner-img text-lg-end top_image_bounce">
-                        <img src="assets/img/banner/2.png" alt="img"> <!-- Imagem principal -->
-                        <img class="shape-img shapeBlinker_img" src="assets/img/banner/6.png" alt="img">
-                        <img class="shape-img-2 spin_image" src="assets/img/banner-2/2.png" alt="img">
+                        <img src="assets/img/banner/2.png" alt="Dashboard Educx - Plataforma de Gamificação Escolar" width="500" height="400">
+                        <img class="shape-img shapeBlinker_img" src="assets/img/banner/6.png" alt="Decoração Educx" width="100" height="100">
+                        <img class="shape-img-2 spin_image" src="assets/img/banner-2/2.png" alt="Elemento decorativo" width="80" height="80">
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- banner end -->
+    <!-- Hero Section End -->
 
-    <div class="about-area position-relative pd-top-110 pd-bottom-70">
+    <!-- Seção de Dores (Problemas) -->
+    <div class="about-area position-relative pd-top-110 pd-bottom-70" id="dores">
         <div class="container">
             <div class="row justify-content-center">
-                <div class="col-lg-6">
+                <div class="col-lg-8">
                     <div class="section-title text-center">
-                        <h6 class="sub-title split_chars">Como funciona</h6>
-                        <h2 class="title move-line-3d">Como funciona</h2>
-                        <img class="mt-3" src="assets/img/icon/shalep-1.png" alt="img">
+                        <h2 class="sub-title split_chars">Desafios Escolares</h2>
+                        <h3 class="title move-line-3d">Sua escola enfrenta esses desafios?</h3>
+                        <img class="mt-3" src="assets/img/icon/shalep-1.png" alt="Ícone Educx" width="50" height="50">
                     </div>
                 </div>
             </div>
-            <div class="intro-box-wrap gap-3 mb-5">
-                <!-- Missões -->
-                <div class="intro-box-inner text-center fade-slide bottom" data-delay="0.6" id="missoes-box">
-                    <div class="icon">
-                        <img src="assets/img/icon/3.png" alt="img">
-                    </div>
-                    <div class="content">
-                        <h4>Missões</h4>
-                    </div>
-                </div>
-
-                <!-- Recompensas -->
-                <div class="intro-box-inner text-center fade-slide bottom" data-delay="0.6" id="recompensas-box">
-                    <div class="icon">
-                        <img src="assets/img/icon/2.png" alt="img">
-                    </div>
-                    <div class="content">
-                        <h4>Recompensas</h4>
-                    </div>
-                </div>
-
-                <!-- Níveis -->
-                <div class="intro-box-inner text-center fade-slide bottom" data-delay="0.8" id="niveis-box">
-                    <div class="icon">
-                        <img src="assets/img/icon/1.png" alt="img">
-                    </div>
-                    <div class="content">
-                        <h4>Níveis</h4>
-                    </div>
-                </div>
-
-                <!-- Ranking -->
-                <div class="intro-box-inner text-center fade-slide bottom" data-delay="0.9" id="ranking-box">
-                    <div class="icon">
-                        <img src="assets/img/icon/4.png" alt="img">
-                    </div>
-                    <div class="content">
-                        <h4>Ranking</h4>
-                    </div>
-                </div>
-                <div class="intro-box-inner text-center fade-slide bottom" data-delay="0.9" id="resultados-box">
-                    <div class="icon">
-                        <img src="assets/img/icon/5.png" alt="img">
-                    </div>
-                    <div class="content">
-                        <h4>Resultados</h4>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-xl-7 col-lg-10 ps-xl-5 order-lg-last">
-                    <div class="about-thumb-inner position-relative mb-4 text-lg-end fade-slide bottom"
-                        data-delay="0.5">
-                        <img src="assets/img/about/9.png" alt="img">
-                        <img class="animate-top-left top_image_bounce" src="assets/img/about/10.png" alt="img">
-                    </div>
-                </div>
-                <div class="col-xl-5 align-self-center order-lg-start">
-                    <div class="about-content section-title mt-5 mt-xl-0 mb-0" id="about-content">
-                        <h6 class="sub-title split_chars" id="about-subtitle">Nosso Roadmap <img class="ms-2"
-                                src="assets/img/icon/shalep-1.png" alt="img"></h6>
-                        <h2 class="title move-line-3d" id="about-title">
-                            Conquiste a <br>
-                            sua jornada de aprendizado
-                        </h2>
-                        <p class="content fade-slide bottom" data-delay="0.2" id="about-text">
-                            Nossa plataforma de gamificação educacional foi criada para transformar a experiência
-                            escolar. A cada missão cumprida, você avança no aprendizado e conquista recompensas!
-                        </p>
-                        <div class="small-title-2 pb-4 fade-slide bottom" data-delay="0.4" id="about-small-title">
-                            <img src="assets/img/about/2.png" alt="img"> | Ganhe Recompensas Fantásticas <span
-                                class="color-base"></span>
+            <div class="row mt-5">
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="intro-box-inner text-center fade-slide bottom" data-delay="0.2">
+                        <div class="icon mb-4">
+                            <i class="fas fa-user-times fa-3x" style="color: #dc3545;"></i>
                         </div>
-                        <img src="assets/img/shape/2.png" alt="img">
+                        <div class="content">
+                            <h4 class="mb-3">Desmotivação</h4>
+                            <p>Alunos que não fazem tarefas e não participam das aulas, resultando em baixo desempenho acadêmico.</p>
+                        </div>
                     </div>
                 </div>
-                <script>
-                    // Função para alterar o conteúdo ao clicar nas etapas
-                    function changeContent(contentType) {
-                        const title = document.getElementById('about-title');
-                        const text = document.getElementById('about-text');
-                        const subtitle = document.getElementById('about-subtitle');
-                        const smallTitle = document.getElementById('about-small-title');
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="intro-box-inner text-center fade-slide bottom" data-delay="0.4">
+                        <div class="icon mb-4">
+                            <i class="fas fa-exclamation-triangle fa-3x" style="color: #ffc107;"></i>
+                        </div>
+                        <div class="content">
+                            <h4 class="mb-3">Indisciplina</h4>
+                            <p>Professores perdendo tempo de aula chamando a atenção da turma, reduzindo o tempo de ensino efetivo.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="intro-box-inner text-center fade-slide bottom" data-delay="0.6">
+                        <div class="icon mb-4">
+                            <i class="fas fa-user-slash fa-3x" style="color: #dc3545;"></i>
+                        </div>
+                        <div class="content">
+                            <h4 class="mb-3">Evasão Escolar</h4>
+                            <p>Perda de matrículas para a concorrência por falta de diferencial, impactando diretamente a receita da escola.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Seção de Dores End -->
 
-                        if (contentType === 'missoes') {
-                            title.innerHTML = "Complete suas <br> Missões Acadêmicas";
-                            text.innerHTML = "Desafie-se todos os dias com novas missões escolares e conquiste recompensas exclusivas, enquanto avança no aprendizado!";
-                            subtitle.innerHTML = "<img src='assets/img/about/2.png' alt='img'> | Suba de Nível com Missões <span class='color-base'></span>";
-                            smallTitle.innerHTML = "Assuma Missões, Ganhe Moedas <span class='color-base'></span>";
-                        } else if (contentType === 'recompensas') {
-                            title.innerHTML = "Explore suas <br> Recompensas Educacionais";
-                            text.innerHTML = "A cada conquista na nossa plataforma, os alunos podem acumular moedas, subir de nível e desbloquear novas recompensas, tornando o aprendizado ainda mais empolgante!";
-                            subtitle.innerHTML = "<img src='assets/img/about/2.png' alt='img'> | Aproveite as Recompensas <span class='color-base'></span>";
-                            smallTitle.innerHTML = "Ganhe Recompensas Fantásticas <span class='color-base'></span>";
-                        } else if (contentType === 'niveis') {
-                            title.innerHTML = "Suba de Nível e Ganhe <br> Vantagens";
-                            text.innerHTML = "A cada ponto de experiência (XP) conquistado, você sobe de nível, desbloqueando novos benefícios, avatares e recompensas exclusivas!";
-                            subtitle.innerHTML = "<img src='assets/img/about/2.png' alt='img'> | Alcançe Novos Níveis <span class='color-base'></span>";
-                            smallTitle.innerHTML = "Suba de Nível, Liberte Novos Benefícios <span class='color-base'></span>";
-                        } else if (contentType === 'ranking') {
-                            title.innerHTML = "Veja seu <br> Ranking Escolar";
-                            text.innerHTML = "Compare seu progresso com os outros alunos! A cada missão cumprida e cada ponto de XP conquistado, você sobe no ranking, desafiando seus colegas a alcançarem novas posições!";
-                            subtitle.innerHTML = "<img src='assets/img/about/2.png' alt='img'> | Seja o Melhor <span class='color-base'></span>";
-                            smallTitle.innerHTML = "Rankings Escolares e Competição Saudável <span class='color-base'></span>";
-                        } else if (contentType === 'resultados') {
-                            title.innerHTML = "Acompanhe seus <br> Resultados";
-                            text.innerHTML = "Veja o impacto das suas conquistas na plataforma! Os resultados são atualizados em tempo real, refletindo seu desempenho e esforço.";
-                            subtitle.innerHTML = "<img src='assets/img/about/2.png' alt='img'> | Acompanhe sua  <span class='color-base'>Evolução</span>";
-                            smallTitle.innerHTML = "Acompanhe seu  <span class='color-base'>progresso</span>";
-                        }
-                    }
-
-                    // Adiciona os eventos de clique nas etapas
-                    document.getElementById("missoes-box").addEventListener("click", function () {
-                        changeContent('missoes');
-                    });
-
-                    document.getElementById("recompensas-box").addEventListener("click", function () {
-                        changeContent('recompensas');
-                    });
-
-                    document.getElementById("niveis-box").addEventListener("click", function () {
-                        changeContent('niveis');
-                    });
-
-                    document.getElementById("ranking-box").addEventListener("click", function () {
-                        changeContent('ranking');
-                    });
-                    // Adicionando o evento de clique para "Resultados"
-                    document.getElementById("resultados-box").addEventListener("click", function () {
-                        changeContent('resultados');
-                    });
-                </script>
+    <!-- Seção de Solução -->
+    <div class="about-area position-relative pd-top-110 pd-bottom-70 bg-cover" id="solucao" style="background-image: url('assets/img/about/bg.png');">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="section-title text-center">
+                        <h2 class="sub-title split_chars">A Solução</h2>
+                        <h3 class="title move-line-3d">Funcionalidades que transformam sua escola</h3>
+                        <img class="mt-3" src="assets/img/icon/shalep-1.png" alt="Ícone Educx" width="50" height="50">
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-5">
+                <div class="col-lg-6 col-md-6 mb-4">
+                    <div class="game-single-level text-center p-4 fade-slide bottom" data-delay="0.2">
+                        <img src="assets/img/about/3.png" alt="Gestão Comportamental Automatizada - Educx" width="80" height="80">
+                        <h4 class="tt-uppercase mt-3 mb-3">Gestão Comportamental Automatizada</h4>
+                        <p>O sistema pontua automaticamente presença e tarefas, criando um ranking meritocrático que motiva os alunos sem esforço extra dos professores.</p>
+                    </div>
+                </div>
+                <div class="col-lg-6 col-md-6 mb-4">
+                    <div class="game-single-level text-center p-4 fade-slide bottom" data-delay="0.3">
+                        <img src="assets/img/about/4.png" alt="Sistema de Recompensas Controlado - Educx" width="80" height="80">
+                        <h4 class="tt-uppercase mt-3 mb-3">Sistema de Recompensas Controlado</h4>
+                        <p>Incentive o aluno com prêmios reais ou virtuais definidos pela escola, sem custos extras. A escola decide o que oferecer e quando.</p>
+                    </div>
+                </div>
+                <div class="col-lg-6 col-md-6 mb-4">
+                    <div class="game-single-level text-center p-4 fade-slide bottom" data-delay="0.4">
+                        <img src="assets/img/about/5.png" alt="Engajamento Pedagógico - Educx" width="80" height="80">
+                        <h4 class="tt-uppercase mt-3 mb-3">Engajamento Pedagógico</h4>
+                        <p>Transforme listas de exercícios e datas comemorativas em missões que os alunos querem fazer, aumentando a participação e o aprendizado.</p>
+                    </div>
+                </div>
+                <div class="col-lg-6 col-md-6 mb-4">
+                    <div class="game-single-level text-center p-4 fade-slide bottom" data-delay="0.5">
+                        <img src="assets/img/about/6.png" alt="Sentimento de Pertencimento - Educx" width="80" height="80">
+                        <h4 class="tt-uppercase mt-3 mb-3">Sentimento de Pertencimento</h4>
+                        <p>O aluno se vê dentro da escola através de avatares e perfis personalizados, aumentando o vínculo emocional com a instituição e reduzindo a evasão.</p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -494,158 +495,91 @@
     </div>
      feature-area end -->
 
-<!-- top-seller-area start -->
-<div class="top-seller-area pd-bottom-80">
+<!-- Seção de Prova Social -->
+<div class="testimonial-area pd-top-120 pd-bottom-90" id="prova-social">
     <div class="container">
-        <div class="section-title d-md-flex justify-content-between align-items-center">
-            <h2 class="title move-line-3d">Top <span>Alunos</span></h2>
-            <div class="array-button slider-control-round mt-md-0 mt-4">
-                <button class="array-next"><i class="fa fa-angle-left"></i></button>
-                <button class="array-prev"><i class="fa fa-angle-right"></i></button>
-            </div>
+        <div class="section-title text-center">
+            <h2 class="sub-title split_chars">Quem usa, aprova</h2>
+            <h3 class="title move-line-3d">Case de <span>Sucesso</span></h3>
         </div>
-        <div class="swiper top-seller-slider fade-slide bottom">
-            <div class="swiper-wrapper">
-                <div class="swiper-slide">
-                    <div class="top-seller-inner" style="background-image: url('assets/img/top-seller/bg.png');">
-                        <div class="top-seller-item d-flex justify-content-between">
-                            <div class="thumb">
-                                <img src="assets/img/top-seller/1.png" alt="img">
-                            </div>
-                            <div class="content">
-                                <h5 class="tt-uppercase">Ander*** Bri**</h5>
-                                <span class="color-base mb-2 d-block">Maior pontuação</span>
-                                <div class="author-img">
-                                    <img src="assets/img/top-seller/4.png" alt="img">
-                                    <span>+2000 XP</span>
-                                </div>
-                            </div>
-                            <div class="button text-end">
-                                <span class="tag mb-2"><span>15 Missões</span></span>
-                                <span class="tag"><span>5 Níveis</span></span>
-                            </div>
-                        </div>
-                        <h6 class="bottom-item"><span></span>Colégio Rosa de Sharom</h6>
+        <div class="row justify-content-center mt-5">
+            <div class="col-lg-10">
+                <div class="feedback-inner text-center p-5" style="background: rgba(255,255,255,0.05); border-radius: 20px;">
+                    <div class="mb-4">
+                        <h3 class="color-base mb-3">Colégio Rosa de Sharom</h3>
+                        <p class="lead">"Desde que implantamos a Educx, a entrega de tarefas aumentou significativamente e os alunos adoram a competição saudável. A plataforma se tornou um diferencial competitivo para nossa escola."</p>
                     </div>
-                </div>
-                <div class="swiper-slide">
-                    <div class="top-seller-inner" style="background-image: url('assets/img/top-seller/bg.png');">
-                        <div class="top-seller-item d-flex justify-content-between">
-                            <div class="thumb">
-                                <img src="assets/img/top-seller/2.png" alt="img">
-                            </div>
-                            <div class="content">
-                                <h5 class="tt-uppercase">An* Lui**</h5>
-                                <span class="color-base mb-2 d-block">Maior pontuação</span>
-                                <div class="author-img">
-                                    <img src="assets/img/top-seller/4.png" alt="img">
-                                    <span>+1800 XP</span>
-                                </div>
-                            </div>
-                            <div class="button text-end">
-                                <span class="tag mb-2"><span>12 Missões</span></span>
-                                <span class="tag"><span>4 Níveis</span></span>
+                    <div class="row mt-4">
+                        <div class="col-md-4 mb-3">
+                            <div class="text-center">
+                                <h2 class="color-base">+85%</h2>
+                                <p>Entrega de Tarefas</p>
                             </div>
                         </div>
-                        <h6 class="bottom-item"><span></span>Colégio Rosa de Sharom</h6>
+                        <div class="col-md-4 mb-3">
+                            <div class="text-center">
+                                <h2 class="color-base">+50%</h2>
+                                <p>Participação em Aulas</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="text-center">
+                                <h2 class="color-base">-30%</h2>
+                                <p>Evasão Escolar</p>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <div class="swiper-slide">
-                    <div class="top-seller-inner" style="background-image: url('assets/img/top-seller/bg.png');">
-                        <div class="top-seller-item d-flex justify-content-between">
-                            <div class="thumb">
-                                <img src="assets/img/top-seller/3.png" alt="img">
-                            </div>
-                            <div class="content">
-                                <h5 class="tt-uppercase">Mar*** Cam***</h5>
-                                <span class="color-base mb-2 d-block">Maior pontuação</span>
-                                <div class="author-img">
-                                    <img src="assets/img/top-seller/4.png" alt="img">
-                                    <span>+1500 XP</span>
-                                </div>
-                            </div>
-                            <div class="button text-end">
-                                <span class="tag mb-2"><span>10 Missões</span></span>
-                                <span class="tag"><span>3 Níveis</span></span>
-                            </div>
-                        </div>
-                        <h6 class="bottom-item"><span></span>Colégio Rosa de Sharom</h6>
+                    <div class="mt-4">
+                        <p class="text-muted"><small>Dados reais após 6 meses de uso da plataforma</small></p>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-<!-- top-seller-area end -->
+<!-- Seção de Prova Social End -->
 
     <!-- top-seller-area end -->
 
-    <!-- about area start -->
-    <div class="about-area position-relative bg-cover pd-top-120 pd-bottom-70"
+    <!-- Seção de Diferenciais -->
+    <div class="about-area position-relative bg-cover pd-top-120 pd-bottom-70" id="diferenciais"
         style="background-image: url('assets/img/about/bg.png');">
         <div class="container">
-            <div class="row" id="sobre-box">
-                <div class="col-xl-7 col-lg-10 pe-xl-5">
-                    <div class="about-thumb-inner mb-4 fade-slide right" data-delay="0.2">
-                        <img src="assets/img/about/1.png" alt="img">
-                    </div>
-                </div>
-                <div class="col-xl-5 align-self-center">
-                    <div class="about-content section-title mt-lg-5 mt-xl-0 mb-0">
-                        <h2 class="title move-line-3d">Gamificação na Educação</h2>
-                        <h5 class="small-title split_chars">Transforme sua jornada escolar com diversão!</h5>
-                        <p class="content fade-slide bottom" data-delay="0.3">Nossa plataforma de gamificação
-                            educacional visa tornar o ambiente escolar mais interativo e motivador. A cada tarefa
-                            cumprida e atitude positiva, o aluno é recompensado com moedas e XP, incentivando o
-                            crescimento contínuo.</p>
-                        <div class="small-title-2 fade-slide bottom" data-delay="0.5">
-                            <img src="assets/img/about/2.png" alt="img"> | Ganhe  <span class="color-base">Recompensas</span>
-                        </div>
-                        <div class="btn-box d-inline-block fade-slide bottom" data-delay="0.7">
-                            <a class="btn btn-main style-small" href="about.html">
-                                <span>
-                                    <span>Explore Mais</span>
-                                </span>
-                            </a>
-                        </div>
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="section-title text-center">
+                        <h2 class="sub-title split_chars">Por que escolher a Educx?</h2>
+                        <h3 class="title move-line-3d">Diferenciais que fazem a <span>diferença</span></h3>
+                        <img class="mt-3" src="assets/img/icon/shalep-1.png" alt="Ícone Educx" width="50" height="50">
                     </div>
                 </div>
             </div>
             <div class="row mt-5">
-                <div class="col-lg-3 col-sm-6">
+                <div class="col-lg-4 col-md-6 mb-4">
                     <div class="game-single-level text-center p-4 fade-slide bottom" data-delay="0.2">
-                        <img src="assets/img/about/3.png" alt="img">
-                        <h4 class="tt-uppercase mt-3 mb-3">Missões Diárias</h4>
-                        <p>Realize atividades como tarefas e cuidados com a escola para acumular moedas e XP.</p>
+                        <i class="fas fa-palette fa-3x color-base mb-3"></i>
+                        <h4 class="tt-uppercase mt-3 mb-3">Personalização Total</h4>
+                        <p>Sua escola, sua marca. Personalizamos a plataforma com a identidade visual da sua instituição, criando uma experiência única para seus alunos.</p>
                     </div>
                 </div>
-                <div class="col-lg-3 col-sm-6">
+                <div class="col-lg-4 col-md-6 mb-4">
                     <div class="game-single-level text-center p-4 fade-slide bottom" data-delay="0.3">
-                        <img src="assets/img/about/4.png" alt="img">
-                        <h4 class="tt-uppercase mt-3 mb-3">Ranking Escolar</h4>
-                        <p>Compare seu progresso com os outros alunos e suba no ranking conforme cumpre suas missões.
-                        </p>
+                        <i class="fas fa-dollar-sign fa-3x color-base mb-3"></i>
+                        <h4 class="tt-uppercase mt-3 mb-3">Preço Acessível</h4>
+                        <p>Tecnologia de ponta com custo acessível para escolas de todos os portes. Investimento que se paga com a redução da evasão e aumento da satisfação.</p>
                     </div>
                 </div>
-                <div class="col-lg-3 col-sm-6">
+                <div class="col-lg-4 col-md-6 mb-4">
                     <div class="game-single-level text-center p-4 fade-slide bottom" data-delay="0.4">
-                        <img src="assets/img/about/5.png" alt="img">
-                        <h4 class="tt-uppercase mt-3 mb-3">Loja de Recompensas</h4>
-                        <p>Troque suas moedas por itens, benefícios e avatares personalizados.</p>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-sm-6">
-                    <div class="game-single-level text-center p-4 fade-slide bottom" data-delay="0.5">
-                        <img src="assets/img/about/6.png" alt="img">
-                        <h4 class="tt-uppercase mt-3 mb-3">Avançando de Nível</h4>
-                        <p>A cada missão cumprida, ganhe pontos de experiência (XP) e desbloqueie novos níveis e
-                            conquistas.</p>
+                        <i class="fas fa-headset fa-3x color-base mb-3"></i>
+                        <h4 class="tt-uppercase mt-3 mb-3">Suporte Humanizado</h4>
+                        <p>Atendimento próximo e humanizado para treinar sua equipe. Não vendemos apenas software, oferecemos uma parceria completa.</p>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <!-- about area end -->
+    <!-- Seção de Diferenciais End -->
 
     <!-- about area end -->
 
@@ -792,137 +726,70 @@
     </div>
      creator-area end -->
 
-    <!-- testimonial-area start -->
-<!-- testimonial-area start -->
-<div class="testimonial-area pd-top-120">
-    <div class="container">
-        <div class="section-title">
-            <div class="row">
-                <div class="col-lg-6">
-                    <h6 class="sub-title split_chars">O que estão falando</h6>
-                    <h2 class="title move-line-3d">Feedback da <span>galera</span></h2>
-                </div>
-                <div class="col-lg-6 d-lg-block d-none">
-                    <div class="array-button slider-control-round text-lg-end">
-                        <button class="array1-prev me-0"><i class="fa fa-angle-left"></i></button>
-                        <button class="array1-next"><i class="fa fa-angle-right"></i></button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="swiper mySwiper2">
-            <div class="swiper-wrapper">
-                <div class="swiper-slide">
-                    <div class="feedback-inner">
-                        <img src="assets/img/testimonial/1.png" alt="img">
-                        <p>“Com a plataforma, o estudo ficou muito mais divertido! Cada missão concluída é uma vitória!”</p>
-                    </div>
-                </div>
-                <div class="swiper-slide">
-                    <div class="feedback-inner">
-                        <img src="assets/img/testimonial/2.png" alt="img">
-                        <p>“A troca de moedas me motivou muito! Sempre quero alcançar o próximo nível e ganhar mais recompensas.”</p>
-                    </div>
-                </div>
-                <div class="swiper-slide">
-                    <div class="feedback-inner">
-                        <img src="assets/img/testimonial/3.png" alt="img">
-                        <p>“Me sinto muito mais engajado nas atividades. As missões são top e me ajudam a aprender de um jeito que nem percebo!”</p>
-                    </div>
-                </div>
-                <div class="swiper-slide">
-                    <div class="feedback-inner">
-                        <img src="assets/img/testimonial/4.png" alt="img">
-                        <p>“Nunca pensei que estudar poderia ser tão divertido! Agora, cada tarefa é como um jogo.”</p>
-                    </div>
-                </div>
-                <div class="swiper-slide">
-                    <div class="feedback-inner">
-                        <img src="assets/img/testimonial/5.png" alt="img">
-                        <p>“Eu adoro a forma como as recompensas são feitas. Isso me dá aquele empurrãozinho para estudar mais e alcançar mais XP.”</p>
-                    </div>
-                </div>
-                <div class="swiper-slide">
-                    <div class="feedback-inner">
-                        <img src="assets/img/testimonial/6.png" alt="img">
-                        <p>“Cada conquista me faz querer ir mais longe! Com a plataforma, fico super motivado a ser o melhor.”</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="swiper mySwiper feedback-list-slider">
-            <div class="swiper-wrapper">
-                <div class="swiper-slide">
-                    <div class="feedback-list">
-                        <img src="assets/img/testimonial/2.png" alt="img">
-                        <div class="details">
-                            <h5>Lucas</h5>
-                            <span>Aluno</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="swiper-slide">
-                    <div class="feedback-list">
-                        <img src="assets/img/testimonial/3.png" alt="img">
-                        <div class="details">
-                            <h5>Amanda</h5>
-                            <span>Aluna</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="swiper-slide">
-                    <div class="feedback-list">
-                        <img src="assets/img/testimonial/4.png" alt="img">
-                        <div class="details">
-                            <h5>Carlos</h5>
-                            <span>Aluno</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="swiper-slide">
-                    <div class="feedback-list">
-                        <img src="assets/img/testimonial/5.png" alt="img">
-                        <div class="details">
-                            <h5>Fernanda</h5>
-                            <span>Aluna</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="swiper-slide">
-                    <div class="feedback-list">
-                        <img src="assets/img/testimonial/2.png" alt="img">
-                        <div class="details">
-                            <h5>Pedro</h5>
-                            <span>Aluno</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="swiper-slide">
-                    <div class="feedback-list">
-                        <img src="assets/img/testimonial/3.png" alt="img">
-                        <div class="details">
-                            <h5>Beatriz</h5>
-                            <span>Aluna</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- testimonial-area end -->
-
-<!-- testimonial-area end -->
 
     
-    <!-- footer area start -->
-    <footer class="footer-area footer-area-1 pd-top-110" style="background-image: url('./assets/img/footer/bg.png');">
+    <!-- Footer com Formulário de Conversão -->
+    <footer class="footer-area footer-area-1 pd-top-110" id="contato" style="background-image: url('./assets/img/footer/bg.png');">
         <div class="container">
-            <div class="row">
-                <div class="col-lg-3 col-md-6">
+            <div class="row justify-content-center mb-5">
+                <div class="col-lg-8 text-center">
+                    <h2 class="title move-line-3d mb-4">Pronto para modernizar sua escola?</h2>
+                    <p class="sr-only">Formulário de contato para agendar demonstração da plataforma Educx</p>
+                    <p class="lead mb-4">Agende uma demonstração gratuita e descubra como a Educx pode transformar sua instituição.</p>
+                </div>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="widget widget_subscribe">
+                        <form id="contatoForm" action="#" method="POST" aria-label="Formulário de contato Educx">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <div class="single-input-inner">
+                                        <label for="nome" class="sr-only">Nome completo</label>
+                                        <input type="text" id="nome" name="nome" placeholder="Seu Nome" required aria-label="Nome completo">
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="single-input-inner">
+                                        <label for="escola" class="sr-only">Nome da escola</label>
+                                        <input type="text" id="escola" name="escola" placeholder="Nome da Escola" required aria-label="Nome da escola">
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="single-input-inner">
+                                        <label for="cargo" class="sr-only">Cargo</label>
+                                        <input type="text" id="cargo" name="cargo" placeholder="Seu Cargo" required aria-label="Cargo">
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="single-input-inner">
+                                        <label for="whatsapp" class="sr-only">WhatsApp</label>
+                                        <input type="tel" id="whatsapp" name="whatsapp" placeholder="WhatsApp (com DDD)" required aria-label="Número do WhatsApp">
+                                    </div>
+                                </div>
+                                <div class="col-md-12 mb-3">
+                                    <div class="single-input-inner">
+                                        <label for="email" class="sr-only">E-mail</label>
+                                        <input type="email" id="email" name="email" placeholder="Seu E-mail" required aria-label="E-mail">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="btn-box text-center">
+                                <button type="submit" class="btn btn-main style-small">
+                                    <span>
+                                        <span>Agendar Demonstração</span>
+                                    </span>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-5">
+                <div class="col-lg-4 col-md-6">
                     <div class="widget widget_about">
-                        <div class="thumb">
-                            <img src="assets/img/logo.png" alt="img">
+                        <div class="thumb mb-3">
+                            <img src="assets/img/logo.png" alt="Educx - Plataforma de Gamificação Escolar" width="150" height="50">
                         </div>
                         <div class="details">
                             <p class="mb-3">
@@ -935,67 +802,26 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-3 col-md-6">
-                    <div class="widget widget_nav_menu ps-xl-5">
+                <div class="col-lg-4 col-md-6">
+                    <div class="widget widget_nav_menu">
                         <h4 class="widget-title">Links Importantes</h4>
                         <ul>
-                            <li><a href="sobre.html">Sobre Nós</a></li>
-                            <li><a href="como-funciona.html">Como Funciona</a></li>
-                            <li><a href="login.html">Minha Conta</a></li>
-                            <li><a href="contato.html">Contato</a></li>
-                            <li><a href="faq.html">FAQ</a></li>
+                            <li><a href="#hero">Início</a></li>
+                            <li><a href="#solucao">Solução</a></li>
+                            <li><a href="#prova-social">Cases de Sucesso</a></li>
+                            <li><a href="#diferenciais">Diferenciais</a></li>
+                            <li><a href="#contato">Contato</a></li>
                         </ul>
                     </div>
                 </div>
-                <div class="col-lg-3 col-md-6">
-                    <div class="widget widget_subscribe">
-                        <h4 class="widget-title">Inscreva-se</h4>
-                        <p class="mb-3">Receba dicas e novidades sobre gamificação e educação diretamente no seu e-mail!</p>
-                        <form action="#">
-                            <div class="single-input-inner">
-                                <input type="email" placeholder="seuemail@dominio.com">
-                            </div>
-                            <div class="btn-box d-inline-block">
-                                <button class="btn btn-main style-small">
-                                    <span>
-                                        <span>Inscrever</span>
-                                    </span>
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6">
-                    <div class="widget widget_instagram ps-xl-5">
-                        <h4 class="widget-title">Nos Siga no Instagram</h4>
-                        <div class="widget widget_contact">
-                            <ul>
-                                <li>
-                                    <img src="assets/img/footer/1.png" alt="img">
-                                    <a href="#"><i class="fab fa-instagram"></i></a>
-                                </li>
-                                <li>
-                                    <img src="assets/img/footer/2.png" alt="img">
-                                    <a href="#"><i class="fab fa-instagram"></i></a>
-                                </li>
-                                <li>
-                                    <img src="assets/img/footer/3.png" alt="img">
-                                    <a href="#"><i class="fab fa-instagram"></i></a>
-                                </li>
-                                <li>
-                                    <img src="assets/img/footer/4.png" alt="img">
-                                    <a href="#"><i class="fab fa-instagram"></i></a>
-                                </li>
-                                <li>
-                                    <img src="assets/img/footer/5.png" alt="img">
-                                    <a href="#"><i class="fab fa-instagram"></i></a>
-                                </li>
-                                <li>
-                                    <img src="assets/img/footer/6.png" alt="img">
-                                    <a href="#"><i class="fab fa-instagram"></i></a>
-                                </li>
-                            </ul>
-                        </div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="widget widget_contact">
+                        <h4 class="widget-title">Fale Conosco</h4>
+                        <ul style="list-style: none; padding: 0;">
+                            <li style="margin-bottom: 10px; color: #fff;"><i class="fa fa-phone" style="margin-right: 10px;"></i> <a href="https://wa.me/5587991682773" target="_blank" style="color: #fff; text-decoration: none;">(87) 9 9168-2773</a></li>
+                            <li style="margin-bottom: 10px; color: #fff;"><i class="fa fa-envelope" style="margin-right: 10px;"></i> <a href="mailto:ccontato@echotec.site" style="color: #fff; text-decoration: none;">ccontato@echotec.site</a></li>
+                            <li style="margin-bottom: 10px; color: #fff;"><i class="fab fa-whatsapp" style="margin-right: 10px;"></i> <a href="https://wa.me/5587991682773" target="_blank" style="color: #fff; text-decoration: none;">WhatsApp</a></li>
+                        </ul>
                     </div>
                 </div>
             </div>
@@ -1003,16 +829,55 @@
         <div class="footer-bottom">
             <div class="container">
                 <div class="row">
-                    <div class="col-lg-6 align-self-center">
+                    <div class="col-lg-12 text-center">
                         <p>© 2025 EducX, Todos os Direitos Reservados</p>
-                    </div>
-                    <div class="col-lg-6 text-lg-end">
-                        <img src="assets/img/footer/7.png" alt="img">
                     </div>
                 </div>
             </div>
         </div>
     </footer>
+    
+    <!-- Botão Flutuante WhatsApp -->
+    <a href="https://wa.me/5587991682773?text=Olá!%20Gostaria%20de%20saber%20mais%20sobre%20a%20Educx" 
+       target="_blank" 
+       class="whatsapp-float" 
+       style="position: fixed; width: 60px; height: 60px; bottom: 20px; right: 20px; background-color: #25d366; color: #FFF; border-radius: 50px; text-align: center; font-size: 30px; box-shadow: 2px 2px 3px #999; z-index: 1000; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease;">
+        <i class="fab fa-whatsapp"></i>
+    </a>
+    
+    <style>
+        .whatsapp-float:hover {
+            transform: scale(1.1);
+            box-shadow: 3px 3px 5px #666;
+        }
+        .whatsapp-float {
+            text-decoration: none;
+        }
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border-width: 0;
+        }
+        .widget_contact ul li a:hover {
+            color: #ffc107 !important;
+            text-decoration: underline !important;
+        }
+        @media (max-width: 768px) {
+            .whatsapp-float {
+                width: 50px;
+                height: 50px;
+                font-size: 24px;
+                bottom: 15px;
+                right: 15px;
+            }
+        }
+    </style>
     
     
     <!-- footer area end -->
@@ -1040,6 +905,29 @@
 
     <!-- main js  -->
     <script src="assets/js/main.js"></script>
+    
+    <!-- Script para formulário de contato -->
+    <script>
+        document.getElementById('contatoForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            const nome = formData.get('nome');
+            const escola = formData.get('escola');
+            const cargo = formData.get('cargo');
+            const whatsapp = formData.get('whatsapp');
+            const email = formData.get('email');
+            
+            // Monta mensagem para WhatsApp
+            const mensagem = `Olá! Meu nome é ${nome}, sou ${cargo} da escola ${escola}. Gostaria de agendar uma demonstração da Educx.\n\nE-mail: ${email}\nWhatsApp: ${whatsapp}`;
+            const whatsappUrl = `https://wa.me/5587991682773?text=${encodeURIComponent(mensagem)}`;
+            
+            // Abre WhatsApp
+            window.open(whatsappUrl, '_blank');
+            
+            // Opcional: Mostra mensagem de sucesso
+            alert('Redirecionando para o WhatsApp...');
+        });
+    </script>
 
 </body>
 
